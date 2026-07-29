@@ -1,0 +1,45 @@
+// Priority: 0
+// =========================================================================
+// PUREMASH TWEAKS - KUBEJS SHAPELESS 9x9 SYNTHESIS RECIPE EXAMPLES
+// Place this file inside: kubejs/server_scripts/
+// =========================================================================
+
+ServerEvents.recipes(event => {
+
+    // =========================================================================
+    // EXAMPLE 1: Multi-Item Unification Shapeless Recipe
+    //
+    // Parameters:
+    // 1. Output item/stack (String or ItemStack)
+    // 2. Ingredients array (Array of item IDs, tags, or ItemStacks, up to 81 items)
+    // =========================================================================
+    event.recipes.puremashtweaks.shapeless_synthesis(
+        'puremashtweaks:moldelonian_ingot',
+        [
+            'puremashtweaks:synthorium_ingot',
+            'minecraft:iron_ingot',
+            'minecraft:gold_ingot',
+            'minecraft:copper_ingot',
+            'minecraft:netherite_ingot',
+            '#c:ingots/steel',
+            '#c:ingots/silver',
+            '#c:ingots/tin',
+            '#c:ingots/lead'
+        ]
+    );
+
+    // =========================================================================
+    // EXAMPLE 2: High Output Yield Shapeless Recipe
+    // Ingredients can be placed anywhere on the 9x9 Synthesis Table grid.
+    // =========================================================================
+    event.recipes.puremashtweaks.shapeless_synthesis(
+        '2x puremashtweaks:puremash_core',
+        [
+            'puremashtweaks:moldelonian_core',
+            'puremashtweaks:synthorium_block',
+            'minecraft:nether_star',
+            '#c:storage_blocks/diamond'
+        ]
+    );
+
+});
