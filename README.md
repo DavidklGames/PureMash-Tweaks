@@ -39,7 +39,7 @@ Forces world chunks to remain loaded continuously across 6 selectable radius lev
 ### 💎 Synthorium Equipment & Enchantments
 * **Synthorium Tool Set**: Ultra-durable tools and armor.
 * **Overload Enchantment**: Increases reach distance, accelerates nearby tile entities on the PureMash Core Block, and unlocks **Creative Flight** when applied to full Synthorium armor!
-* **Overclock Enchantment**: Dynamically boosts the virtual levels of all other enchantments present on the item (highlighted in gold text).
+* **Overclock Enchantment**: Dynamically boosts the virtual levels of all other enchantments present on the item.
 
 ---
 
