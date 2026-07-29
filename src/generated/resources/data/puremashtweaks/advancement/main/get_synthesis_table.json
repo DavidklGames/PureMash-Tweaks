@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_moldelonian_ingot",
+  "criteria": {
+    "has_synthesis_table": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthesis_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_synthesis_table.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:synthesis_table"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_synthesis_table.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_synthesis_table"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

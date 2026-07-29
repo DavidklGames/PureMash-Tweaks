@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_synthorium_paxel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_paxel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "puremashtweaks:multifunctional_compressor"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_synthorium_paxel"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "puremashtweaks:multifunctional_compressor"
+    ]
+  }
+}

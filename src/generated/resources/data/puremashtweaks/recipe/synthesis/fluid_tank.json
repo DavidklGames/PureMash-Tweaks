@@ -1,0 +1,22 @@
+{
+  "type": "puremashtweaks:shaped_synthesis",
+  "key": {
+    "B": "puremashtweaks:synthorium_block",
+    "G": "#c:glass_panes",
+    "K": "minecraft:bucket"
+  },
+  "pattern": [
+    ".........",
+    "..BBBBB..",
+    "..BGGGB..",
+    "..BGGGB..",
+    "..BGKGB..",
+    "..BGGGB..",
+    "..BGGGB..",
+    "..BBBBB..",
+    "........."
+  ],
+  "result": {
+    "id": "puremashtweaks:fluid_tank"
+  }
+}

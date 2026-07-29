@@ -1,0 +1,24 @@
+{
+  "type": "puremashtweaks:shaped_synthesis",
+  "key": {
+    "B": "puremashtweaks:synthorium_block",
+    "C": "puremashtweaks:puremash_core",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "R": "minecraft:redstone_block",
+    "T": "puremashtweaks:fluid_tank"
+  },
+  "pattern": [
+    "BBRBCBRBB",
+    "BRBRMRBRB",
+    "RBRMBMRBR",
+    "BRMBBBMRB",
+    "CMBBTBBMC",
+    "BRMBBBMRB",
+    "RBRMBMRBR",
+    "BRBRMRBRB",
+    "BBRBCBRBB"
+  ],
+  "result": {
+    "id": "puremashtweaks:creative_fluid_tank"
+  }
+}

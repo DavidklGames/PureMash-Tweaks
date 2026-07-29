@@ -1,0 +1,37 @@
+{
+  "type": "puremashtweaks:shapeless_synthesis",
+  "ingredients": [
+    "#c:singularities/coal",
+    "#c:singularities/copper",
+    "#c:singularities/iron",
+    "#c:singularities/gold",
+    "#c:singularities/diamond",
+    "#c:singularities/redstone",
+    "#c:singularities/lapis",
+    "#c:singularities/emerald",
+    "#c:singularities/amethyst",
+    "#c:singularities/quartz",
+    "#c:singularities/glowstone",
+    "#c:singularities/netherite",
+    "#c:singularities/synthorium",
+    "#c:singularities/sculk",
+    "#c:singularities/slime",
+    "#c:singularities/ender_pearl",
+    "#c:singularities/sugar",
+    "#c:singularities/gunpowder",
+    "#c:singularities/clay",
+    "#c:singularities/nether_star",
+    "#c:singularities/inferium",
+    "#c:singularities/prudentium",
+    "#c:singularities/tertium",
+    "#c:singularities/imperium",
+    "#c:singularities/supremium",
+    "#c:singularities/insanium",
+    "#c:singularities/deorum",
+    "#c:singularities/quantum_alloy",
+    "#c:singularities/certus_quartz"
+  ],
+  "result": {
+    "id": "puremashtweaks:cosmic_singularity"
+  }
+}

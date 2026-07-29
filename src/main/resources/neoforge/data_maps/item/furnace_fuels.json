@@ -1,0 +1,10 @@
+{
+  "values": {
+    "puremashtweaks:synthorium_ingot": {
+      "burn_time": 16000
+    },
+    "puremashtweaks:synthorium_block": {
+      "burn_time": 144000
+    }
+  }
+}

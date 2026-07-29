@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "puremashtweaks:synthorium_ingot",
+    "R": "puremashtweaks:synthorium_rod"
+  },
+  "pattern": [
+    "II",
+    " R",
+    " R"
+  ],
+  "result": {
+    "id": "puremashtweaks:synthorium_hoe"
+  }
+}

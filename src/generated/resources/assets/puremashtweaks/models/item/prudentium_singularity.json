@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "puremashtweaks:item/singularity",
+    "layer1": "puremashtweaks:item/singularity_mask"
+  }
+}

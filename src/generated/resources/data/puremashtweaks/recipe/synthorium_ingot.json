@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "puremashtweaks:synthorium_scrap",
+    "puremashtweaks:synthorium_scrap",
+    "puremashtweaks:synthorium_scrap",
+    "puremashtweaks:synthorium_scrap",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:diamond"
+  ],
+  "result": {
+    "id": "puremashtweaks:synthorium_ingot"
+  }
+}

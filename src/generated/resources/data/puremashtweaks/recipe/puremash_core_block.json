@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "puremashtweaks:puremash_core",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "S": "puremashtweaks:synthorium_block"
+  },
+  "pattern": [
+    "MCM",
+    "CSC",
+    "MCM"
+  ],
+  "result": {
+    "id": "puremashtweaks:puremash_core_block"
+  }
+}

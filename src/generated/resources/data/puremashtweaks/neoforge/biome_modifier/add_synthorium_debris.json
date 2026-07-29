@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "puremashtweaks:synthorium_standard_placed",
+    "puremashtweaks:synthorium_rare_placed",
+    "puremashtweaks:synthorium_epic_placed"
+  ],
+  "step": "underground_ores"
+}

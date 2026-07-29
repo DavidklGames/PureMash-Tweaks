@@ -1,0 +1,8 @@
+{
+  "model": {
+    "type": "puremashtweaks:overload_book",
+    "base": "minecraft:item/enchanted_book",
+    "overclock": "puremashtweaks:item/overclock_book",
+    "overload": "puremashtweaks:item/overload_book"
+  }
+}

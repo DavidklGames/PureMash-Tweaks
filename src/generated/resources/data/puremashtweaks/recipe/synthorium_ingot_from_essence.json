@@ -1,0 +1,21 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mysticalagriculture"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "mysticalagriculture:synthorium_essence"
+  },
+  "pattern": [
+    "EEE",
+    "EEE",
+    "EEE"
+  ],
+  "result": {
+    "id": "puremashtweaks:synthorium_ingot"
+  }
+}

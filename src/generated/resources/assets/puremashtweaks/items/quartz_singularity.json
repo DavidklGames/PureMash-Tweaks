@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "puremashtweaks:halo",
+    "base": "puremashtweaks:item/quartz_singularity",
+    "halo": {
+      "color": -15658735,
+      "pulse": false,
+      "size": 2.6,
+      "texture": "puremashtweaks:item/halo"
+    },
+    "halo_model": "puremashtweaks:item/halo"
+  },
+  "oversized_in_gui": true
+}

@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "puremashtweaks:synthorium"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "puremashtweaks:synthorium"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "puremashtweaks:synthorium"
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "puremashtweaks:block/multifunctional_compressor",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "puremashtweaks:block/multifunctional_compressor"
+    },
+    "facing=south": {
+      "model": "puremashtweaks:block/multifunctional_compressor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "puremashtweaks:block/multifunctional_compressor",
+      "y": 270
+    }
+  }
+}

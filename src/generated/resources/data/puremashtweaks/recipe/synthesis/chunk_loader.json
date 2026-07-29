@@ -1,0 +1,25 @@
+{
+  "type": "puremashtweaks:shaped_synthesis",
+  "key": {
+    "C": "puremashtweaks:puremash_core",
+    "D": "minecraft:diamond_block",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "P": "puremashtweaks:synthorium_nugget",
+    "R": "puremashtweaks:synthorium_rod",
+    "S": "puremashtweaks:synthorium_block"
+  },
+  "pattern": [
+    ".........",
+    "..PPSPP..",
+    ".PSDMDSP.",
+    ".PDRSRDP.",
+    ".SMSCSMS.",
+    ".PDRSRDP.",
+    ".PSDMDSP.",
+    "..PPSPP..",
+    "........."
+  ],
+  "result": {
+    "id": "puremashtweaks:chunk_loader"
+  }
+}

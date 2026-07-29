@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "puremashtweaks:synthorium_ingot"
+  },
+  "pattern": [
+    "I",
+    "I",
+    "I"
+  ],
+  "result": {
+    "count": 4,
+    "id": "puremashtweaks:synthorium_rod"
+  }
+}

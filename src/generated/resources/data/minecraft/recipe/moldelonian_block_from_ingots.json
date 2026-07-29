@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "M": "puremashtweaks:moldelonian_ingot"
+  },
+  "pattern": [
+    "MMM",
+    "MMM",
+    "MMM"
+  ],
+  "result": {
+    "id": "puremashtweaks:moldelonian_block"
+  }
+}

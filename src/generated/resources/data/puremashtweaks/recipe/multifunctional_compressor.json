@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": "puremashtweaks:moldelonian_ingot",
+    "P": "puremashtweaks:synthorium_paxel",
+    "S": "puremashtweaks:synthorium_block"
+  },
+  "pattern": [
+    "MSM",
+    "SPS",
+    "MSM"
+  ],
+  "result": {
+    "id": "puremashtweaks:multifunctional_compressor"
+  }
+}

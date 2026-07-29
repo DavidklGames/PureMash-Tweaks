@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "puremashtweaks:item/music_disc_beyond_the_final_stage"
+  }
+}

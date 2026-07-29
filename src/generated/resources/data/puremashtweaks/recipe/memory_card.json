@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "puremashtweaks:synthorium_nugget",
+    "P": "minecraft:paper",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    " R ",
+    "RNR",
+    "PPP"
+  ],
+  "result": {
+    "id": "puremashtweaks:memory_card"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "model": {
+    "type": "puremashtweaks:fluid_tank_model",
+    "base": "puremashtweaks:block/fluid_tank",
+    "capacity": 32000,
+    "is_creative": false
+  }
+}

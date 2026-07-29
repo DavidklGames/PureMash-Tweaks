@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:redstone",
+    "P": "minecraft:paper",
+    "R": "minecraft:repeater",
+    "S": "minecraft:sugar"
+  },
+  "pattern": [
+    "RPR",
+    "PEP",
+    "SPR"
+  ],
+  "result": {
+    "id": "puremashtweaks:speed_upgrade_1"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_moldelonian_core",
+  "criteria": {
+    "has_puremash_core": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:puremash_core"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_puremash_core.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:puremash_core"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_puremash_core.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_puremash_core"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

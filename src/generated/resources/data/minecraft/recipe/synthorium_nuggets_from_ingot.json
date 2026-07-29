@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "puremashtweaks:synthorium_ingot"
+  ],
+  "result": {
+    "count": 9,
+    "id": "puremashtweaks:synthorium_nugget"
+  }
+}

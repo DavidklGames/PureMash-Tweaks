@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "puremashtweaks:synthorium_axe",
+    "I": "puremashtweaks:synthorium_ingot",
+    "P": "puremashtweaks:synthorium_pickaxe",
+    "R": "puremashtweaks:synthorium_rod",
+    "S": "puremashtweaks:synthorium_shovel"
+  },
+  "pattern": [
+    "PSA",
+    " I ",
+    " R "
+  ],
+  "result": {
+    "id": "puremashtweaks:synthorium_paxel"
+  }
+}

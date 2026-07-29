@@ -1,0 +1,24 @@
+{
+  "type": "puremashtweaks:shaped_synthesis",
+  "key": {
+    "D": "minecraft:diamond_block",
+    "I": "puremashtweaks:synthorium_ingot",
+    "M": "puremashtweaks:moldelonian_block",
+    "N": "minecraft:nether_star",
+    "S": "puremashtweaks:synthorium_block"
+  },
+  "pattern": [
+    ".MMSDSMM.",
+    "MSSDIDSSM",
+    "MSDIMIDSM",
+    "SDIDSDIDS",
+    "DIMSNSMID",
+    "SDIDSDIDS",
+    "MSDIMIDSM",
+    "MSSDIDSSM",
+    ".MMSDSMM."
+  ],
+  "result": {
+    "id": "puremashtweaks:moldelonian_core"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "puremashtweaks:block/alchemical_synthesizer",
+  "textures": {
+    "10": "puremashtweaks:block/alchemical_synthesizer/alchemical_synthesizer_front_active"
+  }
+}

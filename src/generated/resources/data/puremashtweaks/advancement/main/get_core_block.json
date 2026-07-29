@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_puremash_core",
+  "criteria": {
+    "has_core_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:puremash_core_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_core_block.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:puremash_core_block"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_core_block.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_core_block"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

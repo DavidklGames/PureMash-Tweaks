@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "puremashtweaks:block/chunk_loader",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "puremashtweaks:block/chunk_loader"
+    },
+    "facing=south": {
+      "model": "puremashtweaks:block/chunk_loader",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "puremashtweaks:block/chunk_loader",
+      "y": 270
+    }
+  }
+}

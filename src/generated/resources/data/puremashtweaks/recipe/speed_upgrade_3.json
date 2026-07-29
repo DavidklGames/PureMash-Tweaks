@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "puremashtweaks:puremash_core",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "U": "puremashtweaks:speed_upgrade_2"
+  },
+  "pattern": [
+    "UMU",
+    "MCM",
+    "UMU"
+  ],
+  "result": {
+    "id": "puremashtweaks:speed_upgrade_3"
+  }
+}

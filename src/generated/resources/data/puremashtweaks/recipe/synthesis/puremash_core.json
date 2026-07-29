@@ -1,0 +1,27 @@
+{
+  "type": "puremashtweaks:shaped_synthesis",
+  "key": {
+    "C": "ae2:controller",
+    "G": "puremashtweaks:synthorium_singularity",
+    "I": "puremashtweaks:moldelonian_ingot",
+    "K": "puremashtweaks:moldelonian_core",
+    "M": "puremashtweaks:moldelonian_block",
+    "N": "minecraft:diamond_block",
+    "S": "puremashtweaks:synthorium_block",
+    "Y": "mysticalagradditions:creative_essence"
+  },
+  "pattern": [
+    "SSSSYSSSS",
+    "SMMINIMMS",
+    "SMYNSNYMS",
+    "SINGCGNIS",
+    "YNSCKCSNY",
+    "SINGCGNIS",
+    "SMYNSNYMS",
+    "SMMINIMMS",
+    "SSSSYSSSS"
+  ],
+  "result": {
+    "id": "puremashtweaks:puremash_core"
+  }
+}

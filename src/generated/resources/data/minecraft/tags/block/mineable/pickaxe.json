@@ -1,0 +1,14 @@
+{
+  "values": [
+    "puremashtweaks:puremash_core_block",
+    "puremashtweaks:synthorium_block",
+    "puremashtweaks:moldelonian_block",
+    "puremashtweaks:synthorium_debris",
+    "puremashtweaks:synthesis_table",
+    "puremashtweaks:multifunctional_compressor",
+    "puremashtweaks:fake_bedrock",
+    "puremashtweaks:alchemical_synthesizer",
+    "puremashtweaks:fluid_tank",
+    "puremashtweaks:creative_fluid_tank"
+  ]
+}

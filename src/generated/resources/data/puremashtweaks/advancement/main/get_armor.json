@@ -1,0 +1,72 @@
+{
+  "parent": "puremashtweaks:main/get_paxel",
+  "criteria": {
+    "has_boots": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_boots"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_chestplate": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_chestplate"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_helmet": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_helmet"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_leggings": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_leggings"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_armor.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:synthorium_chestplate"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_armor.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_helmet"
+    ],
+    [
+      "has_chestplate"
+    ],
+    [
+      "has_leggings"
+    ],
+    [
+      "has_boots"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bucket",
+    "C": "minecraft:cauldron",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "R": "minecraft:redstone_block",
+    "S": "puremashtweaks:synthorium_ingot"
+  },
+  "pattern": [
+    "MBM",
+    "SCS",
+    "MRM"
+  ],
+  "result": {
+    "id": "puremashtweaks:alchemical_synthesizer"
+  }
+}

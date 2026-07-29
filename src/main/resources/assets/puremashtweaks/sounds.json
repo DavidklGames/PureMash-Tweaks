@@ -1,0 +1,26 @@
+{
+  "puremash_goal": {
+    "subtitle": "subtitles.puremashtweaks.puremash_goal",
+    "sounds": [
+      "puremashtweaks:puremash_goal"
+    ]
+  },
+  "beyond_the_final_stage": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "puremashtweaks:records/beyond_the_final_stage",
+        "stream": true
+      }
+    ]
+  },
+  "beyond_the_final_stage_achievements_completed": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "puremashtweaks:soundtrack/beyond_the_final_stage_achievements_completed",
+        "stream": true
+      }
+    ]
+  }
+}

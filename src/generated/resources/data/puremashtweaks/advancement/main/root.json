@@ -1,0 +1,25 @@
+{
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "display": {
+    "background": "puremashtweaks:block/backgrounds/deepslate",
+    "description": {
+      "translate": "advancements.puremashtweaks.root.description"
+    },
+    "icon": {
+      "id": "puremashtweaks:puremash_core"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "tick"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,216 @@
+{
+  "itemGroup.puremashtweaks.puremash_tab": "PureMash Tweaks",
+  "itemGroup.puremashtweaks.puremash_singularity_tab": "PureMash: Singularity",
+  "subtitles.puremashtweaks.puremash_goal": "PureMash Goal Achieved!",
+
+  "item.puremashtweaks.puremash_core": "PureMash Core",
+  "block.puremashtweaks.puremash_core_block": "PureMash Core Block",
+
+  "block.puremashtweaks.synthorium_debris": "Synthorium Debris",
+  "item.puremashtweaks.synthorium_scrap": "Synthorium Scrap",
+  "item.puremashtweaks.synthorium_ingot": "Synthorium Ingot",
+  "block.puremashtweaks.synthorium_block": "Synthorium Block",
+  "item.puremashtweaks.synthorium_helmet": "Synthorium Helmet",
+  "item.puremashtweaks.synthorium_chestplate": "Synthorium Chestplate",
+  "item.puremashtweaks.synthorium_leggings": "Synthorium Leggings",
+  "item.puremashtweaks.synthorium_boots": "Synthorium Boots",
+  "item.puremashtweaks.synthorium_sword": "Synthorium Sword",
+  "item.puremashtweaks.synthorium_pickaxe": "Synthorium Pickaxe",
+  "item.puremashtweaks.synthorium_shovel": "Synthorium Shovel",
+  "item.puremashtweaks.synthorium_axe": "Synthorium Axe",
+  "item.puremashtweaks.synthorium_hoe": "Synthorium Hoe",
+  "item.puremashtweaks.synthorium_paxel": "Synthorium Paxel",
+  "item.puremashtweaks.synthorium_rod": "Synthorium Rod",
+  "item.puremashtweaks.synthorium_dust": "Synthorium Dust",
+  "item.puremashtweaks.synthorium_nugget": "Synthorium Nugget",
+
+  "item.puremashtweaks.moldelonian_ingot": "Moldelonian Ingot",
+  "block.puremashtweaks.moldelonian_block": "Moldelonian Block",
+  "item.puremashtweaks.moldelonian_core": "Moldelonian Core",
+  "item.puremashtweaks.moldelonian_nugget": "Moldelonian Nugget",
+
+  "block.puremashtweaks.synthesis_table": "Synthesis Table",
+  "container.puremashtweaks.synthesis_table": "Synthesis Table",
+  "block.puremashtweaks.multifunctional_compressor": "Multifunctional Compressor",
+  "container.puremashtweaks.multifunctional_compressor": "Compressor",
+  "tooltip.puremash.multifunctional_compressor.empty": "Empty",
+  "item.puremashtweaks.memory_card": "Memory Card",
+  "item.puremashtweaks.music_disc_beyond_the_final_stage": "Music Disc",
+
+  "tooltip.puremashtweaks.memory_card.empty": "Oops! The Memory Card is empty.",
+  "tooltip.puremashtweaks.memory_card.saved": "The recipe was saved successfully!",
+  "tooltip.puremashtweaks.memory_card.clear_instruction": "Look up and right click to clean the recipe.",
+  "tooltip.puremashtweaks.memory_card.cleared": "Memory Card was cleared!",
+  "block.puremashtweaks.fake_bedrock": "Bedrock",
+
+  "item.puremashtweaks.speed_upgrade_1": "Speed Upgrade Tier 1",
+  "item.puremashtweaks.speed_upgrade_2": "Speed Upgrade Tier 2",
+  "item.puremashtweaks.speed_upgrade_3": "Speed Upgrade Tier 3",
+
+  "tooltip.puremashtweaks.multifunctional_compressor.mode.title": "Change the Multifunctional Compressor's operating mode.",
+  "tooltip.puremashtweaks.multifunctional_compressor.mode.desc": "Modes: Compression, Singularity, Dust.",
+  "tooltip.puremashtweaks.multifunctional_compressor.lock.locked": "Locked Recipe",
+  "tooltip.puremashtweaks.multifunctional_compressor.lock.locked.desc": "The recipe is locked to prevent the entry of unwanted items.",
+  "tooltip.puremashtweaks.multifunctional_compressor.lock.free": "Unlocked Recipe",
+  "tooltip.puremashtweaks.multifunctional_compressor.lock.free.desc": "The recipe is unlocked and accepts any compatible item.",
+
+  "container.puremashtweaks.multifunctional_compressor.normal": "Compression",
+  "container.puremashtweaks.multifunctional_compressor.singularity": "Singularity Compressor",
+  "container.puremashtweaks.multifunctional_compressor.dust": "Dust Crusher",
+  "tooltip.puremashtweaks.multifunctional_compressor.not_suitable_compression": "%s is not suitable for compression.",
+  "tooltip.puremashtweaks.multifunctional_compressor.not_suitable_crushing": "%s is not suitable for crushing.",
+  "jei.category.puremashtweaks.compression": "Compression",
+  "jei.category.puremashtweaks.singularity": "Singularity Condensing",
+  "jei.category.puremashtweaks.dust": "Crushing / Pulverizing",
+
+  "jei.category.puremashtweaks.synthesis_table": "Synthesis Table",
+  "jei.category.puremashtweaks.multifunctional_compressor": "Multifunctional Compressor",
+
+  "item.puremashtweaks.synthorium_singularity": "Synthorium Singularity",
+  "item.puremashtweaks.sculk_singularity": "Sculk Singularity",
+  "item.puremashtweaks.magma_singularity": "Magma Cream Singularity",
+  "item.puremashtweaks.nether_star_singularity": "Nether Star Singularity",
+  "item.puremashtweaks.coal_singularity": "Coal Singularity",
+  "item.puremashtweaks.copper_singularity": "Copper Singularity",
+  "item.puremashtweaks.iron_singularity": "Iron Singularity",
+  "item.puremashtweaks.gold_singularity": "Gold Singularity",
+  "item.puremashtweaks.diamond_singularity": "Diamond Singularity",
+  "item.puremashtweaks.emerald_singularity": "Emerald Singularity",
+  "item.puremashtweaks.redstone_singularity": "Redstone Singularity",
+  "item.puremashtweaks.amethyst_singularity": "Amethyst Singularity",
+  "item.puremashtweaks.quartz_singularity": "Quartz Singularity",
+  "item.puremashtweaks.lapis_singularity": "Lapis Lazuli Singularity",
+  "item.puremashtweaks.slime_singularity": "Slime Singularity",
+  "item.puremashtweaks.glowstone_singularity": "Glowstone Singularity",
+  "item.puremashtweaks.netherite_singularity": "Netherite Singularity",
+  "item.puremashtweaks.ender_pearl_singularity": "Ender Pearl Singularity",
+  "item.puremashtweaks.sugar_singularity": "Sugar Singularity",
+  "item.puremashtweaks.gunpowder_singularity": "Gunpowder Singularity",
+  "item.puremashtweaks.clay_singularity": "Clay Singularity",
+
+  "item.puremashtweaks.deorum_singularity": "Deorum Singularity",
+  "item.puremashtweaks.quantum_alloy_singularity": "Quantum Alloy Singularity",
+  "item.puremashtweaks.certus_quartz_singularity": "Certus Quartz Singularity",
+  "item.puremashtweaks.inferium_singularity": "Inferium Singularity",
+  "item.puremashtweaks.prudentium_singularity": "Prudentium Singularity",
+  "item.puremashtweaks.tertium_singularity": "Tertium Singularity",
+  "item.puremashtweaks.imperium_singularity": "Imperium Singularity",
+  "item.puremashtweaks.supremium_singularity": "Supremium Singularity",
+  "item.puremashtweaks.insanium_singularity": "Insanium Singularity",
+  "item.puremashtweaks.netherite_iron_singularity": "Netherite Iron Singularity",
+  "item.puremashtweaks.netherite_gold_singularity": "Netherite Gold Singularity",
+  "item.puremashtweaks.netherite_emerald_singularity": "Netherite Emerald Singularity",
+  "item.puremashtweaks.netherite_diamond_singularity": "Netherite Diamond Singularity",
+  "item.puremashtweaks.cosmic_singularity": "Cosmic Singularity",
+
+  "tooltip.puremashtweaks.synthorium_debris.desc": "Debris from an powerful ancient technology.",
+  "tooltip.puremashtweaks.moldelonian.desc": "The ultimate metal alloy. Fused from all ores into one single material.",
+  "tooltip.puremashtweaks.moldelonian_core.desc": "A heavy piece, works as a battery. The centerpiece of the PureMash Core.",
+  "tooltip.puremashtweaks.puremash_core.desc": "A highly powerful microchip capable of fabricating creative-tier technologies.",
+  "tooltip.puremashtweaks.synthesis_table.desc": "An intelligent automated workbench that automates crafting up to a 9x9 grid.",
+  "tooltip.puremashtweaks.multifunctional_compressor.desc": "A multi-mode machine: Compresses, condenses singularities, and pulverizes materials.",
+  "tooltip.puremashtweaks.synthorium_tools.overload_bedrock": "Charged with Overload! This tool has gained enough strength to shatter Bedrock.",
+
+  "tooltip.puremashtweaks.speed_upgrade_1.desc": "Machine Speed Upgrade (Tier 1)",
+  "tooltip.puremashtweaks.speed_upgrade_2.desc": "Machine Speed & Duplication Upgrade (Tier 2)",
+  "tooltip.puremashtweaks.speed_upgrade_3.desc": "Max Machine Speed & Max Duplication Upgrade (Tier 3)",
+
+  "block.puremashtweaks.alchemical_synthesizer": "Alchemical Synthesizer",
+  "container.puremashtweaks.alchemical_synthesizer": "Alchemical Synthesizer",
+  "tooltip.puremashtweaks.alchemical_synthesizer.desc": "Processes materials hydro-thermally and mechanically using fluid catalysts and tools.",
+  "tooltip.puremashtweaks.puremash_core_block.desc": "Accelerates the surrounding area when enchanted with Overload.",
+  "tooltip.puremashtweaks.synthorium_rod.desc": "The rod used as support for Synthorium tools, or other recipes.",
+
+  "key.puremashtweaks.toggle_flight": "Toggle Overload Flight",
+  "key.category.puremashtweaks.main": "PureMash Tweaks",
+  "crop.puremashtweaks.synthorium": "Synthorium",
+
+  "chat.puremashtweaks.prefix": "[PureMash Tweaks]: ",
+  "chat.puremashtweaks.no_synthorium_armor": "You are not wearing a Synthorium Armor!",
+  "chat.puremashtweaks.overload_full_set_required": "A full Synthorium set enchanted with Overload is required to fly!",
+
+  "advancements.puremashtweaks.root.title": "PureMash Tweaks",
+  "advancements.puremashtweaks.root.description": "The beginning of a PureMash journey.",
+
+  "advancements.puremashtweaks.find_debris.title": "Lost and Found",
+  "advancements.puremashtweaks.find_debris.description": "Find debris from an ancient technology.",
+
+  "advancements.puremashtweaks.get_ingot.title": "Synthorium Ingot",
+  "advancements.puremashtweaks.get_ingot.description": "Craft a Synthorium Ingot: The ingot that still flows with energy even after millennia!",
+
+  "advancements.puremashtweaks.get_tools.title": "Synthorium Tools",
+  "advancements.puremashtweaks.get_tools.description": "Craft all Synthorium tools.",
+
+  "advancements.puremashtweaks.get_paxel.title": "Everything is better when everything is united!",
+  "advancements.puremashtweaks.get_paxel.description": "Unite a pickaxe, shovel, and axe to create the Synthorium Paxel.",
+
+  "advancements.puremashtweaks.get_armor.title": "I'm Energized!",
+  "advancements.puremashtweaks.get_armor.description": "Have all 4 pieces of Synthorium armor.",
+
+  "advancements.puremashtweaks.get_moldelonian_ingot.title": "All in One!",
+  "advancements.puremashtweaks.get_moldelonian_ingot.description": "Unify all ores into one, thus obtaining the Moldelonian Ingot.",
+
+  "advancements.puremashtweaks.get_moldelonian_core.title": "The Weight of the World",
+  "advancements.puremashtweaks.get_moldelonian_core.description": "Forge an impossibly dense core by fusing every single mineral this universe has to offer.",
+
+  "advancements.puremashtweaks.get_puremash_core.title": "PureMash Core",
+  "advancements.puremashtweaks.get_puremash_core.description": "The Creative Chip! With it, you craft any creative item.",
+
+  "advancements.puremashtweaks.get_core_block.title": "The PureMash Core Block",
+  "advancements.puremashtweaks.get_core_block.description": "Unify processing power into a single block. Exercise extreme caution regarding its placement.",
+
+  "advancements.puremashtweaks.overloaded.title": "Overloaded!",
+  "advancements.puremashtweaks.overloaded.description": "Enchant an item with the power of Overload.",
+
+  "advancements.puremashtweaks.energy_for_all.title": "Unbounded Synergy",
+  "advancements.puremashtweaks.energy_for_all.description": "Synthesize a Synthorium Block to anchor and stabilize raw, untamed energy.",
+
+  "advancements.puremashtweaks.one_unites_all.title": "The Grand Unification",
+  "advancements.puremashtweaks.one_unites_all.description": "Hold the ultimate testament of balance, where all forces become one.",
+
+  "advancements.puremashtweaks.get_multifunctional_compressor.title": "Multifunctional Processing",
+  "advancements.puremashtweaks.get_multifunctional_compressor.description": "Craft a Multifunctional Compressor to process your items.",
+
+  "advancements.puremashtweaks.get_synthesis_table.title": "The Grand Automator",
+  "advancements.puremashtweaks.get_synthesis_table.description": "Craft a Synthesis Table to design ultimate automated recipes.",
+
+  "advancements.puremashtweaks.cosmic_singularity.title": "Beyond the Event Horizon",
+  "advancements.puremashtweaks.cosmic_singularity.description": "Collapse every cosmic force into a single point of infinite mass.",
+
+  "config.jade.plugin_puremashtweaks.crafting_table": "Synthesis Table Info",
+  "config.jade.plugin_puremashtweaks.puremash_core_client": "PureMash Core Block Info",
+  "config.jade.plugin_puremashtweaks.multifunctional_compressor": "Multifunctional Compressor Info",
+
+  "tooltip.puremashtweaks.music_disc_beyond_the_final_stage.desc": "A melody that marks the end of your journey, but does not yet mark the end of what you can do.",
+  "tooltip.puremashtweaks.synthorium_debris_in_jei.desc": "Found in the depths of the Overworld, between layers -64 and 0.",
+
+  "advancements.puremashtweaks.get_alchemical_synthesizer.title": "Alchemical Master",
+  "advancements.puremashtweaks.get_alchemical_synthesizer.description": "Craft an Alchemical Synthesizer to process materials hydro-thermally, mechanically, and thermodynamically.",
+
+  "block.puremashtweaks.chunk_loader": "PureMash Chunk Loader",
+  "container.puremashtweaks.chunk_loader": "PureMash Chunk Loader",
+  "chat.puremashtweaks.chunk_loader.needs_core": "§c[PureMash Chunk Loader]: Wider loading zones (Level 4+) require a Moldelonian Core inside the slot!",
+  "chat.puremashtweaks.chunk_loader.core_removed": "§e[PureMash Chunk Loader]: Moldelonian Core removed! Chunk loading range downgraded to Level 3 (5x5).",
+  "tooltip.puremashtweaks.chunk_loader.desc": "Forces chunks to remain constantly loaded in the world. Levels 4 to 6 require a Moldelonian Core.",
+  "tooltip.puremashtweaks.chunk_loader.slot_desc": "Place a Moldelonian Core here to unlock Levels 4, 5 and 6.",
+
+  "enchantment.puremashtweaks.overclock": "Overclock",
+  "enchantment.puremashtweaks.overclock.desc": "Overclocks the maximum level of any enchantment present on the enchanted item.",
+  "enchantment.puremashtweaks.overload": "Overload",
+  "item.puremashtweaks.overload_book": "Overload Book",
+  "item.puremashtweaks.overclock_book": "Overclock Book",
+  "enchantment.puremashtweaks.overload.desc": "Increase the reach of tools. There are secret abilities in some Synthorium items—such as the armor: levels I and II grant limited creative flight, but at level III, it is unlimited!",
+
+  "item.puremashtweaks.fluid_tank": "Fluid Tank",
+  "item.puremashtweaks.creative_fluid_tank": "Creative Fluid Tank",
+  "tooltip.puremashtweaks.fluid_tank.fluid": "Fluid: ",
+  "tooltip.puremashtweaks.fluid_tank.amount": "Amount: ",
+  "tooltip.puremashtweaks.fluid_tank.none": "NONE",
+  "tooltip.puremashtweaks.fluid_tank.empty": "Empty",
+
+  "chat.puremashtweaks.creative_fluid_tank.reset": "§c[Creative Fluid Tank]: The Fluid Tank was reset and cleaned!",
+  "chat.puremashtweaks.creative_fluid_tank.empty": "§7[Creative Fluid Tank]: Empty (Insert a liquid to have an infinite supply of it)",
+  "chat.puremashtweaks.creative_fluid_tank.info": "§d[Creative Fluid Tank]: §fInfinity of %s §8(Shift + Click to clean)",
+  "chat.puremashtweaks.fluid_tank.empty": "§7[Fluid Tank]: Empty (0 / 32,000 mB)",
+  "chat.puremashtweaks.fluid_tank.info": "§b[Fluid Tank]: §f%s / 32,000 mB of %s"
+}

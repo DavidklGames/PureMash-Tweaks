@@ -1,0 +1,32 @@
+{
+  "parent": "puremashtweaks:main/root",
+  "criteria": {
+    "has_debris": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_debris"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.find_debris.description"
+    },
+    "icon": {
+      "id": "puremashtweaks:synthorium_debris"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.find_debris.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_debris"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

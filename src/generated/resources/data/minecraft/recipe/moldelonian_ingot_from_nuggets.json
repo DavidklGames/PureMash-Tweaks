@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": "puremashtweaks:moldelonian_nugget"
+  },
+  "pattern": [
+    "NNN",
+    "NNN",
+    "NNN"
+  ],
+  "result": {
+    "id": "puremashtweaks:moldelonian_ingot"
+  }
+}

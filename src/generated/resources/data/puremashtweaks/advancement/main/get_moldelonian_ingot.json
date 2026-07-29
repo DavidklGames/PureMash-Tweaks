@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_armor",
+  "criteria": {
+    "has_moldelonian": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:moldelonian_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_moldelonian_ingot.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:moldelonian_ingot"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_moldelonian_ingot.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_moldelonian"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
