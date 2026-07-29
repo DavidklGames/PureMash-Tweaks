@@ -1,0 +1,87 @@
+// Priority: 0
+// =========================================================================
+// PUREMASH TWEAKS - KUBEJS SHAPED 9x9 SYNTHESIS RECIPE EXAMPLES
+// Place this file inside: kubejs/server_scripts/
+// =========================================================================
+
+ServerEvents.recipes(event => {
+
+    // =========================================================================
+    // EXAMPLE 1: Full 9x9 Matrix Shaped Synthesis Recipe
+    //
+    // Parameters:
+    // 1. Output item/stack (String or ItemStack)
+    // 2. Pattern array (Array of strings, up to 9 rows of up to 9 characters)
+    // 3. Key object (Mapping characters to item IDs or tags)
+    // =========================================================================
+    event.recipes.puremashtweaks.shaped_synthesis(
+        'puremashtweaks:moldelonian_core',
+        [
+            ' MMSDSMM ',
+            'MSSDIDSSM',
+            'MSDIMIDSM',
+            'SDIDSDIDS',
+            'DIMSNSMID',
+            'SDIDSDIDS',
+            'MSDIMIDSM',
+            'MSSDIDSSM',
+            ' MMSDSMM '
+        ],
+        {
+            M: 'puremashtweaks:moldelonian_block',
+            S: 'puremashtweaks:synthorium_block',
+            I: 'puremashtweaks:synthorium_ingot',
+            D: '#c:storage_blocks/diamond',
+            N: 'minecraft:nether_star'
+        }
+    );
+
+    // =========================================================================
+    // EXAMPLE 2: Smaller Pattern with Custom Output Stack Count
+    // Empty spaces (' ') inside the pattern define empty grid slots.
+    // =========================================================================
+    event.recipes.puremashtweaks.shaped_synthesis(
+        '4x puremashtweaks:synthorium_ingot',
+        [
+            '  SSS  ',
+            ' S   S ',
+            'S  D  S',
+            ' S   S ',
+            '  SSS  '
+        ],
+        {
+            S: 'puremashtweaks:synthorium_scrap',
+            D: 'minecraft:diamond'
+        }
+    );
+
+    // =========================================================================
+    // EXAMPLE 3: Complex Endgame Shaped Synthesis Recipe
+    // Using common tags (#c:...) for multi-mod compatibility
+    // =========================================================================
+    event.recipes.puremashtweaks.shaped_synthesis(
+        'puremashtweaks:puremash_core',
+        [
+            'SSSSYSSSS',
+            'SMMINIMMS',
+            'SMYNSNYMS',
+            'SINGCGNIS',
+            'YNSCKCSNY',
+            'SINGCGNIS',
+            'SMYNSNYMS',
+            'SMMINIMMS',
+            'SSSSYSSSS'
+        ],
+        {
+            S: 'puremashtweaks:synthorium_block',
+            M: 'puremashtweaks:moldelonian_block',
+            I: 'puremashtweaks:moldelonian_ingot',
+            G: '#c:puremash/singularity',
+            C: '#c:storage_blocks/netherite',
+            Y: '#c:storage_blocks/emerald',
+            N: '#c:storage_blocks/diamond',
+            K: 'puremashtweaks:moldelonian_core'
+        }
+    );
+
+});
