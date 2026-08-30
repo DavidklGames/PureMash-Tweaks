@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "puremashtweaks:moldelonian_universal_cable"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "puremashtweaks:blocks/moldelonian_universal_cable"
+}

@@ -1,0 +1,26 @@
+{
+  "item_settings": {
+    "display_name": {
+      "type": "translatable",
+      "translate": "item.puremashtweaks.guide"
+    },
+    "tooltip_lines": [
+      {
+        "text": "The Definitive Guide to PureMash Technologies.",
+        "color": "gray"
+      }
+    ],
+    "model": "puremashtweaks:item/guide"
+  },
+  "default_language": "en_us",
+  "custom_colors": {
+    "puremashtweaks:cyan_glow": {
+      "dark_mode": "#00E5FF",
+      "light_mode": "#0099B8"
+    },
+    "puremashtweaks:moldelonian_gold": {
+      "dark_mode": "#FFD700",
+      "light_mode": "#CC9900"
+    }
+  }
+}

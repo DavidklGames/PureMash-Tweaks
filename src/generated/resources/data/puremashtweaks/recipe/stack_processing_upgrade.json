@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": "puremashtweaks:memory_card",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "S": "puremashtweaks:synthorium_ingot"
+  },
+  "pattern": [
+    "MSM",
+    "SCS",
+    "MSM"
+  ],
+  "result": {
+    "id": "puremashtweaks:stack_processing_upgrade"
+  }
+}

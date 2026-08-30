@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivemetalworks"
+    }
+  ],
+  "type": "productivemetalworks:item_melting",
+  "ingredient": "#c:scraps/synthorium",
+  "maximum_temperature": 0,
+  "minimum_temperature": 2200,
+  "result": [
+    {
+      "amount": 100,
+      "id": "puremashtweaks:molten_synthorium"
+    }
+  ]
+}

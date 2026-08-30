@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivebees"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "puremashtweaks"
+    }
+  ],
+  "type": "productivebees:bee_conversion",
+  "item": "puremashtweaks:moldelonian_block",
+  "result": "productivebees:moldelonian",
+  "source": "productivebees:synthorium"
+}

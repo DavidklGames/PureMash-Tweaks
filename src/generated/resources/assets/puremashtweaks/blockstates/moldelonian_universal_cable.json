@@ -1,0 +1,115 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_core"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_side"
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_side",
+        "y": 90
+      },
+      "when": {
+        "east": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_side",
+        "y": 180
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_side",
+        "y": 270
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_side",
+        "x": 270
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_side",
+        "x": 90
+      },
+      "when": {
+        "down": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_extract"
+      },
+      "when": {
+        "north_extract": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_extract",
+        "y": 90
+      },
+      "when": {
+        "east_extract": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_extract",
+        "y": 180
+      },
+      "when": {
+        "south_extract": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_extract",
+        "y": 270
+      },
+      "when": {
+        "west_extract": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_extract",
+        "x": 270
+      },
+      "when": {
+        "up_extract": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "puremashtweaks:block/moldelonian_universal_cable_extract",
+        "x": 90
+      },
+      "when": {
+        "down_extract": "true"
+      }
+    }
+  ]
+}

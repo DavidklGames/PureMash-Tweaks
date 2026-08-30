@@ -1,0 +1,156 @@
+{
+  "type": "silentgear:simple",
+  "parent": "",
+  "crafting": {
+    "can_salvage": true,
+    "categories": [
+      "metal",
+      "advanced"
+    ],
+    "gear_type_blacklist": [],
+    "ingredient": "#c:ingots/synthorium",
+    "part_substitutes": {
+      "silentgear:rod": "#c:rods/synthorium"
+    }
+  },
+  "display": {
+    "color": "#00E5FF",
+    "main_texture_type": "HIGH_CONTRAST",
+    "name": {
+      "translate": "material.puremashtweaks.synthorium"
+    },
+    "name_prefix": "",
+    "equippable": {
+      "always_use_tint": true,
+      "asset_id": "silentgear:generic_shiny",
+      "compound_asset_id": "silentgear:generic_shiny",
+      "equip_sound": "minecraft:item.armor.equip_netherite"
+    }
+  },
+  "properties": {
+    "silentgear:main": {
+      "durability": 3000.0,
+      "armor_durability": 37.0,
+      "enchantment_value": 22.0,
+      "rarity": 85.0,
+      "harvest_speed": 15.0,
+      "attack_damage": 22.0,
+      "attack_speed": 1.6,
+      "magic_damage": 4.0,
+      "ranged_damage": 4.0,
+      "draw_speed": 0.15,
+      "projectile_speed": 1.0,
+      "projectile_accuracy": 1.0,
+      "armor": 34.0,
+      "armor/helmet": 6.0,
+      "armor/chestplate": 12.0,
+      "armor/leggings": 10.0,
+      "armor/boots": 6.0,
+      "armor_toughness": 20.0,
+      "knockback_resistance": 0.8,
+      "magic_armor": 8.0,
+      "harvest_tier": {
+        "incorrect_blocks_for_tool": "puremashtweaks:incorrect_for_synthorium_tool",
+        "level_hint": "4",
+        "name": "synthorium"
+      },
+      "traits": [
+        {
+          "conditions": [],
+          "level": 3,
+          "trait": "silentgear:sturdy"
+        },
+        {
+          "conditions": [],
+          "level": 2,
+          "trait": "silentgear:malleable"
+        },
+        {
+          "conditions": [
+            {
+              "type": "silentgear:material_ratio",
+              "ratio": 0.5
+            }
+          ],
+          "level": 2,
+          "trait": "silentgear:magnetic"
+        }
+      ]
+    },
+    "silentgear:rod": {
+      "durability": {
+        "operation": "MULTIPLY_BASE",
+        "value": 0.5
+      },
+      "attack_speed": {
+        "operation": "ADD",
+        "value": 0.2
+      },
+      "harvest_speed": {
+        "operation": "MULTIPLY_BASE",
+        "value": 0.2
+      },
+      "enchantment_value": {
+        "operation": "ADD",
+        "value": 5.0
+      },
+      "rarity": 85.0,
+      "traits": [
+        {
+          "conditions": [],
+          "level": 4,
+          "trait": "silentgear:sturdy"
+        },
+        {
+          "conditions": [],
+          "level": 3,
+          "trait": "silentgear:flexible"
+        },
+        {
+          "conditions": [],
+          "level": 3,
+          "trait": "silentgear:synergistic"
+        },
+        {
+          "conditions": [],
+          "level": 2,
+          "trait": "silentgear:magnetic"
+        },
+        {
+          "conditions": [],
+          "level": 3,
+          "trait": "silentgear:malleable"
+        }
+      ]
+    },
+    "silentgear:tip": {
+      "durability": {
+        "operation": "ADD",
+        "value": 300.0
+      },
+      "harvest_speed": {
+        "operation": "ADD",
+        "value": 2.0
+      },
+      "attack_damage": {
+        "operation": "ADD",
+        "value": 1.5
+      },
+      "rarity": 75.0
+    },
+    "silentgear:coating": {
+      "durability": {
+        "operation": "MULTIPLY_BASE",
+        "value": 0.2
+      },
+      "armor_toughness": {
+        "operation": "ADD",
+        "value": 2.0
+      },
+      "harvest_speed": {
+        "operation": "ADD",
+        "value": 1.5
+      }
+    }
+  }
+}

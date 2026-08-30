@@ -1,0 +1,34 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivebees"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "puremashtweaks"
+    }
+  ],
+  "type": "productivebees:advanced_beehive",
+  "ingredient": "productivebees:synthorium",
+  "results": [
+    {
+      "chance": 1.0,
+      "item": {
+        "neoforge:ingredient_type": "productivebees:component",
+        "components": {
+          "productivebees:bee_type": "productivebees:synthorium"
+        },
+        "items": "productivebees:configurable_honeycomb"
+      },
+      "max": 3,
+      "min": 1
+    },
+    {
+      "chance": 0.05,
+      "item": "#c:pollens",
+      "max": 1,
+      "min": 1
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": "minecraft:end_stone",
+    "S": "puremashtweaks:moldelonian_ingot",
+    "T": "puremashtweaks:moldelonian_smithing_template"
+  },
+  "pattern": [
+    "DTD",
+    "DSD",
+    "DDD"
+  ],
+  "result": {
+    "count": 2,
+    "id": "puremashtweaks:moldelonian_smithing_template"
+  }
+}

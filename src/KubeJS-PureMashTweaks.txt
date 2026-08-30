@@ -1,0 +1,273 @@
+====================================================================================================
+               PUREMASH TWEAKS - KUBEJS RECIPE REFERENCE GUIDE (26.1.2)
+====================================================================================================
+
+File location in instance: kubejs/server_scripts/puremash_recipes.js
+
+----------------------------------------------------------------------------------------------------
+1. REMOVING EXISTING RECIPES
+----------------------------------------------------------------------------------------------------
+ServerEvents.recipes(event => {
+
+    // Remove by Recipe ID
+    event.remove({ id: 'puremashtweaks:synthesis/moldelonian_core' })
+    event.remove({ id: 'puremashtweaks:synthesis/cosmic_singularity' })
+
+    // Remove by Output Item
+    event.remove({ output: 'puremashtweaks:synthorium_block' })
+    event.remove({ output: 'puremashtweaks:moldelonian_ingot' })
+
+    // Remove all recipes from a specific PureMash machine type
+    event.remove({ type: 'puremashtweaks:compression' })
+    event.remove({ type: 'puremashtweaks:singularity' })
+    event.remove({ type: 'puremashtweaks:dust' })
+    event.remove({ type: 'puremashtweaks:alchemical' })
+    event.remove({ type: 'puremashtweaks:shaped_synthesis' })
+    event.remove({ type: 'puremashtweaks:shapeless_synthesis' })
+
+    // Remove by Mod ID
+    event.remove({ mod: 'puremashtweaks' })
+})
+
+
+----------------------------------------------------------------------------------------------------
+2. SYNTHESIS TABLE (9x9 SHAPED RECIPES)
+----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:shaped_synthesis
+
+Parameters:
+  - result: Output item (e.g. 'puremashtweaks:moldelonian_core' or Item.of('item_id', count))
+  - pattern: Exactly 9 strings representing rows (up to 9 chars per row). Use space ' ' for empty.
+  - key: Character mapping to Items or Tags (e.g. '#c:ingots/iron', 'minecraft:diamond')
+
+Example:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.shaped_synthesis(
+        'puremashtweaks:moldelonian_core',
+        [
+            ' MMSDSMM ',
+            'MSSDIDSSM',
+            'MSDIMIDSM',
+            'SDIDSDIDS',
+            'DIMSNSMID',
+            'SDIDSDIDS',
+            'MSDIMIDSM',
+            'MSSDIDSSM',
+            ' MMSDSMM '
+        ],
+        {
+            M: 'puremashtweaks:moldelonian_block',
+            S: 'puremashtweaks:synthorium_block',
+            I: 'puremashtweaks:synthorium_ingot',
+            D: 'minecraft:diamond_block',
+            N: 'minecraft:nether_star'
+        }
+    ).id('kubejs:custom_moldelonian_core')
+})
+
+
+----------------------------------------------------------------------------------------------------
+3. SYNTHESIS TABLE (9x9 SHAPELESS RECIPES)
+----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:shapeless_synthesis
+
+Parameters:
+  - result: Output item (e.g. 'puremashtweaks:moldelonian_ingot')
+  - ingredients: Array of up to 81 ingredients (items or tags)
+
+Example:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.shapeless_synthesis(
+        'puremashtweaks:moldelonian_ingot',
+        [
+            'puremashtweaks:synthorium_ingot',
+            'minecraft:netherite_ingot',
+            'minecraft:gold_ingot',
+            'minecraft:iron_ingot',
+            'minecraft:copper_ingot',
+            '#c:ingots/silver',
+            '#c:ingots/lead',
+            '#c:ingots/tin',
+            '#c:ingots/nickel'
+        ]
+    ).id('kubejs:custom_shapeless_moldelonian_ingot')
+})
+
+
+----------------------------------------------------------------------------------------------------
+4. MULTIFUNCTIONAL COMPRESSOR: COMPRESSION MODE
+----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:compression
+
+Parameters:
+  - input: Required input item or tag (e.g. 'minecraft:iron_ingot' or '#c:ingots/iron')
+  - output: Output item stack (e.g. 'minecraft:iron_block')
+  - input_count: Number of input items required (Optional, Default: 9)
+  - time_cost: Processing duration in ticks (Optional, Default: 20 ticks = 1.0s)
+
+Fluent Syntax:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.compression(
+        'minecraft:iron_block',       // output
+        'minecraft:iron_ingot'        // input
+    )
+    .inputCount(9)                    // optional, default 9
+    .timeCost(20)                     // optional, default 20
+    .id('kubejs:compress_iron_ingots')
+
+    // Custom Raw JSON Syntax alternative:
+    event.custom({
+        type: 'puremashtweaks:compression',
+        input: { item: 'puremashtweaks:synthorium_ingot' },
+        input_count: 9,
+        output: { id: 'puremashtweaks:synthorium_block', count: 1 },
+        time_cost: 20
+    }).id('kubejs:custom_compress_synthorium')
+})
+
+
+----------------------------------------------------------------------------------------------------
+5. MULTIFUNCTIONAL COMPRESSOR: SINGULARITY CONDENSING MODE
+----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:singularity
+
+Parameters:
+  - item: Input ingredient (e.g. 'minecraft:diamond_block')
+  - output: Output singularity item (e.g. 'puremashtweaks:diamond_singularity')
+  - cost: Total items required to condense (Optional, Default: 1000)
+  - time_cost: Condensation cycle duration in ticks (Optional, Default: 40 ticks = 2.0s)
+
+Fluent Syntax:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.singularity(
+        'puremashtweaks:diamond_singularity', // output
+        'minecraft:diamond_block'             // item (input)
+    )
+    .cost(500)                                // optional, default 1000
+    .timeCost(40)                             // optional, default 40
+    .id('kubejs:condense_diamond_singularity')
+
+    // Custom Raw JSON Syntax alternative:
+    event.custom({
+        type: 'puremashtweaks:singularity',
+        item: { item: 'minecraft:nether_star' },
+        cost: 100,
+        output: { id: 'puremashtweaks:nether_star_singularity', count: 1 },
+        time_cost: 40
+    }).id('kubejs:custom_nether_star_singularity')
+})
+
+
+----------------------------------------------------------------------------------------------------
+6. MULTIFUNCTIONAL COMPRESSOR: DUST CRUSHER MODE
+----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:dust
+
+Parameters:
+  - input: Required input item or tag (e.g. 'minecraft:iron_ingot', '#c:ores/iron')
+  - output: Output dust item stack (e.g. 'puremashtweaks:synthorium_dust')
+  - time_cost: Processing duration in ticks (Optional, Default: 20 ticks = 1.0s)
+
+Fluent Syntax:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.dust(
+        'puremashtweaks:synthorium_dust',     // output
+        'puremashtweaks:synthorium_ingot'     // input
+    )
+    .timeCost(20)                             // optional, default 20
+    .id('kubejs:crush_synthorium_ingot')
+
+    // Ore Doubling Example:
+    event.recipes.puremashtweaks.dust(
+        Item.of('puremashtweaks:synthorium_dust', 2), // output: 2x dust
+        'puremashtweaks:synthorium_debris'            // input: raw/ore
+    )
+    .timeCost(30)
+    .id('kubejs:crush_synthorium_debris')
+
+    // Custom Raw JSON Syntax alternative:
+    event.custom({
+        type: 'puremashtweaks:dust',
+        input: { item: 'puremashtweaks:moldelonian_ingot' },
+        output: { id: 'puremashtweaks:moldelonian_dust', count: 1 },
+        time_cost: 20
+    }).id('kubejs:custom_crush_moldelonian')
+})
+
+
+----------------------------------------------------------------------------------------------------
+7. ALCHEMICAL SYNTHESIZER
+----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:alchemical
+
+Parameters:
+  - input: Required item ingredient (e.g. 'minecraft:gravel')
+  - output: Output item (e.g. 'minecraft:flint')
+  - output_count: Amount of output item produced (Optional, Default: 1)
+  - fluid: Fluid ID or 'none' (Optional, Default: 'none', e.g. 'minecraft:water', 'minecraft:lava')
+  - fluid_amount: Fluid consumed in mB (Optional, Default: 0)
+  - tool_type: Tool catalyst required (Optional, Default: 'none', options: 'none', 'pickaxe', 'shovel', 'axe', 'paxel')
+  - time: Duration in ticks (Optional, Default: 60 ticks = 3.0s)
+  - energy: Forge Energy cost in FE/t (Optional, Default: 100 FE/t)
+  - double_output: Chance/toggle for dual output bonuses (Optional, Default: false)
+
+Examples:
+
+ServerEvents.recipes(event => {
+
+    // Example A: Hydro-thermal gravel washing with shovel catalyst
+    event.recipes.puremashtweaks.alchemical(
+        'minecraft:flint',            // output
+        'minecraft:gravel'            // input
+    )
+    .outputCount(1)
+    .fluid('minecraft:water')
+    .fluidAmount(250)
+    .toolType('shovel')
+    .time(20)
+    .energy(100)
+    .doubleOutput(false)
+    .id('kubejs:alchemical_gravel_to_flint')
+
+    // Example B: Dry mechanical crushing using pickaxe (No fluid)
+    event.recipes.puremashtweaks.alchemical(
+        'minecraft:gravel',
+        'minecraft:cobblestone'
+    )
+    .outputCount(1)
+    .fluid('none')
+    .fluidAmount(0)
+    .toolType('pickaxe')
+    .time(20)
+    .energy(100)
+    .id('kubejs:alchemical_cobble_to_gravel')
+
+    // Example C: High-heat molten smelting (Lava catalyst + Pickaxe)
+    event.recipes.puremashtweaks.alchemical(
+        'minecraft:iron_ingot',
+        'minecraft:raw_iron'
+    )
+    .outputCount(2)
+    .fluid('minecraft:lava')
+    .fluidAmount(250)
+    .toolType('pickaxe')
+    .time(30)
+    .energy(150)
+    .doubleOutput(true)
+    .id('kubejs:alchemical_smelt_raw_iron_double')
+
+    // Custom Raw JSON Syntax alternative:
+    event.custom({
+        type: 'puremashtweaks:alchemical',
+        input: { item: 'minecraft:sand' },
+        output: { id: 'minecraft:clay_ball', count: 1 },
+        output_count: 1,
+        fluid: 'minecraft:water',
+        fluid_amount: 250,
+        tool_type: 'shovel',
+        time: 20,
+        energy: 100,
+        double_output: false
+    }).id('kubejs:custom_alchemical_sand_to_clay')
+})
+====================================================================================================

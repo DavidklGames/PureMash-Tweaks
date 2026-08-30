@@ -1,0 +1,160 @@
+{
+  "type": "silentgear:simple",
+  "parent": "",
+  "crafting": {
+    "can_salvage": true,
+    "categories": [
+      "metal",
+      "endgame"
+    ],
+    "gear_type_blacklist": [],
+    "ingredient": "#c:ingots/moldelonian",
+    "part_substitutes": {}
+  },
+  "display": {
+    "color": "#E8EFF2",
+    "main_texture_type": "HIGH_CONTRAST",
+    "name": {
+      "translate": "material.puremashtweaks.moldelonian"
+    },
+    "name_prefix": "",
+    "equippable": {
+      "always_use_tint": true,
+      "asset_id": "silentgear:generic_shiny",
+      "compound_asset_id": "silentgear:generic_shiny",
+      "equip_sound": "minecraft:item.armor.equip_netherite"
+    }
+  },
+  "properties": {
+    "silentgear:main": {
+      "durability": 6500.0,
+      "armor_durability": 85.0,
+      "enchantment_value": 30.0,
+      "rarity": 100.0,
+      "harvest_speed": 20.0,
+      "attack_damage": 65.0,
+      "attack_speed": 1.8,
+      "magic_damage": 16.0,
+      "ranged_damage": 8.0,
+      "draw_speed": 0.25,
+      "projectile_speed": 1.2,
+      "projectile_accuracy": 1.2,
+      "armor": 100.0,
+      "armor/helmet": 18.0,
+      "armor/chestplate": 36.0,
+      "armor/leggings": 28.0,
+      "armor/boots": 18.0,
+      "armor_toughness": 50.0,
+      "knockback_resistance": 1.0,
+      "magic_armor": 32.0,
+      "harvest_tier": {
+        "incorrect_blocks_for_tool": "puremashtweaks:incorrect_for_moldelonian_tool",
+        "level_hint": "5",
+        "name": "moldelonian"
+      },
+      "traits": [
+        {
+          "conditions": [],
+          "level": 5,
+          "trait": "silentgear:sturdy"
+        },
+        {
+          "conditions": [],
+          "level": 5,
+          "trait": "silentgear:synergistic"
+        },
+        {
+          "conditions": [
+            {
+              "type": "silentgear:or",
+              "values": [
+                {
+                  "type": "silentgear:material_count",
+                  "count": 3
+                },
+                {
+                  "type": "silentgear:material_ratio",
+                  "ratio": 0.5
+                }
+              ]
+            }
+          ],
+          "level": 1,
+          "trait": "silentgear:void_ward"
+        },
+        {
+          "conditions": [
+            {
+              "type": "silentgear:material_ratio",
+              "ratio": 0.33
+            }
+          ],
+          "level": 1,
+          "trait": "silentgear:flame_ward"
+        }
+      ]
+    },
+    "silentgear:rod": {
+      "durability": {
+        "operation": "MULTIPLY_BASE",
+        "value": 0.5
+      },
+      "rarity": 100.0,
+      "traits": [
+        {
+          "conditions": [],
+          "level": 5,
+          "trait": "silentgear:sturdy"
+        }
+      ]
+    },
+    "silentgear:tip": {
+      "durability": {
+        "operation": "ADD",
+        "value": 600.0
+      },
+      "harvest_speed": {
+        "operation": "ADD",
+        "value": 4.0
+      },
+      "attack_damage": {
+        "operation": "ADD",
+        "value": 4.0
+      },
+      "rarity": 100.0,
+      "traits": [
+        {
+          "conditions": [],
+          "level": 3,
+          "trait": "silentgear:imperial"
+        },
+        {
+          "conditions": [],
+          "level": 3,
+          "trait": "silentgear:gold_digger"
+        }
+      ]
+    },
+    "silentgear:coating": {
+      "durability": {
+        "operation": "MULTIPLY_BASE",
+        "value": 0.35
+      },
+      "armor_toughness": {
+        "operation": "ADD",
+        "value": 6.0
+      },
+      "armor": {
+        "operation": "ADD",
+        "value": 5.0
+      },
+      "traits": [
+        {
+          "conditions": [],
+          "level": 1,
+          "trait": "silentgear:void_ward"
+        }
+      ]
+    }
+  }
+}

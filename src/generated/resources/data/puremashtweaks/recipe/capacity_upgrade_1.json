@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": "puremashtweaks:memory_card",
+    "R": "minecraft:redstone_block",
+    "S": "puremashtweaks:synthorium_ingot"
+  },
+  "pattern": [
+    "SMS",
+    "MRM",
+    "SMS"
+  ],
+  "result": {
+    "id": "puremashtweaks:capacity_upgrade_1"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_armor",
+  "criteria": {
+    "has_moldelonian_template": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:moldelonian_smithing_template"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_moldelonian_template.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:moldelonian_smithing_template"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_moldelonian_template.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_moldelonian_template"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "guideme"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:book",
+    "G": "#c:glass_panes",
+    "S": "puremashtweaks:synthorium_ingot"
+  },
+  "pattern": [
+    "SGS",
+    "GBG",
+    "SGS"
+  ],
+  "result": {
+    "components": {
+      "guideme:guide_id": "puremashtweaks:guide"
+    },
+    "id": "guideme:guide"
+  }
+}

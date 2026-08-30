@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": "puremashtweaks:duplication_upgrade_1",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "N": "minecraft:nether_star"
+  },
+  "pattern": [
+    "MNM",
+    "NDN",
+    "MNM"
+  ],
+  "result": {
+    "id": "puremashtweaks:duplication_upgrade_2"
+  }
+}

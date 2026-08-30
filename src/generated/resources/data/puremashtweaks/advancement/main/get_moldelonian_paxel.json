@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_moldelonian_template",
+  "criteria": {
+    "has_moldelonian_paxel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:moldelonian_paxel"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_moldelonian_paxel.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:moldelonian_paxel"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_moldelonian_paxel.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_moldelonian_paxel"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

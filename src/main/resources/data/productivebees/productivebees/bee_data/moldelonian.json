@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "puremashtweaks"
+    }
+  ],
+  "attack": 2.5,
+  "beeTexture": "puremashtweaks:textures/entity/bee/moldelonian/bee",
+  "flowerBlock": "puremashtweaks:moldelonian_block",
+  "particleColor": "#aecccc",
+  "primaryColor": "#ddfbfb",
+  "secondaryColor": "#587676",
+  "renderer": "default_crystal",
+  "selfbreed": true,
+  "size": 0.7,
+  "useGlowLayer": true
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "minecraft:glass",
+    "R": "minecraft:redstone",
+    "S": "puremashtweaks:synthorium_ingot"
+  },
+  "pattern": [
+    "SSS",
+    "RGR",
+    "SSS"
+  ],
+  "result": {
+    "count": 16,
+    "id": "puremashtweaks:synthorium_universal_cable"
+  }
+}

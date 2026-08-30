@@ -1,0 +1,26 @@
+{
+  "type": "puremashtweaks:shaped_synthesis",
+  "key": {
+    "A": "puremashtweaks:puremash_core_block",
+    "B": "puremashtweaks:puremash_battery",
+    "C": "puremashtweaks:moldelonian_core",
+    "I": "puremashtweaks:moldelonian_block",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "R": "minecraft:redstone_block",
+    "S": "puremashtweaks:synthorium_block"
+  },
+  "pattern": [
+    "IIIIAIIII",
+    "IRRSMSRRI",
+    "IRSMCMSRI",
+    "ISMARAMSI",
+    "AMCRBRCMA",
+    "ISMARAMSI",
+    "IRSMCMSRI",
+    "IRRSMSRRI",
+    "IIIIAIIII"
+  ],
+  "result": {
+    "id": "puremashtweaks:creative_battery"
+  }
+}

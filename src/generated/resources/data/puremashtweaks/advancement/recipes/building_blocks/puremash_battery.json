@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_moldelonian_core": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:moldelonian_core"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "puremashtweaks:puremash_battery"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_moldelonian_core"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "puremashtweaks:puremash_battery"
+    ]
+  }
+}

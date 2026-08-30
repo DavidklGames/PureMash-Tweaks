@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "puremashtweaks:item/moldelonian_apple"
+  }
+}

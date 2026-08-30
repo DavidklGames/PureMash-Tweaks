@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivemetalworks"
+    }
+  ],
+  "type": "productivemetalworks:item_casting",
+  "cast": "minecraft:netherite_scrap",
+  "consume_cast": false,
+  "fluid": {
+    "amount": 100,
+    "ingredient": "puremashtweaks:molten_synthorium"
+  },
+  "result": {
+    "id": "puremashtweaks:synthorium_scrap"
+  }
+}

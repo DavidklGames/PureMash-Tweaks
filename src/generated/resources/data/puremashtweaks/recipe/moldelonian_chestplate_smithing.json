@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "puremashtweaks:moldelonian_ingot",
+  "base": "puremashtweaks:synthorium_chestplate",
+  "result": {
+    "id": "puremashtweaks:moldelonian_chestplate"
+  },
+  "template": "puremashtweaks:moldelonian_smithing_template"
+}

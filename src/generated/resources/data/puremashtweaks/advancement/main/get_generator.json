@@ -1,0 +1,32 @@
+{
+  "parent": "puremashtweaks:main/get_fluid_tank",
+  "criteria": {
+    "has_generator": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:puremash_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_generator.description"
+    },
+    "icon": {
+      "id": "puremashtweaks:puremash_generator"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_generator.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_generator"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

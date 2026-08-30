@@ -1,0 +1,40 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivemetalworks"
+    }
+  ],
+  "type": "productivemetalworks:fluid_alloying",
+  "fluids": [
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_ancient_debris"
+    },
+    {
+      "amount": 60,
+      "ingredient": "#c:molten_diamond"
+    },
+    {
+      "amount": 25,
+      "ingredient": "#c:molten_enderium"
+    },
+    {
+      "amount": 30,
+      "ingredient": "#c:molten_lead"
+    },
+    {
+      "amount": 80,
+      "ingredient": "#c:molten_glass"
+    },
+    {
+      "amount": 30,
+      "ingredient": "#c:molten_electrum"
+    }
+  ],
+  "result": {
+    "amount": 90,
+    "id": "puremashtweaks:molten_synthorium"
+  },
+  "speed": 1
+}

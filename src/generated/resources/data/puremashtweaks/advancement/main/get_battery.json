@@ -1,0 +1,32 @@
+{
+  "parent": "puremashtweaks:main/get_moldelonian_core",
+  "criteria": {
+    "has_battery": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:puremash_battery"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_battery.description"
+    },
+    "icon": {
+      "id": "puremashtweaks:puremash_battery"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_battery.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_battery"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

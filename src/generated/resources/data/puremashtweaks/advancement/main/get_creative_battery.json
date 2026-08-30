@@ -1,0 +1,33 @@
+{
+  "parent": "puremashtweaks:main/get_battery",
+  "criteria": {
+    "has_creative_battery": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:creative_battery"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_creative_battery.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "puremashtweaks:creative_battery"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_creative_battery.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_creative_battery"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

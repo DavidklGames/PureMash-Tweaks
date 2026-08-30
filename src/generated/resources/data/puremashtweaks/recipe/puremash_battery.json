@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "puremashtweaks:moldelonian_core",
+    "R": "minecraft:redstone_block",
+    "S": "puremashtweaks:synthorium_block"
+  },
+  "pattern": [
+    "SRS",
+    "RCR",
+    "SRS"
+  ],
+  "result": {
+    "id": "puremashtweaks:puremash_battery"
+  }
+}

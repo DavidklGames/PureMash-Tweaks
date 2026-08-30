@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivemetalworks"
+    }
+  ],
+  "type": "productivemetalworks:item_casting",
+  "cast": "minecraft:bucket",
+  "consume_cast": false,
+  "fluid": {
+    "amount": 1000,
+    "ingredient": "puremashtweaks:molten_moldelonian"
+  },
+  "result": {
+    "id": "puremashtweaks:molten_moldelonian_bucket"
+  }
+}

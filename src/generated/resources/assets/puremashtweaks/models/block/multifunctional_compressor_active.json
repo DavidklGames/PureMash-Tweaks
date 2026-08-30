@@ -1,0 +1,6 @@
+{
+  "parent": "puremashtweaks:block/multifunctional_compressor",
+  "textures": {
+    "0": "puremashtweaks:block/multifunctional_compressor/multifunctional_compressor_active"
+  }
+}

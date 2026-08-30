@@ -1,0 +1,19 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "puremashtweaks"
+    }
+  ],
+  "attack": 1.5,
+  "beeTexture": "puremashtweaks:textures/entity/bee/synthorium/bee",
+  "flowerBlock": "puremashtweaks:synthorium_block",
+  "particleColor": "#3ddfe1",
+  "primaryColor": "#3ddfe1",
+  "secondaryColor": "#804f40",
+  "renderer": "default_crystal",
+  "tertiaryColor": "#0ebabd",
+  "size": 0.7,
+  "selfbreed": true,
+  "useGlowLayer": true
+}

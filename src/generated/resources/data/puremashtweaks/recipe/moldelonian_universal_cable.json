@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "puremashtweaks:synthorium_universal_cable",
+    "M": "puremashtweaks:moldelonian_ingot",
+    "R": "minecraft:redstone_block"
+  },
+  "pattern": [
+    "MMM",
+    "RCR",
+    "MMM"
+  ],
+  "result": {
+    "count": 16,
+    "id": "puremashtweaks:moldelonian_universal_cable"
+  }
+}

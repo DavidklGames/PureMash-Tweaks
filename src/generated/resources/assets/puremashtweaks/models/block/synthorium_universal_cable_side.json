@@ -1,0 +1,7 @@
+{
+  "parent": "puremashtweaks:block/part_cable",
+  "textures": {
+    "0": "puremashtweaks:block/universal_cable/synthorium_cable",
+    "particle": "puremashtweaks:block/universal_cable/synthorium_cable"
+  }
+}

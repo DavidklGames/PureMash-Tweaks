@@ -1,0 +1,30 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivebees"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "puremashtweaks"
+    }
+  ],
+  "type": "productivebees:centrifuge",
+  "ingredient": {
+    "neoforge:ingredient_type": "productivebees:component",
+    "components": {
+      "productivebees:bee_type": "productivebees:moldelonian"
+    },
+    "items": "productivebees:configurable_honeycomb"
+  },
+  "outputs": [
+    {
+      "chance": 0.2,
+      "item": "puremashtweaks:moldelonian_nugget",
+      "max": 2
+    },
+    {
+      "item": "productivebees:wax"
+    }
+  ]
+}

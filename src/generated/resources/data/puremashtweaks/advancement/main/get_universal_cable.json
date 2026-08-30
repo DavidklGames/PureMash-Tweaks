@@ -1,0 +1,43 @@
+{
+  "parent": "puremashtweaks:main/get_ingot",
+  "criteria": {
+    "has_moldelonian_cable": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:moldelonian_universal_cable"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_synthorium_cable": {
+      "conditions": {
+        "items": [
+          {
+            "items": "puremashtweaks:synthorium_universal_cable"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.puremashtweaks.get_universal_cable.description"
+    },
+    "icon": {
+      "id": "puremashtweaks:synthorium_universal_cable"
+    },
+    "title": {
+      "translate": "advancements.puremashtweaks.get_universal_cable.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_synthorium_cable",
+      "has_moldelonian_cable"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

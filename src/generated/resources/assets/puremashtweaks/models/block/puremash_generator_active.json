@@ -1,0 +1,6 @@
+{
+  "parent": "puremashtweaks:block/puremash_generator",
+  "textures": {
+    "1": "puremashtweaks:block/puremash_generator/puremash_generator_front_active"
+  }
+}

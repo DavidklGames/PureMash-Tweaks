@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "puremashtweaks:synthorium_apple",
+    "M": "puremashtweaks:moldelonian_ingot"
+  },
+  "pattern": [
+    "MMM",
+    "MAM",
+    "MMM"
+  ],
+  "result": {
+    "id": "puremashtweaks:moldelonian_apple"
+  }
+}

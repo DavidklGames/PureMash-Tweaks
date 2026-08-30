@@ -1,0 +1,168 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "productivemetalworks"
+    }
+  ],
+  "type": "productivemetalworks:fluid_alloying",
+  "fluids": [
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_synthorium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_iron"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_gold"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_copper"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_netherite"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_aluminum"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_lead"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_nickel"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_osmium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_platinum"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_silver"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_tin"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_zinc"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_uranium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_steel"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_bronze"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_brass"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_electrum"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_invar"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_constantan"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_iridium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_enderium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_lumium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_signalum"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_heavy_core"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_quartz"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_glass"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_amethyst"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_redstone"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_glowstone"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_obsidian"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_carbon"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_diamond"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_emerald"
+    },
+    {
+      "amount": 90,
+      "ingredient": "#c:molten_lapis"
+    },
+    {
+      "amount": 90,
+      "ingredient": "allthemodium:molten_allthemodium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "allthemodium:molten_vibranium"
+    },
+    {
+      "amount": 90,
+      "ingredient": "allthemodium:molten_unobtainium"
+    }
+  ],
+  "result": {
+    "amount": 90,
+    "id": "puremashtweaks:molten_moldelonian"
+  },
+  "speed": 1
+}

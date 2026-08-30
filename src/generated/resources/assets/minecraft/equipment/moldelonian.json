@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "puremashtweaks:moldelonian"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "puremashtweaks:moldelonian"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "puremashtweaks:moldelonian"
+      }
+    ]
+  }
+}
