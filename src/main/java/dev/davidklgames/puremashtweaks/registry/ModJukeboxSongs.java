@@ -11,4 +11,8 @@ public class ModJukeboxSongs {
             Registries.JUKEBOX_SONG,
             Identifier.fromNamespaceAndPath("puremashtweaks", "beyond_the_final_stage")
     );
+    public static final ResourceKey<JukeboxSong> NEW_HORIZONS = ResourceKey.create(
+            Registries.JUKEBOX_SONG,
+            Identifier.fromNamespaceAndPath("puremashtweaks", "new_horizons")
+    );
 }

@@ -1,13 +1,16 @@
 package dev.davidklgames.puremashtweaks.datagen;
 
 import dev.davidklgames.puremashtweaks.api.client.renderer.book.EnchantmentBookModelsUnbaked;
-import dev.davidklgames.puremashtweaks.component.ModDataComponents;
+import dev.davidklgames.puremashtweaks.block.CableBlock;
+import dev.davidklgames.puremashtweaks.registry.PureMashDataComponents;
 import dev.davidklgames.puremashtweaks.item.ColorSingularityItem;
+import dev.davidklgames.puremashtweaks.registry.ModFluids;
 import dev.davidklgames.puremashtweaks.util.ModArmorMaterials;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.MultiVariant;
+import net.minecraft.client.data.models.blockstates.MultiPartGenerator;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.*;
@@ -101,25 +104,49 @@ public class ModModelProvider extends ModelProvider {
         );
 
         // =========================================================
-        // Multifunctional Compressor (Block Bench Static Model)
+        // Multifunctional Compressor (Facing + LIT State with Animated Front)
         // =========================================================
-        Identifier compressorModelId = modLoc("block/multifunctional_compressor");
-        MultiVariant compressorVariant = BlockModelGenerators.plainVariant(compressorModelId);
+        TextureSlot COMPRESSOR_FRONT_SLOT = TextureSlot.create("0");
+
+        ModelTemplate ACTIVE_COMPRESSOR_TEMPLATE = new ModelTemplate(
+                Optional.of(modLoc("block/multifunctional_compressor")),
+                Optional.empty(),
+                COMPRESSOR_FRONT_SLOT
+        );
+
+        TextureMapping activeCompressorTextureMap = new TextureMapping()
+                .put(COMPRESSOR_FRONT_SLOT, new Material(modLoc("block/multifunctional_compressor/multifunctional_compressor_active")));
+
+        Identifier compressorInactiveModelId = modLoc("block/multifunctional_compressor");
+
+        // DataGen will generate 'multifunctional_compressor_active.json' inheriting base geometry with active front
+        Identifier compressorActiveModelId = ACTIVE_COMPRESSOR_TEMPLATE.create(
+                modLoc("block/multifunctional_compressor_active"),
+                activeCompressorTextureMap,
+                blockModels.modelOutput
+        );
+
+        MultiVariant compInactiveVariant = BlockModelGenerators.plainVariant(compressorInactiveModelId);
+        MultiVariant compActiveVariant = BlockModelGenerators.plainVariant(compressorActiveModelId);
 
         blockModels.blockStateOutput.accept(
                 MultiVariantGenerator.dispatch(ModBlocks.MULTIFUNCTIONAL_COMPRESSOR.get())
-                        .with(PropertyDispatch.initial(BlockStateProperties.HORIZONTAL_FACING)
-                                .select(Direction.NORTH, compressorVariant)
-                                .select(Direction.EAST, compressorVariant.with(BlockModelGenerators.Y_ROT_90))
-                                .select(Direction.SOUTH, compressorVariant.with(BlockModelGenerators.Y_ROT_180))
-                                .select(Direction.WEST, compressorVariant.with(BlockModelGenerators.Y_ROT_270))
+                        .with(PropertyDispatch.initial(BlockStateProperties.HORIZONTAL_FACING, BlockStateProperties.LIT)
+                                .select(Direction.NORTH, Boolean.FALSE, compInactiveVariant)
+                                .select(Direction.EAST, Boolean.FALSE, compInactiveVariant.with(BlockModelGenerators.Y_ROT_90))
+                                .select(Direction.SOUTH, Boolean.FALSE, compInactiveVariant.with(BlockModelGenerators.Y_ROT_180))
+                                .select(Direction.WEST, Boolean.FALSE, compInactiveVariant.with(BlockModelGenerators.Y_ROT_270))
+                                .select(Direction.NORTH, Boolean.TRUE, compActiveVariant)
+                                .select(Direction.EAST, Boolean.TRUE, compActiveVariant.with(BlockModelGenerators.Y_ROT_90))
+                                .select(Direction.SOUTH, Boolean.TRUE, compActiveVariant.with(BlockModelGenerators.Y_ROT_180))
+                                .select(Direction.WEST, Boolean.TRUE, compActiveVariant.with(BlockModelGenerators.Y_ROT_270))
                         )
         );
 
         itemModels.itemModelOutput.register(
                 ModBlocks.MULTIFUNCTIONAL_COMPRESSOR.get().asItem(),
                 new net.minecraft.client.renderer.item.ClientItem(
-                        ItemModelUtils.plainModel(compressorModelId),
+                        ItemModelUtils.plainModel(compressorInactiveModelId),
                         new net.minecraft.client.renderer.item.ClientItem.Properties(true, false, 1.0F)
                 )
         );
@@ -256,11 +283,210 @@ public class ModModelProvider extends ModelProvider {
                 )
         );
 
-        // --- ALL ITEMS REGISTER ---
+        // =========================================================
+        // PureMash Energy Generator (Dynamic LIT & Facing Blockstate)
+        // =========================================================
+        TextureSlot GENERATOR_FRONT_SLOT = TextureSlot.create("1");
+
+        ModelTemplate ACTIVE_GENERATOR_TEMPLATE = new ModelTemplate(
+                Optional.of(modLoc("block/puremash_generator")),
+                Optional.empty(),
+                GENERATOR_FRONT_SLOT
+        );
+
+        TextureMapping activeGeneratorTextureMap = new TextureMapping()
+                .put(GENERATOR_FRONT_SLOT, new Material(modLoc("block/puremash_generator/puremash_generator_front_active")));
+
+        Identifier generatorInactiveModelId = modLoc("block/puremash_generator");
+
+        // DataGen will automatically create 'puremash_generator_active.json'!
+        Identifier generatorActiveModelId = ACTIVE_GENERATOR_TEMPLATE.create(
+                modLoc("block/puremash_generator_active"),
+                activeGeneratorTextureMap,
+                blockModels.modelOutput
+        );
+
+        MultiVariant generatorInactiveVariant = BlockModelGenerators.plainVariant(generatorInactiveModelId);
+        MultiVariant generatorActiveVariant = BlockModelGenerators.plainVariant(generatorActiveModelId);
+
+        blockModels.blockStateOutput.accept(
+                MultiVariantGenerator.dispatch(ModBlocks.PUREMASH_GENERATOR.get())
+                        .with(PropertyDispatch.initial(BlockStateProperties.HORIZONTAL_FACING, BlockStateProperties.LIT)
+                                .select(Direction.NORTH, Boolean.FALSE, generatorInactiveVariant)
+                                .select(Direction.EAST, Boolean.FALSE, generatorInactiveVariant.with(BlockModelGenerators.Y_ROT_90))
+                                .select(Direction.SOUTH, Boolean.FALSE, generatorInactiveVariant.with(BlockModelGenerators.Y_ROT_180))
+                                .select(Direction.WEST, Boolean.FALSE, generatorInactiveVariant.with(BlockModelGenerators.Y_ROT_270))
+                                .select(Direction.NORTH, Boolean.TRUE, generatorActiveVariant)
+                                .select(Direction.EAST, Boolean.TRUE, generatorActiveVariant.with(BlockModelGenerators.Y_ROT_90))
+                                .select(Direction.SOUTH, Boolean.TRUE, generatorActiveVariant.with(BlockModelGenerators.Y_ROT_180))
+                                .select(Direction.WEST, Boolean.TRUE, generatorActiveVariant.with(BlockModelGenerators.Y_ROT_270))
+                        )
+        );
+
+        itemModels.itemModelOutput.register(
+                ModBlocks.PUREMASH_GENERATOR.get().asItem(),
+                new net.minecraft.client.renderer.item.ClientItem(
+                        ItemModelUtils.plainModel(generatorInactiveModelId),
+                        new net.minecraft.client.renderer.item.ClientItem.Properties(true, false, 1.0F)
+                )
+        );
+
+        // =========================================================
+        // FLUID BLOCKSTATES & MODELS (Eliminates "Missing Block Model" warning)
+        // =========================================================
+
+        TextureMapping synthoriumFluidMapping = new TextureMapping()
+                .put(TextureSlot.PARTICLE, new Material(modLoc("block/fluid/molten_synthorium_still"), false));
+        ModelTemplates.PARTICLE_ONLY.create(ModBlocks.MOLTEN_SYNTHORIUM_BLOCK.get(), synthoriumFluidMapping, blockModels.modelOutput);
+        blockModels.createNonTemplateModelBlock(ModBlocks.MOLTEN_SYNTHORIUM_BLOCK.get());
+
+        TextureMapping moldelonianFluidMapping = new TextureMapping()
+                .put(TextureSlot.PARTICLE, new Material(modLoc("block/fluid/molten_moldelonian_still"), false));
+        ModelTemplates.PARTICLE_ONLY.create(ModBlocks.MOLTEN_MOLDELONIAN_BLOCK.get(), moldelonianFluidMapping, blockModels.modelOutput);
+        blockModels.createNonTemplateModelBlock(ModBlocks.MOLTEN_MOLDELONIAN_BLOCK.get());
+
+        // Dynamic bucket models
+        this.generateBuckets(itemModels);
+
+        // --- UNIVERSAL CABLE MODEL DATAGEN ---
+        registerCableBlock(blockModels, itemModels, ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get(), "synthorium_universal_cable", modLoc("block/universal_cable/synthorium_cable"));
+        registerCableBlock(blockModels, itemModels, ModBlocks.MOLDELONIAN_UNIVERSAL_CABLE.get(), "moldelonian_universal_cable", modLoc("block/universal_cable/moldelonian_cable"));
+
+        // --- PureMash Battery ---
+        Identifier batteryModelId = modLoc("block/puremash_battery");
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(
+                ModBlocks.PUREMASH_BATTERY.get(),
+                BlockModelGenerators.plainVariant(batteryModelId)
+        ));
+        itemModels.itemModelOutput.register(
+                ModBlocks.PUREMASH_BATTERY.get().asItem(),
+                new net.minecraft.client.renderer.item.ClientItem(
+                        ItemModelUtils.plainModel(batteryModelId),
+                        new net.minecraft.client.renderer.item.ClientItem.Properties(true, false, 1.0F)
+                )
+        );
+
+        // --- Creative Battery ---
+        Identifier creativeBatteryModelId = modLoc("block/creative_battery");
+        blockModels.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(
+                ModBlocks.CREATIVE_BATTERY.get(),
+                BlockModelGenerators.plainVariant(creativeBatteryModelId)
+        ));
+        itemModels.itemModelOutput.register(
+                ModBlocks.CREATIVE_BATTERY.get().asItem(),
+                new net.minecraft.client.renderer.item.ClientItem(
+                        ItemModelUtils.plainModel(creativeBatteryModelId),
+                        new net.minecraft.client.renderer.item.ClientItem.Properties(true, false, 1.0F)
+                )
+        );
+
+        // =========================================================
+        // SUSPICIOUS END STONE
+        // =========================================================
+        blockModels.createBrushableBlock(ModBlocks.SUSPICIOUS_END_STONE.get());
+
+        // --- PureMash Guide Book Model (for GuideME) ---
+        Identifier guideModelId = Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "item/guide");
+        Material guideMaterial = new Material(
+                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "item/guide"),
+                false
+        );
+        TextureMapping guideMapping = new TextureMapping().put(TextureSlot.LAYER0, guideMaterial);
+        ModelTemplates.FLAT_ITEM.create(guideModelId, guideMapping, itemModels.modelOutput);
+
+    // --- ALL ITEMS REGISTER ---
         registerAllItems(itemModels);
     }
 
+    // --- CABLE MODEL TEMPLATES (USING YOUR PARENT MODELS: core_cable, part_cable, extracting_cable) ---
+    private static final TextureSlot ZERO_SLOT = TextureSlot.create("0");
 
+    private static final ModelTemplate CORE_TEMPLATE = new ModelTemplate(
+            Optional.of(Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "block/core_cable")),
+            Optional.empty(),
+            ZERO_SLOT,
+            TextureSlot.PARTICLE
+    );
+
+    private static final ModelTemplate SIDE_TEMPLATE = new ModelTemplate(
+            Optional.of(Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "block/part_cable")),
+            Optional.empty(),
+            ZERO_SLOT,
+            TextureSlot.PARTICLE
+    );
+
+    private static final ModelTemplate EXTRACT_TEMPLATE = new ModelTemplate(
+            Optional.of(Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "block/extracting_cable")),
+            Optional.empty(),
+            ZERO_SLOT,
+            TextureSlot.PARTICLE
+    );
+
+    private void registerCableBlock(BlockModelGenerators blockModels, ItemModelGenerators itemModels, Block cableBlock, String name, Identifier textureLoc) {
+        TextureMapping textureMap = new TextureMapping()
+                .put(ZERO_SLOT, new Material(textureLoc, false))
+                .put(TextureSlot.PARTICLE, new Material(textureLoc, false));
+
+        Identifier coreModelId = CORE_TEMPLATE.create(modLoc("block/" + name + "_core"), textureMap, blockModels.modelOutput);
+        Identifier sideModelId = SIDE_TEMPLATE.create(modLoc("block/" + name + "_side"), textureMap, blockModels.modelOutput);
+        Identifier extractModelId = EXTRACT_TEMPLATE.create(modLoc("block/" + name + "_extract"), textureMap, blockModels.modelOutput);
+
+        blockModels.blockStateOutput.accept(
+                MultiPartGenerator.multiPart(cableBlock)
+                        .with(BlockModelGenerators.plainVariant(coreModelId))
+
+                        // 1. Cable arm/leg (Always renders whenever connected to the side)
+                        .with(BlockModelGenerators.condition(CableBlock.NORTH, true), BlockModelGenerators.plainVariant(sideModelId))
+                        .with(BlockModelGenerators.condition(CableBlock.EAST, true), BlockModelGenerators.plainVariant(sideModelId).with(BlockModelGenerators.Y_ROT_90))
+                        .with(BlockModelGenerators.condition(CableBlock.SOUTH, true), BlockModelGenerators.plainVariant(sideModelId).with(BlockModelGenerators.Y_ROT_180))
+                        .with(BlockModelGenerators.condition(CableBlock.WEST, true), BlockModelGenerators.plainVariant(sideModelId).with(BlockModelGenerators.Y_ROT_270))
+                        .with(BlockModelGenerators.condition(CableBlock.UP, true), BlockModelGenerators.plainVariant(sideModelId).with(BlockModelGenerators.X_ROT_270))
+                        .with(BlockModelGenerators.condition(CableBlock.DOWN, true), BlockModelGenerators.plainVariant(sideModelId).with(BlockModelGenerators.X_ROT_90))
+
+                        // 2. Extraction head/nozzle (Renders ON TOP of the arm whenever extracting is true)
+                        .with(BlockModelGenerators.condition(CableBlock.NORTH_EXTRACT, true), BlockModelGenerators.plainVariant(extractModelId))
+                        .with(BlockModelGenerators.condition(CableBlock.EAST_EXTRACT, true), BlockModelGenerators.plainVariant(extractModelId).with(BlockModelGenerators.Y_ROT_90))
+                        .with(BlockModelGenerators.condition(CableBlock.SOUTH_EXTRACT, true), BlockModelGenerators.plainVariant(extractModelId).with(BlockModelGenerators.Y_ROT_180))
+                        .with(BlockModelGenerators.condition(CableBlock.WEST_EXTRACT, true), BlockModelGenerators.plainVariant(extractModelId).with(BlockModelGenerators.Y_ROT_270))
+                        .with(BlockModelGenerators.condition(CableBlock.UP_EXTRACT, true), BlockModelGenerators.plainVariant(extractModelId).with(BlockModelGenerators.X_ROT_270))
+                        .with(BlockModelGenerators.condition(CableBlock.DOWN_EXTRACT, true), BlockModelGenerators.plainVariant(extractModelId).with(BlockModelGenerators.X_ROT_90))
+        );
+
+        itemModels.itemModelOutput.register(
+                cableBlock.asItem(),
+                new net.minecraft.client.renderer.item.ClientItem(
+                        ItemModelUtils.plainModel(coreModelId),
+                        new net.minecraft.client.renderer.item.ClientItem.Properties(true, false, 1.0F)
+                )
+        );
+    }
+
+    private void generateBuckets(ItemModelGenerators itemModels) {
+        this.createBucket(itemModels, ModItems.MOLTEN_SYNTHORIUM_BUCKET, ModFluids.MOLTEN_SYNTHORIUM_SOURCE);
+        this.createBucket(itemModels, ModItems.MOLTEN_MOLDELONIAN_BUCKET, ModFluids.MOLTEN_MOLDELONIAN_SOURCE);
+    }
+
+    private void createBucket(
+            ItemModelGenerators itemModels,
+            net.neoforged.neoforge.registries.DeferredHolder<net.minecraft.world.item.Item, ? extends net.minecraft.world.item.BucketItem> bucket,
+            net.neoforged.neoforge.registries.DeferredHolder<net.minecraft.world.level.material.Fluid, ? extends net.minecraft.world.level.material.FlowingFluid> fluid
+    ) {
+        itemModels.itemModelOutput.accept(
+                bucket.get(),
+                new net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel.Unbaked(
+                        new net.neoforged.neoforge.client.model.item.DynamicFluidContainerModel.Textures(
+                                Optional.empty(),
+                                Optional.of(new Material(Identifier.withDefaultNamespace("item/bucket"), false)),
+                                Optional.of(new Material(Identifier.fromNamespaceAndPath("neoforge", "item/mask/bucket_fluid_drip"), false)),
+                                Optional.empty()
+                        ),
+                        fluid.get(),
+                        false, // flipGas
+                        true,  // applyFluidLuminosity
+                        true   // coverIsMask
+                )
+        );
+    }
 
     private void registerAllItems(ItemModelGenerators itemModels) {
 
@@ -276,13 +502,62 @@ public class ModModelProvider extends ModelProvider {
         // --- Moldelonian
         itemModels.generateFlatItem(ModItems.MOLDELONIAN_INGOT.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.MOLDELONIAN_CORE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_DUST.get(), ModelTemplates.FLAT_ITEM);
+
+        // --- Moldelonian Tools ---
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_SWORD.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_PICKAXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_AXE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_SHOVEL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_HOE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_PAXEL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+
+        // -- Moldelonian Smithing Template ---
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get(), ModelTemplates.FLAT_ITEM);
+
+        // --- Apples ---
+        itemModels.generateFlatItem(ModItems.SYNTHORIUM_APPLE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_APPLE.get(), ModelTemplates.FLAT_ITEM);
+
+        // --- Moldelonian Armor Models ---
+        itemModels.generateTrimmableItem(
+                ModItems.MOLDELONIAN_HELMET.get(),
+                ModArmorMaterials.MOLDELONIAN_ASSET,
+                ItemModelGenerators.TRIM_PREFIX_HELMET,
+                false
+        );
+
+        itemModels.generateTrimmableItem(
+                ModItems.MOLDELONIAN_CHESTPLATE.get(),
+                ModArmorMaterials.MOLDELONIAN_ASSET,
+                ItemModelGenerators.TRIM_PREFIX_CHESTPLATE,
+                false
+        );
+
+        itemModels.generateTrimmableItem(
+                ModItems.MOLDELONIAN_LEGGINGS.get(),
+                ModArmorMaterials.MOLDELONIAN_ASSET,
+                ItemModelGenerators.TRIM_PREFIX_LEGGINGS,
+                false
+        );
+
+        itemModels.generateTrimmableItem(
+                ModItems.MOLDELONIAN_BOOTS.get(),
+                ModArmorMaterials.MOLDELONIAN_ASSET,
+                ItemModelGenerators.TRIM_PREFIX_BOOTS,
+                false
+        );
 
         // --- Recipe Card (with Data Components swap) ---
         itemModels.itemModelOutput.accept(ModItems.MEMORY_CARD.get(),
-                ItemModelUtils.conditional(ItemModelUtils.hasComponent(ModDataComponents.RECIPE_CARD_DATA.get()),
+                ItemModelUtils.conditional(ItemModelUtils.hasComponent(PureMashDataComponents.RECIPE_CARD_DATA.get()),
                 ItemModelUtils.plainModel(itemModels.createFlatItemModel(ModItems.MEMORY_CARD.get(), "_filled", ModelTemplates.FLAT_ITEM)),
                 ItemModelUtils.plainModel(itemModels.createFlatItemModel
                 (ModItems.MEMORY_CARD.get(), ModelTemplates.FLAT_ITEM))));
+
+        // --- Plates ---
+        itemModels.generateFlatItem(ModItems.SYNTHORIUM_PLATE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.MOLDELONIAN_PLATE.get(), ModelTemplates.FLAT_ITEM);
 
         // --- Nuggets ---
         itemModels.generateFlatItem(ModItems.MOLDELONIAN_NUGGET.get(), ModelTemplates.FLAT_ITEM);
@@ -290,15 +565,25 @@ public class ModModelProvider extends ModelProvider {
 
         // --- Music Discs ---
         itemModels.generateFlatItem(ModItems.MUSIC_DISC_BEYOND_THE_FINAL_STAGE.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.MUSIC_DISC_NEW_HORIZONS.get(), ModelTemplates.FLAT_ITEM);
 
         // --- Enchantment Books ---
         itemModels.generateFlatItem(ModItems.OVERLOAD_BOOK.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.OVERCLOCK_BOOK.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.OVERDRIVE_BOOK.get(), ModelTemplates.FLAT_ITEM);
 
         // --- Machine Upgrades ---
         itemModels.generateFlatItem(ModItems.SPEED_UPGRADE_1.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.SPEED_UPGRADE_2.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.SPEED_UPGRADE_3.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.CAPACITY_UPGRADE_1.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.CAPACITY_UPGRADE_2.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.DUPLICATION_UPGRADE_1.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.DUPLICATION_UPGRADE_2.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ModItems.STACK_PROCESSING_UPGRADE.get(), ModelTemplates.FLAT_ITEM);
+
+        // --- DISTRIBUTION FILTER ITEM MODEL ---
+        itemModels.generateFlatItem(ModItems.DISTRIBUTION_FILTER.get(), ModelTemplates.FLAT_ITEM);
 
         // --- Tools ---
         itemModels.generateFlatItem(ModItems.SYNTHORIUM_SWORD.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
@@ -307,6 +592,8 @@ public class ModModelProvider extends ModelProvider {
         itemModels.generateFlatItem(ModItems.SYNTHORIUM_SHOVEL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModels.generateFlatItem(ModItems.SYNTHORIUM_HOE.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
         itemModels.generateFlatItem(ModItems.SYNTHORIUM_PAXEL.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModels.generateFlatItem(ModItems.CONFIGURATION_WRENCH.get(), ModelTemplates.FLAT_HANDHELD_ITEM);
+
 
         itemModels.generateTrimmableItem(
                 ModItems.SYNTHORIUM_HELMET.get(),
@@ -342,12 +629,13 @@ public class ModModelProvider extends ModelProvider {
                         new EnchantmentBookModelsUnbaked(
                                 Identifier.withDefaultNamespace("item/enchanted_book"),
                                 Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "item/overload_book"),
-                                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "item/overclock_book")
+                                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "item/overclock_book"),
+                                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "item/overdrive_book")
                         ),
                         new net.minecraft.client.renderer.item.ClientItem.Properties(
-                                true, // hand_animation_on_swap (DEFAULT).
-                                false, // oversized_in_gui (not).
-                                1.0F   // swap_animation_scale.
+                                true,
+                                false,
+                                1.0F
                         )
                 )
         );

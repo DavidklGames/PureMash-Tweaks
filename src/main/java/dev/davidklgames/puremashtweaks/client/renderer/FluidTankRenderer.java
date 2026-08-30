@@ -55,8 +55,8 @@ public class FluidTankRenderer<T extends BlockEntity> implements BlockEntityRend
 
         int finalColor = FluidRenderHelper.getFluidColor(state.fluid, state.amount);
 
-        // Clamps height ratio based on fluid amount
-        double ratio = state.isCreative ? 1.0 : Mth.clamp((double) state.amount / (double) state.capacity, 0.05, 1.0);
+        // Calculate height ratio dynamically based on current amount (restores smooth 1-second filling animation for creative tanks)
+        double ratio = Mth.clamp((double) state.amount / (double) state.capacity, 0.05, 1.0);
 
         // Coordinates matched precisely inside the new glass container (from X/Z: 3 to 13, Y: 2 to 16)
         double minY = 0.126; // Y = 2.01 block units

@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:tertium_singularity"
+    {
+      "id": "puremashtweaks:tertium_singularity",
+      "required": false
+    }
   ]
 }

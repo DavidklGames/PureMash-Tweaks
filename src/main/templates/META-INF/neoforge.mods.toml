@@ -84,19 +84,29 @@ config="${mod_id}.mixins.json"
 
 [[dependencies.${mod_id}]]
 modId = "ae2"
-type = "required" # Altere para "required" se o mod não puder ligar sem ele
+type = "required" # Change to "required" if the mod cannot start without it.
+versionRange = "[26.1.10-beta,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "guideme"
+type = "required" # Change to "required" if the mod cannot start without it.
+versionRange = "[26.1.12-beta,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "mysticalagriculture"
-type = "required" # Altere para "required" se o mod não puder ligar sem ele
+type = "required" # Change to "required" if the mod cannot start without it.
+versionRange = "[9.0.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "mysticalagradditions"
-type = "required" # Altere para "required" se o mod não puder ligar sem ele
+type = "required" # Change to "required" if the mod cannot start without it.
+versionRange = "[9.0.0,)"
 ordering = "AFTER"
 side = "BOTH"
 

@@ -5,10 +5,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.davidklgames.puremashtweaks.PureMashTweaks;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,18 +29,20 @@ public class SynthesisRecipeHelper {
     private static final List<ShapelessRecipeData> SHAPELESS_RECIPES = new ArrayList<>();
     private static boolean loaded = false;
 
-    // Shielded 9x9 spatial collision structure
-    public record ShapedRecipeData(String[] pattern, Map<Character, Item> keys, ItemStack result, int width, int height) {
-        public boolean matches(ItemStack[] grid) {
-            // Iterates through all possible offset positions within the 9x9 grid
+    public static void reset() {
+        loaded = false;
+        SHAPED_RECIPES.clear();
+        SHAPELESS_RECIPES.clear();
+    }
+
+    public record ShapedRecipeData(String[] pattern, Map<Character, Item> keys, ItemStack result, int width, int height, int totalItemsRequired) {
+        public boolean matches(ItemStack[] grid, int activeCount) {
+            if (activeCount != this.totalItemsRequired) return false;
+
             for (int startY = 0; startY <= 9 - this.height; startY++) {
                 for (int startX = 0; startX <= 9 - this.width; startX++) {
-                    if (this.checkMatch(grid, startX, startY, true)) {
-                        return true;
-                    }
-                    if (this.checkMatch(grid, startX, startY, false)) {
-                        return true;
-                    }
+                    if (this.checkMatch(grid, startX, startY, true)) return true;
+                    if (this.checkMatch(grid, startX, startY, false)) return true;
                 }
             }
             return false;
@@ -52,17 +56,11 @@ public class SynthesisRecipeHelper {
                     Item expectedItem = null;
 
                     if (rx >= 0 && ry >= 0 && rx < this.width && ry < this.height) {
-                        char ch;
-                        if (mirror) {
-                            ch = pattern[ry].charAt(this.width - 1 - rx);
-                        } else {
-                            ch = pattern[ry].charAt(rx);
-                        }
+                        char ch = mirror ? pattern[ry].charAt(this.width - 1 - rx) : pattern[ry].charAt(rx);
                         expectedItem = keys.get(ch);
                     }
 
                     ItemStack actual = grid[x + y * 9];
-                    // If the recipe does not expect an item at this coordinate, the slot on the table MUST be empty
                     if (expectedItem == null || expectedItem == net.minecraft.world.item.Items.AIR) {
                         if (!actual.isEmpty()) return false;
                     } else {
@@ -74,24 +72,46 @@ public class SynthesisRecipeHelper {
         }
     }
 
-    // Formless (Shapeless) collision structure
     public record ShapelessRecipeData(List<Item> ingredients, ItemStack result) {
-        public boolean matches(ItemStack[] grid) {
-            List<ItemStack> activeItems = new ArrayList<>();
-            for (ItemStack stack : grid) {
-                if (!stack.isEmpty()) activeItems.add(stack);
-            }
-            if (activeItems.size() != ingredients.size()) return false;
+        public boolean matches(ItemStack[] grid, int activeCount) {
+            if (activeCount != ingredients.size()) return false;
 
-            List<Item> expected = new ArrayList<>(ingredients);
-            for (ItemStack actual : activeItems) {
+            boolean[] matched = new boolean[ingredients.size()];
+
+            for (ItemStack actual : grid) {
+                if (actual.isEmpty()) continue;
                 Item actualItem = actual.getItem();
-                if (!expected.remove(actualItem)) {
-                    return false;
+
+                boolean found = false;
+                for (int j = 0; j < ingredients.size(); j++) {
+                    if (!matched[j] && ingredients.get(j) == actualItem) {
+                        matched[j] = true;
+                        found = true;
+                        break;
+                    }
                 }
+                if (!found) return false;
             }
-            return expected.isEmpty();
+            return true;
         }
+    }
+
+    public static List<ShapedRecipeData> getShapedRecipes() {
+        loadCustomRecipes();
+        return SHAPED_RECIPES;
+    }
+
+    public static List<ShapelessRecipeData> getShapelessRecipes() {
+        loadCustomRecipes();
+        return SHAPELESS_RECIPES;
+    }
+
+    public static ItemStack[] getIngredientItems(Ingredient ingredient) {
+        if (ingredient == null || ingredient.isEmpty()) return new ItemStack[0];
+        return ingredient.items()
+                .map(Holder::value)
+                .map(ItemStack::new)
+                .toArray(ItemStack[]::new);
     }
 
     public static void loadCustomRecipes() {
@@ -135,23 +155,32 @@ public class SynthesisRecipeHelper {
                             for (Map.Entry<String, JsonElement> entry : keyObj.entrySet()) {
                                 char ch = entry.getKey().charAt(0);
                                 Identifier itemLoc = Identifier.tryParse(entry.getValue().getAsString());
-                                Item item = itemLoc != null ? BuiltInRegistries.ITEM.get(itemLoc).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
+                                Item item = itemLoc != null ? BuiltInRegistries.ITEM.get(itemLoc).map(Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
                                 keys.put(ch, item);
                             }
 
-                            // ADVANCED COMPONENT SUPPORT: Reads using Minecraft's Codec if it is a complex object!
+                            int totalRequired = 0;
+                            for (String row : pattern) {
+                                for (int c = 0; c < row.length(); c++) {
+                                    char ch = row.charAt(c);
+                                    if (ch != ' ' && ch != '.' && keys.containsKey(ch) && keys.get(ch) != net.minecraft.world.item.Items.AIR) {
+                                        totalRequired++;
+                                    }
+                                }
+                            }
+
                             ItemStack resultStack;
                             if (obj.get("result").isJsonObject()) {
                                 resultStack = ItemStack.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, obj.get("result")).getOrThrow();
                             } else {
                                 Identifier resId = Identifier.tryParse(obj.get("result").getAsString());
-                                Item resultItem = resId != null ? BuiltInRegistries.ITEM.get(resId).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
+                                Item resultItem = resId != null ? BuiltInRegistries.ITEM.get(resId).map(Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
                                 int count = obj.has("result_count") ? obj.get("result_count").getAsInt() : 1;
                                 resultStack = new ItemStack(resultItem, count);
                             }
 
                             if (!resultStack.isEmpty()) {
-                                SHAPED_RECIPES.add(new ShapedRecipeData(pattern, keys, resultStack, patW, patH));
+                                SHAPED_RECIPES.add(new ShapedRecipeData(pattern, keys, resultStack, patW, patH, totalRequired));
                             }
                         }
                     }
@@ -180,19 +209,18 @@ public class SynthesisRecipeHelper {
                             List<Item> ingredients = new ArrayList<>();
                             for (int i = 0; i < ingredientsArray.size(); i++) {
                                 Identifier itemLoc = Identifier.tryParse(ingredientsArray.get(i).getAsString());
-                                Item item = itemLoc != null ? BuiltInRegistries.ITEM.get(itemLoc).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
+                                Item item = itemLoc != null ? BuiltInRegistries.ITEM.get(itemLoc).map(Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
                                 if (item != net.minecraft.world.item.Items.AIR) {
                                     ingredients.add(item);
                                 }
                             }
 
-                            // ADVANCED COMPONENT SUPPORT: Reads using Minecraft's Codec if it is a complex object!
                             ItemStack resultStack;
                             if (obj.get("result").isJsonObject()) {
                                 resultStack = ItemStack.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, obj.get("result")).getOrThrow();
                             } else {
                                 Identifier resId = Identifier.tryParse(obj.get("result").getAsString());
-                                Item resultItem = resId != null ? BuiltInRegistries.ITEM.get(resId).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
+                                Item resultItem = resId != null ? BuiltInRegistries.ITEM.get(resId).map(Holder::value).orElse(net.minecraft.world.item.Items.AIR) : net.minecraft.world.item.Items.AIR;
                                 int count = obj.has("result_count") ? obj.get("result_count").getAsInt() : 1;
                                 resultStack = new ItemStack(resultItem, count);
                             }
@@ -213,18 +241,24 @@ public class SynthesisRecipeHelper {
 
     @Nullable
     public static ItemStack getResult(ItemStack[] grid) {
+        if (grid == null || grid.length == 0) return null;
+
+        int activeCount = 0;
+        for (ItemStack s : grid) {
+            if (!s.isEmpty()) activeCount++;
+        }
+        if (activeCount == 0) return null;
+
         loadCustomRecipes();
 
-        // 1. First check if the pattern on the table matches any Shaped 9x9 recipe
         for (ShapedRecipeData recipe : SHAPED_RECIPES) {
-            if (recipe.matches(grid)) {
+            if (recipe.matches(grid, activeCount)) {
                 return recipe.result().copy();
             }
         }
 
-        // 2. If it did not match Shaped, check if it matches any Shapeless 9x9 recipe
         for (ShapelessRecipeData recipe : SHAPELESS_RECIPES) {
-            if (recipe.matches(grid)) {
+            if (recipe.matches(grid, activeCount)) {
                 return recipe.result().copy();
             }
         }

@@ -22,5 +22,7 @@ public class ModEnchantmentTagProvider extends EnchantmentTagsProvider {
         this.tag(EnchantmentTags.TRADEABLE).add(ModEnchantments.OVERLOAD);
         this.tag(EnchantmentTags.IN_ENCHANTING_TABLE).add(ModEnchantments.OVERCLOCK);
         this.tag(EnchantmentTags.TRADEABLE).add(ModEnchantments.OVERCLOCK);
+        this.tag(EnchantmentTags.IN_ENCHANTING_TABLE).add(ModEnchantments.OVERDRIVE);
+        this.tag(EnchantmentTags.TRADEABLE).add(ModEnchantments.OVERDRIVE);
     }
 }

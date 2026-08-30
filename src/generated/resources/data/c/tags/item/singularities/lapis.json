@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:lapis_singularity"
+    {
+      "id": "puremashtweaks:lapis_singularity",
+      "required": false
+    }
   ]
 }

@@ -1,6 +1,7 @@
 {
   "type": "puremashtweaks:shaped_synthesis",
   "key": {
+    "A": "minecraft:redstone_block",
     "D": "minecraft:diamond_block",
     "I": "puremashtweaks:synthorium_ingot",
     "M": "puremashtweaks:moldelonian_block",
@@ -11,9 +12,9 @@
     ".MMSDSMM.",
     "MSSDIDSSM",
     "MSDIMIDSM",
-    "SDIDSDIDS",
+    "SDIASAIDS",
     "DIMSNSMID",
-    "SDIDSDIDS",
+    "SDIASAIDS",
     "MSDIMIDSM",
     "MSSDIDSSM",
     ".MMSDSMM."

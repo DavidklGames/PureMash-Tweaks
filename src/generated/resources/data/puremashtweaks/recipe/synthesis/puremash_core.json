@@ -8,17 +8,18 @@
     "M": "puremashtweaks:moldelonian_block",
     "N": "minecraft:diamond_block",
     "S": "puremashtweaks:synthorium_block",
+    "T": "puremashtweaks:cosmic_singularity",
     "Y": "mysticalagradditions:creative_essence"
   },
   "pattern": [
     "SSSSYSSSS",
-    "SMMINIMMS",
+    "STMINIMTS",
     "SMYNSNYMS",
     "SINGCGNIS",
     "YNSCKCSNY",
     "SINGCGNIS",
     "SMYNSNYMS",
-    "SMMINIMMS",
+    "STMINIMTS",
     "SSSSYSSSS"
   ],
   "result": {

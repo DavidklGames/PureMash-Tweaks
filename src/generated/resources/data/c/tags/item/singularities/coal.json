@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:coal_singularity"
+    {
+      "id": "puremashtweaks:coal_singularity",
+      "required": false
+    }
   ]
 }

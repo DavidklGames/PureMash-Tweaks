@@ -1,6 +1,6 @@
 package dev.davidklgames.puremashtweaks.client;
 
-import dev.davidklgames.puremashtweaks.component.ModSounds;
+import dev.davidklgames.puremashtweaks.registry.ModSounds;
 import dev.davidklgames.puremashtweaks.registry.ModItems;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,6 +30,7 @@ public class PureMashAdvancementCompletionHandler {
             "puremashtweaks:main/get_paxel",
             "puremashtweaks:main/get_compressor",
             "puremashtweaks:main/get_armor",
+            "puremashtweaks:main/get_moldelonian_template",
             "puremashtweaks:main/get_moldelonian_ingot",
             "puremashtweaks:main/get_moldelonian_core",
             "puremashtweaks:main/get_puremash_core",
@@ -38,6 +39,16 @@ public class PureMashAdvancementCompletionHandler {
             "puremashtweaks:main/get_alchemical_synthesizer",
             "puremashtweaks:secret/overloaded",
             "puremashtweaks:secret/energy_for_all",
+            "puremashtweaks:main/get_moldelonian_armor",
+            "puremashtweaks:main/get_moldelonian_paxel",
+            "puremashtweaks:secret/overclocked",
+            "puremashtweaks:secret/overdriven",
+            "puremashtweaks:main/get_generator",
+            "puremashtweaks:main/get_universal_cable",
+            "puremashtweaks:main/get_fluid_tank",
+            "puremashtweaks:main/get_creative_fluid_tank",
+            "puremashtweaks:main/get_battery",
+            "puremashtweaks:main/get_creative_battery",
             "puremashtweaks:secret/one_unites_all",
             "puremashtweaks:secret/cosmic_singularity"
     };

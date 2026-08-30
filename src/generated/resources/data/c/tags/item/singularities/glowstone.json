@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:glowstone_singularity"
+    {
+      "id": "puremashtweaks:glowstone_singularity",
+      "required": false
+    }
   ]
 }

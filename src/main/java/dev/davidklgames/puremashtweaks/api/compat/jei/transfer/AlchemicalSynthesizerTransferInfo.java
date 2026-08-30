@@ -41,12 +41,15 @@ public class AlchemicalSynthesizerTransferInfo implements IRecipeTransferInfo<Al
     public @NotNull List<Slot> getRecipeSlots(AlchemicalSynthesizerMenu container, @NonNull ParsedRecipe recipe) {
         List<Slot> slots = new ArrayList<>();
 
+        // Slot 1: Material Sample
         slots.add(container.getSlot(1));
 
+        // Slot 0: Fluid Bucket Input (if recipe requires fluid)
         if (recipe.fluid() != null) {
             slots.add(container.getSlot(0));
         }
 
+        // Slot 2: Tool Catalyst Input (if recipe requires tool)
         if (recipe.toolType() != null && !recipe.toolType().equals("none")) {
             slots.add(container.getSlot(2));
         }

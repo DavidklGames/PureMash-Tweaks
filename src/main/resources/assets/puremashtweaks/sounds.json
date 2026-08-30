@@ -22,5 +22,14 @@
         "stream": true
       }
     ]
+  },
+  "new_horizons": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "puremashtweaks:records/new_horizons",
+        "stream": true
+      }
+    ]
   }
 }

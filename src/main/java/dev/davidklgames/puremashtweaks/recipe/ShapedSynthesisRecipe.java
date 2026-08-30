@@ -51,8 +51,11 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
             return false;
         }
 
-        for (int startY = 0; startY <= input.height() - this.height; startY++) {
-            for (int startX = 0; startX <= input.width() - this.width; startX++) {
+        int maxStartY = input.height() - this.height;
+        int maxStartX = input.width() - this.width;
+
+        for (int startY = 0; startY <= maxStartY; startY++) {
+            for (int startX = 0; startX <= maxStartX; startX++) {
                 if (this.matches(input, startX, startY, true)) return true;
                 if (this.matches(input, startX, startY, false)) return true;
             }
@@ -61,26 +64,27 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
     }
 
     private boolean matches(CraftingInput input, int startX, int startY, boolean mirror) {
-        for (int y = 0; y < input.height(); y++) {
-            for (int x = 0; x < input.width(); x++) {
+        int inputWidth = input.width();
+        int inputHeight = input.height();
+
+        for (int y = 0; y < inputHeight; y++) {
+            for (int x = 0; x < inputWidth; x++) {
                 int rx = x - startX;
                 int ry = y - startY;
                 Optional<Ingredient> expected = Optional.empty();
 
                 if (rx >= 0 && ry >= 0 && rx < this.width && ry < this.height) {
-                    if (mirror) {
-                        expected = this.ingredients.get(this.width - 1 - rx + ry * this.width);
-                    } else {
-                        expected = this.ingredients.get(rx + ry * this.width);
-                    }
+                    int index = mirror ? (this.width - 1 - rx + ry * this.width) : (rx + ry * this.width);
+                    expected = this.ingredients.get(index);
                 }
 
-                ItemStack actual = input.getItem(x + y * input.width());
+                ItemStack actual = input.getItem(x + y * inputWidth);
 
-                boolean match;
-                match = expected.map(ingredient -> ingredient.test(actual)).orElseGet(actual::isEmpty);
-
-                if (!match) return false;
+                if (expected.isPresent()) {
+                    if (!expected.get().test(actual)) return false;
+                } else {
+                    if (!actual.isEmpty()) return false;
+                }
             }
         }
         return true;
@@ -116,7 +120,6 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
     public @Nullable RecipeBookCategory recipeBookCategory() { return null; }
 
     public static ShapedSynthesisRecipe newFromCodec(String group, List<String> pattern, Map<String, Ingredient> key, ItemStackTemplate result) {
-        // Finds the bounding box of the non-empty part of the recipe to perform Auto-Trim.
         int firstRow = -1;
         int lastRow = -1;
         int firstCol = Integer.MAX_VALUE;
@@ -127,7 +130,6 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
             boolean rowEmpty = true;
             for (int c = 0; c < row.length(); c++) {
                 char ch = row.charAt(c);
-                // Dots and spaces are read perfectly.
                 if (ch != ' ' && ch != '.') {
                     rowEmpty = false;
                     if (c < firstCol) firstCol = c;
@@ -140,7 +142,6 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
             }
         }
 
-        // If the recipe is completely empty (fail-safe).
         if (firstRow == -1) {
             return new ShapedSynthesisRecipe(group, 0, 0, List.of(), result, pattern, key);
         }
@@ -148,7 +149,7 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
         int trimmedHeight = lastRow - firstRow + 1;
         int trimmedWidth = lastCol - firstCol + 1;
 
-        List<Optional<Ingredient>> trimmedIngredients = new java.util.ArrayList<>();
+        List<Optional<Ingredient>> trimmedIngredients = new java.util.ArrayList<>(trimmedWidth * trimmedHeight);
         for (int r = firstRow; r <= lastRow; r++) {
             String row = pattern.get(r);
             for (int c = firstCol; c <= lastCol; c++) {
@@ -173,13 +174,12 @@ public class ShapedSynthesisRecipe implements Recipe<CraftingInput> {
             ).apply(instance, ShapedSynthesisRecipe::newFromCodec)
     );
 
-    // Dynamic synchronization fixed by sending actual width and height over the network.
     public static final StreamCodec<RegistryFriendlyByteBuf, ShapedSynthesisRecipe> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, r -> r.group,
-            ByteBufCodecs.VAR_INT, r -> r.width,
-            ByteBufCodecs.VAR_INT, r -> r.height,
-            Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.ingredients,
-            ItemStackTemplate.STREAM_CODEC, r -> r.result,
+            ByteBufCodecs.STRING_UTF8, ShapedSynthesisRecipe::group,
+            ByteBufCodecs.VAR_INT, ShapedSynthesisRecipe::getWidth,
+            ByteBufCodecs.VAR_INT, ShapedSynthesisRecipe::getHeight,
+            Ingredient.OPTIONAL_CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), ShapedSynthesisRecipe::getIngredients,
+            ItemStackTemplate.STREAM_CODEC, ShapedSynthesisRecipe::getResult,
             (group, width, height, ingredients, result) -> new ShapedSynthesisRecipe(group, width, height, ingredients, result, List.of(), Map.of())
     );
 }

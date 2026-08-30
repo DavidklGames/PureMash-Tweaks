@@ -2,109 +2,85 @@
     P U R E M A S H   T W E A K S   -   C O M P R E S S O R
 ======================================================================
 
-The Multifunctional Compressor is a versatile heavy-duty machine
-capable of dense material compression, gravity-based singularity
+The Multifunctional Compressor is a heavy-duty multi-mode machine
+designed for high-speed material compaction, gravitational singularity
 condensation, and kinetic pulverization.
 
 ----------------------------------------------------------------------
-  1. INTERFACE AND SLOT LAYOUT
+  1. MACHINE OVERVIEW & INTERFACE
 ----------------------------------------------------------------------
 
-The interface of the Compressor is designed for precise manual and
-automated control.
-
-+--[X]---------------------------------------------------------+
-|                                                              |
-|   [Input Slot]  =======>  [Progress]  =======>  [Output]     |
-|     (Slot 0)               (Arrow)               (Slot 1)    |
-|     X=39, Y=35                                   X=120, Y=35 |
-|                                                              |
-|                                                  [Upgrades]  |
-|                                                  Slot 2, 3, 4|
-|                                                  X=182       |
-+--------------------------------------------------------------+
-
-- Input Slot (Slot 0): Place raw materials to be processed.
-- Output Slot (Slot 1): Collects finished products. Cannot be
-  manually stuffed with inputs.
-- Upgrade Slots (Slots 2, 3, and 4): Located on the far right.
-  These slots accept exclusive speed upgrade items.
+- Energy Storage: 5,000,000 FE base capacity (expandable via Capacity Upgrades).
+- Slot 0 (Input): Accepts compatible raw materials, ingots, or ores.
+- Slot 1 (Output): Holds finished products with instantaneous 0-tick
+  auto-ejection to adjacent inventories, cables, and AE2 networks.
+- Slots 2 to 4 (Upgrades): Accept Speed, Capacity, Duplication,
+  and Stack Processing Upgrades.
+- Mode Selector: Cycles between Compression, Singularity, and Dust modes.
+- Recipe Lock: Locks the machine to the item currently in Slot 0 to prevent
+  automation lines and conduits from inserting unwanted materials.
 
 ----------------------------------------------------------------------
   2. THE THREE OPERATING MODES
 ----------------------------------------------------------------------
 
-By clicking the Mode Button (located on the GUI), you can cycle
-the machine through three specialized states. The header text at
-the top of the screen will dynamically update to display the active mode:
+- MODE 0: COMPRESSION (Default: 20t @ 50 FE/t)
+  Packs large quantities of items into dense block forms (e.g., 9 ingots
+  into 1 block). Automatically scans global crafting recipes for 9:1
+  storage block conversions.
 
-- COMPRESSION (Mode 0)
-  Consumes large quantities of items to pack them into block form
-  (e.g., 9 Synthorium Ingots into 1 Synthorium Block). The machine
-  automatically scans global recipes for standard 9-to-1 conversions.
+- MODE 1: SINGULARITY CONDENSING (Default: 40t @ 250 FE/t)
+  Condenses dense materials under extreme gravitational pressure.
+  Input items are consumed progressively into an internal accumulator
+  until the required target cost (default: 1,000 items) is reached.
 
-- SINGULARITY (Mode 1)
-  Condenses dense materials under gravitational pressure. In this mode,
-  the machine consumes input items one-by-one, slowly filling its
-  internal accumulator until the singularity threshold (default: 1000)
-  is reached before outputting the finalized Singularity.
-
-- DUST CRUSHING (Mode 2)
-  Pulverizes ingots and raw materials into fine powders. It features
-  an automatic scan that registers custom ingot-to-dust conversion
-  recipes from other installed mods.
+- MODE 2: DUST CRUSHING (Default: 20t @ 100 FE/t)
+  Pulverizes ores, raw metals, and ingots into fine powders.
+  Automatically detects metals and gems across all mods and applies
+  built-in ore doubling (1 raw ore/ore block -> 2 dusts).
 
 ----------------------------------------------------------------------
-  3. INTEGRATED SPEED AND DUPLICATION UPGRADES
+  3. UPGRADES & PERFORMANCE
 ----------------------------------------------------------------------
 
-Installing speed upgrades into Slots 2, 3, or 4 will modify the
-machine's operation time and yield:
-
-- Speed Upgrade Tier 1: Speeds up operations.
-- Speed Upgrade Tier 2: Accelerates processing speed and grants
-  a +10% chance to duplicate outputs per upgrade in Compression and
-  Dust modes.
-- Speed Upgrade Tier 3: Maximizes processing speed and grants
-  a +35% chance to duplicate outputs per upgrade in Compression and
-  Dust modes.
+- Speed Upgrade Tier 1: Increases processing speed (+2 power).
+- Speed Upgrade Tier 2: Significantly increases processing speed (+4 power).
+- Speed Upgrade Tier 3: Exponentially accelerates processing speed
+  (+16, +64, up to +256 power when using 3x cards).
+- Capacity Upgrades: Multiplies internal energy storage (2x / 5x).
+- Duplication Upgrades: Grants a chance to duplicate output items (+15% / +50%).
+- Stack Processing Upgrade: Allows processing an entire stack (up to 64 items)
+  simultaneously in a single cycle.
 
 ----------------------------------------------------------------------
-  4. ADVANCED AUTOMATION & SIDED ROUTING
+  4. RECIPE DECLARATION: JSON CONFIG & KUBEJS
 ----------------------------------------------------------------------
 
-The Compressor is fully compatible with item transport pipes and
-applied logistics systems. Side configuration buttons are available
-on the left panel (D: Down, U: Up, N: North, S: South, W: West, E: East):
+A) COMPRESSION RECIPES (Mode 0)
 
-- OFF: Disables pipe interaction on that specific side.
-- IN (Blue / Input): Allows automation pipes to push items into Slot 0.
-- OUT (Orange / Output): Allows automation pipes to extract finished
-  products from Slot 1.
-
-Locking Feature (Lock Button):
-When locked, the machine memorizes the item currently in Slot 0 and
-will ONLY accept that specific item type. This prevents automation
-pipes from inserting unwanted items and clogging the processing line.
-
-----------------------------------------------------------------------
-  5. CUSTOM JSON RECIPE TEMPLATES
-----------------------------------------------------------------------
-
-Custom recipes can be placed inside the subfolders of this directory:
-
-A) Compressor Recipes (Folder: compressor_recipes/compressor/*.json)
+- JSON Config: config/PureMash Tweaks/compressor_recipes/compressor/*.json
 [
   {
     "input": "puremashtweaks:synthorium_ingot",
     "input_count": 9,
     "output": "puremashtweaks:synthorium_block",
-    "time_cost": 100,
+    "time_cost": 20,
     "enable_recipe": true
   }
 ]
 
-B) Singularity Recipes (Folder: compressor_recipes/singularity/*.json)
+- KubeJS Script: kubejs/server_scripts/compressor_recipes.js
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.compression('puremashtweaks:synthorium_block', 'puremashtweaks:synthorium_ingot')
+        .inputCount(9)
+        .timeCost(20)
+        .id('kubejs:compress_synthorium_block')
+})
+
+
+B) SINGULARITY RECIPES (Mode 1)
+
+- JSON Config: config/PureMash Tweaks/compressor_recipes/singularity/*.json
 [
   {
     "name": "Synthorium Singularity",
@@ -112,19 +88,40 @@ B) Singularity Recipes (Folder: compressor_recipes/singularity/*.json)
     "cost": 1000,
     "color0": "#101010",
     "color1": "#00FFFF",
-    "add_to_puremashtweaks_singularity_tab": true,
-    "add_to_puremash_and_singularity_tag": true,
+    "required_mod_id": "none",
     "enable_recipe": true,
     "enable_item": true
   }
 ]
 
-C) Dust Recipes (Folder: compressor_recipes/dust/*.json)
+* Note on "required_mod_id": If specified (e.g. "ae2", "mysticalagriculture"),
+  the recipe is loaded only when that mod is installed. Use "none" otherwise.
+
+- KubeJS Script:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.singularity('puremashtweaks:diamond_singularity', 'minecraft:diamond_block')
+        .cost(500)
+        .timeCost(40)
+        .id('kubejs:condense_diamond_singularity')
+})
+
+
+C) DUST CRUSHING RECIPES (Mode 2)
+
+- JSON Config: config/PureMash Tweaks/compressor_recipes/dust/*.json
 [
   {
     "input": "puremashtweaks:synthorium_ingot",
     "output": "puremashtweaks:synthorium_dust",
-    "time_cost": 100,
+    "time_cost": 20,
     "enable_recipe": true
   }
 ]
+
+- KubeJS Script:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.dust('puremashtweaks:synthorium_dust', 'puremashtweaks:synthorium_ingot')
+        .timeCost(20)
+        .id('kubejs:crush_synthorium_ingot')
+})
+======================================================================

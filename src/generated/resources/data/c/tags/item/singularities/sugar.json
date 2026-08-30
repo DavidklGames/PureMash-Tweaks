@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:sugar_singularity"
+    {
+      "id": "puremashtweaks:sugar_singularity",
+      "required": false
+    }
   ]
 }

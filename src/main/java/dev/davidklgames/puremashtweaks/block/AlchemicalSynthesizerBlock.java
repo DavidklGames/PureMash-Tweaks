@@ -5,6 +5,12 @@ import dev.davidklgames.puremashtweaks.block.entity.AlchemicalSynthesizerBlockEn
 import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -35,7 +41,9 @@ public class AlchemicalSynthesizerBlock extends BaseEntityBlock {
 
     public AlchemicalSynthesizerBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(LIT, Boolean.FALSE));
     }
 
     @Override
@@ -64,6 +72,29 @@ public class AlchemicalSynthesizerBlock extends BaseEntityBlock {
     @Override
     protected @NonNull RenderShape getRenderShape(@NonNull BlockState state) {
         return RenderShape.MODEL;
+    }
+
+    @Override
+    public void animateTick(BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull RandomSource random) {
+        if (state.getValue(LIT)) {
+            double x = (double) pos.getX() + 0.5D;
+            double y = pos.getY();
+            double z = (double) pos.getZ() + 0.5D;
+
+            if (random.nextDouble() < 0.1D) {
+                level.playLocalSound(x, y, z, SoundEvents.FURNACE_FIRE_CRACKLE, SoundSource.BLOCKS, 1.0F, 1.0F, false);
+            }
+
+            Direction direction = state.getValue(FACING);
+            Direction.Axis axis = direction.getAxis();
+            double horizontalOffset = random.nextDouble() * 0.6D - 0.3D;
+            double offsetX = axis == Direction.Axis.X ? (double) direction.getStepX() * 0.52D : horizontalOffset;
+            double offsetY = random.nextDouble() * 6.0D / 16.0D + 0.12D;
+            double offsetZ = axis == Direction.Axis.Z ? (double) direction.getStepZ() * 0.52D : horizontalOffset;
+
+            level.addParticle(ParticleTypes.SMOKE, x + offsetX, y + offsetY, z + offsetZ, 0.0D, 0.0D, 0.0D);
+            level.addParticle(ParticleTypes.FLAME, x + offsetX, y + offsetY, z + offsetZ, 0.0D, 0.0D, 0.0D);
+        }
     }
 
     @Nullable
@@ -105,10 +136,10 @@ public class AlchemicalSynthesizerBlock extends BaseEntityBlock {
     @Override
     protected void affectNeighborsAfterRemoval(
             @NonNull BlockState state,
-            net.minecraft.server.level.@NonNull ServerLevel level,
+            @NonNull ServerLevel level,
             @NonNull BlockPos pos,
             boolean movedByPiston
     ) {
-        net.minecraft.world.Containers.updateNeighboursAfterDestroy(state, level, pos);
+        Containers.updateNeighboursAfterDestroy(state, level, pos);
     }
 }

@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:netherite_singularity"
+    {
+      "id": "puremashtweaks:netherite_singularity",
+      "required": false
+    }
   ]
 }

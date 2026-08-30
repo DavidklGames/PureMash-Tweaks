@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:redstone_singularity"
+    {
+      "id": "puremashtweaks:redstone_singularity",
+      "required": false
+    }
   ]
 }

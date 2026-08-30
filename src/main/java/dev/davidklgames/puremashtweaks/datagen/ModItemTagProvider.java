@@ -31,92 +31,172 @@ public class ModItemTagProvider extends IntrinsicHolderTagsProvider<Item> {
 
     @Override
     protected void addTags(HolderLookup.@NonNull Provider registries) {
-        // Repair Tag
+
+        // =========================================================================
+        // OVERDRIVE ENCHANTABLE TAG (UNIVERSAL: ALL TOOLS, WEAPONS & ARMORS)
+        // =========================================================================
+        var overdriveEnchantableTag = TagKey.create(
+                Registries.ITEM,
+                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "enchantable/overdrive")
+        );
+
+        this.tag(overdriveEnchantableTag)
+                // 1. Universal tool and weapon categories (Vanilla & all mods)
+                .addTag(ItemTags.SWORDS)
+                .addTag(ItemTags.AXES)
+                .addTag(ItemTags.HOES)
+                .addTag(ItemTags.PICKAXES)
+                .addTag(ItemTags.SHOVELS)
+                .addTag(ItemTags.MINING_ENCHANTABLE)
+                .addTag(ItemTags.WEAPON_ENCHANTABLE)
+                .addTag(ItemTags.MELEE_WEAPON_ENCHANTABLE)
+                .addTag(ItemTags.SHARP_WEAPON_ENCHANTABLE)
+                .addTag(ItemTags.SWEEPING_ENCHANTABLE)
+                .addTag(ItemTags.DURABILITY_ENCHANTABLE)
+
+                // 2. Universal armor categories (Vanilla & all mods)
+                .addTag(ItemTags.ARMOR_ENCHANTABLE)
+                .addTag(ItemTags.HEAD_ARMOR_ENCHANTABLE)
+                .addTag(ItemTags.CHEST_ARMOR_ENCHANTABLE)
+                .addTag(ItemTags.LEG_ARMOR_ENCHANTABLE)
+                .addTag(ItemTags.FOOT_ARMOR_ENCHANTABLE)
+
+                // 3. Explicit Paxels & PureMash tools
+                .add(ModItems.SYNTHORIUM_PAXEL.get())
+                .add(ModItems.MOLDELONIAN_PAXEL.get());
+
         this.tag(ItemTags.create(Identifier.fromNamespaceAndPath("puremashtweaks", "synthorium_repair_items")))
                 .add(ModItems.SYNTHORIUM_INGOT.get());
 
+        this.tag(ItemTags.BEACON_PAYMENT_ITEMS)
+                .add(ModItems.SYNTHORIUM_INGOT.get())
+                .add(ModItems.MOLDELONIAN_INGOT.get());
+
         // =========================================================================
-        // VANILLA MINECRAFT TOOL AND ARMOR CATEGORIES
+        // PLATES
+        // =========================================================================
+        this.tag(commonTag("plates"))
+                .add(ModItems.SYNTHORIUM_PLATE.get())
+                .add(ModItems.MOLDELONIAN_PLATE.get());
+
+        this.tag(commonTag("plates/synthorium")).add(ModItems.SYNTHORIUM_PLATE.get());
+        this.tag(commonTag("plates/moldelonian")).add(ModItems.MOLDELONIAN_PLATE.get());
+
+        // =========================================================================
+        // CABLES ITEM TAG
+        // =========================================================================
+        this.tag(commonTag("cables"))
+                .add(ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get().asItem())
+                .add(ModBlocks.MOLDELONIAN_UNIVERSAL_CABLE.get().asItem());
+
+        // =========================================================================
+        // FOODS & FRUITS
+        // =========================================================================
+        this.tag(commonTag("foods"))
+                .add(ModItems.SYNTHORIUM_APPLE.get())
+                .add(ModItems.MOLDELONIAN_APPLE.get());
+
+        this.tag(commonTag("foods/fruit"))
+                .add(ModItems.SYNTHORIUM_APPLE.get())
+                .add(ModItems.MOLDELONIAN_APPLE.get());
+
+        this.tag(commonTag("foods/synthorium")).add(ModItems.SYNTHORIUM_APPLE.get());
+        this.tag(commonTag("foods/moldelonian")).add(ModItems.MOLDELONIAN_APPLE.get());
+
+        // =========================================================================
+        // VANILLA TOOL AND ARMOR CATEGORIES
         // =========================================================================
         this.tag(ItemTags.PICKAXES).add(ModItems.SYNTHORIUM_PICKAXE.get(), ModItems.SYNTHORIUM_PAXEL.get());
         this.tag(ItemTags.AXES).add(ModItems.SYNTHORIUM_AXE.get(), ModItems.SYNTHORIUM_PAXEL.get());
         this.tag(ItemTags.SHOVELS).add(ModItems.SYNTHORIUM_SHOVEL.get(), ModItems.SYNTHORIUM_PAXEL.get());
         this.tag(ItemTags.SWORDS).add(ModItems.SYNTHORIUM_SWORD.get());
         this.tag(ItemTags.HOES).add(ModItems.SYNTHORIUM_HOE.get());
+        this.tag(ItemTags.PICKAXES).add(ModItems.MOLDELONIAN_PICKAXE.get(), ModItems.MOLDELONIAN_PAXEL.get());
+        this.tag(ItemTags.AXES).add(ModItems.MOLDELONIAN_AXE.get(), ModItems.MOLDELONIAN_PAXEL.get());
+        this.tag(ItemTags.SHOVELS).add(ModItems.MOLDELONIAN_SHOVEL.get(), ModItems.MOLDELONIAN_PAXEL.get());
+        this.tag(ItemTags.SWORDS).add(ModItems.MOLDELONIAN_SWORD.get());
+        this.tag(ItemTags.HOES).add(ModItems.MOLDELONIAN_HOE.get());
+
+        this.tag(ItemTags.HEAD_ARMOR).add(ModItems.MOLDELONIAN_HELMET.get());
+        this.tag(ItemTags.CHEST_ARMOR).add(ModItems.MOLDELONIAN_CHESTPLATE.get());
+        this.tag(ItemTags.LEG_ARMOR).add(ModItems.MOLDELONIAN_LEGGINGS.get());
+        this.tag(ItemTags.FOOT_ARMOR).add(ModItems.MOLDELONIAN_BOOTS.get());
 
         this.tag(ItemTags.HEAD_ARMOR).add(ModItems.SYNTHORIUM_HELMET.get());
         this.tag(ItemTags.CHEST_ARMOR).add(ModItems.SYNTHORIUM_CHESTPLATE.get());
         this.tag(ItemTags.LEG_ARMOR).add(ModItems.SYNTHORIUM_LEGGINGS.get());
         this.tag(ItemTags.FOOT_ARMOR).add(ModItems.SYNTHORIUM_BOOTS.get());
 
-        // Allows Synthorium Armor to receive Armor Trims at the Smithing Table.
         this.tag(ItemTags.TRIMMABLE_ARMOR)
                 .add(ModItems.SYNTHORIUM_HELMET.get())
                 .add(ModItems.SYNTHORIUM_CHESTPLATE.get())
                 .add(ModItems.SYNTHORIUM_LEGGINGS.get())
                 .add(ModItems.SYNTHORIUM_BOOTS.get());
 
+        this.tag(ItemTags.TRIMMABLE_ARMOR)
+                .add(ModItems.MOLDELONIAN_HELMET.get())
+                .add(ModItems.MOLDELONIAN_CHESTPLATE.get())
+                .add(ModItems.MOLDELONIAN_LEGGINGS.get())
+                .add(ModItems.MOLDELONIAN_BOOTS.get());
+
+        this.tag(ItemTags.create(Identifier.fromNamespaceAndPath("puremashtweaks", "moldelonian_repair_items")))
+                .add(ModItems.MOLDELONIAN_INGOT.get());
+
         this.tag(TagKey.create(Registries.ITEM, Identifier.withDefaultNamespace("music_discs"))).add(ModItems.MUSIC_DISC_BEYOND_THE_FINAL_STAGE.get());
+        this.tag(TagKey.create(Registries.ITEM, Identifier.withDefaultNamespace("music_discs"))).add(ModItems.MUSIC_DISC_NEW_HORIZONS.get());
 
         // =========================================================================
-        // Singularities Tags (NATIVE AND DYNAMIC)
+        // SINGULARITIES TAGS (SAFE OPTIONAL REFERENCES)
         // =========================================================================
-
-        // Unified Tag: c:puremash/singularity
-        net.minecraft.tags.TagKey<net.minecraft.world.item.Item> puremashSingularityTag = net.minecraft.tags.TagKey.create(
-                net.minecraft.core.registries.Registries.ITEM,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "puremash/singularity")
+        TagKey<Item> puremashSingularityTag = TagKey.create(
+                Registries.ITEM,
+                Identifier.fromNamespaceAndPath("c", "puremash/singularity")
         );
 
-        // Default Unified Tag c:singularities.
-        net.minecraft.tags.TagKey<net.minecraft.world.item.Item> standardSingularitiesTag = net.minecraft.tags.TagKey.create(
-                net.minecraft.core.registries.Registries.ITEM,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "singularities")
+        TagKey<Item> standardSingularitiesTag = TagKey.create(
+                Registries.ITEM,
+                Identifier.fromNamespaceAndPath("c", "singularities")
         );
 
         var puremashGroup = this.tag(puremashSingularityTag);
         var standardGroup = this.tag(standardSingularitiesTag);
 
-        // Scans and adds all registered singularities (both static and dynamic via JSON).
-        for (var itemHolder : dev.davidklgames.puremashtweaks.registry.ModSingularities.REGISTERED_SINGULARITIES) {
-            if (itemHolder == dev.davidklgames.puremashtweaks.registry.ModSingularities.COSMIC_SINGULARITY) {
+        for (var itemHolder : ModSingularities.REGISTERED_SINGULARITIES) {
+            if (itemHolder == null || itemHolder == ModSingularities.COSMIC_SINGULARITY) {
                 continue;
             }
 
-            puremashGroup.add(itemHolder.get());
-            standardGroup.add(itemHolder.get());
+            Item item = itemHolder.get();
+            puremashGroup.addOptional(item);
+            standardGroup.addOptional(item);
 
-            // --- Dynamic generation of individual tags for the Cosmic Singularity recipe ---
             String pathName = itemHolder.getId().getPath();
-            // Removes the "_singularity" suffix to maintain the standard (e.g., "coal_singularity" -> "coal")
             String cleanName = pathName.replace("_singularity", "");
 
-            net.minecraft.tags.TagKey<Item> individualTag = net.minecraft.tags.TagKey.create(
+            TagKey<Item> individualTag = TagKey.create(
                     Registries.ITEM,
                     Identifier.fromNamespaceAndPath("c", "singularities/" + cleanName)
             );
-            this.tag(individualTag).add(itemHolder.get());
+            this.tag(individualTag).addOptional(item);
         }
 
-        // --- EMPTY COMPATIBLE TAGS FOR CONDITIONAL SINGULARITIES TO PREVENT RECIPE LOADING FAILURES ---
+        // Generate empty tag files for optional modded singularities to prevent JSON deserialization failures
         String[] optionalSingularities = new String[] {
                 "inferium", "prudentium", "tertium", "imperium", "supremium", "insanium",
                 "deorum", "quantum_alloy", "certus_quartz",
                 "netherite_iron", "netherite_gold", "netherite_emerald", "netherite_diamond"
         };
         for (String name : optionalSingularities) {
-            net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.TagKey.create(
+            TagKey<Item> tagKey = TagKey.create(
                     Registries.ITEM,
                     Identifier.fromNamespaceAndPath("c", "singularities/" + name)
             );
-            this.tag(tagKey); // Declare the tag so that the JSON file is physically generated, even if it is empty!
+            this.tag(tagKey);
         }
 
         // =========================================================================
-        // Unified global tags in the new "c:" standard of version 26.1.2
+        // UNIFIED GLOBAL TAGS (c:)
         // =========================================================================
-
-        // 1. Ingots (c:ingots e c:ingots/metal_name)
         this.tag(commonTag("ingots"))
                 .add(ModItems.SYNTHORIUM_INGOT.get())
                 .add(ModItems.MOLDELONIAN_INGOT.get());
@@ -124,7 +204,6 @@ public class ModItemTagProvider extends IntrinsicHolderTagsProvider<Item> {
         this.tag(commonTag("ingots/synthorium")).add(ModItems.SYNTHORIUM_INGOT.get());
         this.tag(commonTag("ingots/moldelonian")).add(ModItems.MOLDELONIAN_INGOT.get());
 
-        // 2. Nuggets (c:nuggets e c:nuggets/metal_name)
         this.tag(commonTag("nuggets"))
                 .add(ModItems.SYNTHORIUM_NUGGET.get())
                 .add(ModItems.MOLDELONIAN_NUGGET.get());
@@ -132,23 +211,19 @@ public class ModItemTagProvider extends IntrinsicHolderTagsProvider<Item> {
         this.tag(commonTag("nuggets/synthorium")).add(ModItems.SYNTHORIUM_NUGGET.get());
         this.tag(commonTag("nuggets/moldelonian")).add(ModItems.MOLDELONIAN_NUGGET.get());
 
-        // 3. Dusts (c:dusts e c:dusts/metal_name)
-        this.tag(commonTag("dusts")).add(ModItems.SYNTHORIUM_DUST.get());
+        this.tag(commonTag("dusts")).add(ModItems.SYNTHORIUM_DUST.get(), ModItems.MOLDELONIAN_DUST.get());
         this.tag(commonTag("dusts/synthorium")).add(ModItems.SYNTHORIUM_DUST.get());
+        this.tag(commonTag("dusts/moldelonian")).add(ModItems.MOLDELONIAN_DUST.get());
 
-        // 4. Scraps (c:scraps e c:scraps/metal_name)
         this.tag(commonTag("scraps")).add(ModItems.SYNTHORIUM_SCRAP.get());
         this.tag(commonTag("scraps/synthorium")).add(ModItems.SYNTHORIUM_SCRAP.get());
 
-        // 5. Rods (c:rods e c:rods/metal_name)
         this.tag(commonTag("rods")).add(ModItems.SYNTHORIUM_ROD.get());
         this.tag(commonTag("rods/synthorium")).add(ModItems.SYNTHORIUM_ROD.get());
 
-        // 6. Ores (c:ores e c:ores/metal_name)
         this.tag(commonTag("ores")).add(ModBlocks.SYNTHORIUM_DEBRIS.get().asItem());
         this.tag(commonTag("ores/synthorium")).add(ModBlocks.SYNTHORIUM_DEBRIS.get().asItem());
 
-        // 7. Storage Blocks (c:storage_blocks)
         this.tag(commonTag("storage_blocks"))
                 .add(ModBlocks.SYNTHORIUM_BLOCK.get().asItem())
                 .add(ModBlocks.MOLDELONIAN_BLOCK.get().asItem())
@@ -158,42 +233,45 @@ public class ModItemTagProvider extends IntrinsicHolderTagsProvider<Item> {
         this.tag(commonTag("storage_blocks/moldelonian")).add(ModBlocks.MOLDELONIAN_BLOCK.get().asItem());
         this.tag(commonTag("storage_blocks/puremash_core")).add(ModBlocks.PUREMASH_CORE_BLOCK.get().asItem());
 
-        // Creating the custom tag and adding only the allowed items in Datagen!
+        this.tag(TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "tools")))
+                .add(ModItems.CONFIGURATION_WRENCH.get());
+
+        this.tag(TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "tools/wrench")))
+                .add(ModItems.CONFIGURATION_WRENCH.get());
+
+        this.tag(TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "wrenches")))
+                .add(ModItems.CONFIGURATION_WRENCH.get());
+
         var overloadEnchantableTag = TagKey.create(
                 Registries.ITEM,
                 Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "enchantable/overload")
         );
 
         this.tag(overloadEnchantableTag)
-                // 1. UNIVERSAL ACCEPTANCE: Includes all mining tools and weapons (Vanilla and Mods).
-                .addTag(net.minecraft.tags.ItemTags.MINING_ENCHANTABLE)
-                .addTag(net.minecraft.tags.ItemTags.WEAPON_ENCHANTABLE)
-
-                // 2. EXCLUSIVE: Only PureMash Tweaks armor can receive this (blocks vanilla and other mods).
+                .addTag(ItemTags.MINING_ENCHANTABLE)
+                .addTag(ItemTags.WEAPON_ENCHANTABLE)
                 .add(ModItems.SYNTHORIUM_HELMET.get())
                 .add(ModItems.SYNTHORIUM_CHESTPLATE.get())
                 .add(ModItems.SYNTHORIUM_LEGGINGS.get())
                 .add(ModItems.SYNTHORIUM_BOOTS.get())
-
-                // 3. EXCLUSIVE: Only the PureMash Core Block can receive the enchantment.
+                .add(ModItems.MOLDELONIAN_HELMET.get())
+                .add(ModItems.MOLDELONIAN_CHESTPLATE.get())
+                .add(ModItems.MOLDELONIAN_LEGGINGS.get())
+                .add(ModItems.MOLDELONIAN_BOOTS.get())
                 .add(ModItems.PUREMASH_CORE_BLOCK_ITEM.get());
 
-        // --- EXCLUSIVE: Only the PureMash Core Block can receive the enchantment ---
         String[] optionalIngots = new String[] {
-                "steel", "bronze", "brass", "electrum", "invar", "constantan", "iridium", "titanium", "tungsten", "nickel", "platinum", "zync", "silver", "thorium", "lead",
-                "cobalt", "ardite", "manyullyn", "refined_glowstone", "refined_obsidian", "rose_gold", "aluminum", "tin", "osmium", "electrum", "enderium", "invar", "uranium",
+                "steel", "bronze", "brass", "electrum", "invar", "constantan", "iridium", "titanium", "tungsten", "nickel", "platinum", "zinc", "silver", "thorium", "lead",
+                "cobalt", "ardite", "manyullyn", "refined_glowstone", "refined_obsidian", "rose_gold", "aluminum", "tin", "osmium", "uranium",
                 "enderium", "lumium", "signalum", "deorum", "quantum_alloy", "prosperity", "inferium", "prudentium", "tertium", "imperium", "supremium"
         };
         for (String metal : optionalIngots) {
             this.tag(commonTag("ingots/" + metal));
         }
 
-        // =========================================================================
-        // COSMIC SINGULARITY TAG
-        // =========================================================================
-        net.minecraft.tags.TagKey<net.minecraft.world.item.Item> supremeSingularityTag = net.minecraft.tags.TagKey.create(
-                net.minecraft.core.registries.Registries.ITEM,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "puremash/supreme_singularity")
+        TagKey<Item> supremeSingularityTag = TagKey.create(
+                Registries.ITEM,
+                Identifier.fromNamespaceAndPath("c", "puremash/supreme_singularity")
         );
 
         this.tag(supremeSingularityTag).add(ModSingularities.COSMIC_SINGULARITY.get());

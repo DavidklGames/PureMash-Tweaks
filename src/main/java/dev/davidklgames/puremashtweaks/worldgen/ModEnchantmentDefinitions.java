@@ -24,8 +24,12 @@ public class ModEnchantmentDefinitions {
                 Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "enchantable/overload")
         );
 
-        // --- OVERLOAD ENCHHANTMENT REGISTRY ---
+        net.minecraft.tags.TagKey<net.minecraft.world.item.Item> overdriveEnchantableTag = net.minecraft.tags.TagKey.create(
+                Registries.ITEM,
+                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "enchantable/overdrive")
+        );
 
+        // --- OVERLOAD ENCHANTMENT REGISTRY ---
         context.register(ModEnchantments.OVERLOAD, Enchantment.enchantment(
                         Enchantment.definition(
                                 items.getOrThrow(overloadEnchantableTag),
@@ -35,34 +39,32 @@ public class ModEnchantmentDefinitions {
                                 8,
                                 EquipmentSlotGroup.ANY
                         ))
-                .withSpecialEffect(EnchantmentEffectComponents.ATTRIBUTES, List.of(
-                        new EnchantmentAttributeEffect(
-                                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overload_reach_block"),
-                                Attributes.BLOCK_INTERACTION_RANGE,
-                                LevelBasedValue.perLevel(1.0f, 1.0f),
-                                AttributeModifier.Operation.ADD_VALUE
-                        ),
-                        new EnchantmentAttributeEffect(
-                                Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overload_reach_entity"),
-                                Attributes.ENTITY_INTERACTION_RANGE,
-                                LevelBasedValue.perLevel(1.0f, 1.0f),
-                                AttributeModifier.Operation.ADD_VALUE
-                        )
-                ))
                 .build(Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overload")));
 
         // --- OVERCLOCK ENCHANTMENT REGISTRY ---
 
         context.register(ModEnchantments.OVERCLOCK, Enchantment.enchantment(
                         Enchantment.definition(
-
                                 items.getOrThrow(net.minecraft.tags.ItemTags.VANISHING_ENCHANTABLE),
                                 5, 2, // Weight 5, Max Level 2
                                 Enchantment.dynamicCost(15, 15),
                                 Enchantment.dynamicCost(65, 15),
                                 8,
-                                net.minecraft.world.entity.EquipmentSlotGroup.ANY
+                                EquipmentSlotGroup.ANY
                         ))
                 .build(Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overclock")));
+
+        // --- OVERDRIVE ENCHANTMENT REGISTRY ---
+
+        context.register(ModEnchantments.OVERDRIVE, Enchantment.enchantment(
+                        Enchantment.definition(
+                                items.getOrThrow(overdriveEnchantableTag),
+                                5, 4, // Weight 5, Max Level 4
+                                Enchantment.dynamicCost(20, 15),
+                                Enchantment.dynamicCost(70, 15),
+                                8,
+                                EquipmentSlotGroup.ANY
+                        ))
+                .build(Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overdrive")));
     }
 }

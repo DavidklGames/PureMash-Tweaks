@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:iron_singularity"
+    {
+      "id": "puremashtweaks:iron_singularity",
+      "required": false
+    }
   ]
 }

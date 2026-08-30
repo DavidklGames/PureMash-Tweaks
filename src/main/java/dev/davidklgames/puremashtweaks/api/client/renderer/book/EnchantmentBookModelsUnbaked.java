@@ -18,14 +18,16 @@ import org.jspecify.annotations.NonNull;
 public record EnchantmentBookModelsUnbaked(
         Identifier baseModelId,
         Identifier overloadModelId,
-        Identifier overclockModelId
+        Identifier overclockModelId,
+        Identifier overdriveModelId
 ) implements ItemModel.Unbaked {
 
     public static final MapCodec<EnchantmentBookModelsUnbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     Identifier.CODEC.fieldOf("base").forGetter(EnchantmentBookModelsUnbaked::baseModelId),
                     Identifier.CODEC.fieldOf("overload").forGetter(EnchantmentBookModelsUnbaked::overloadModelId),
-                    Identifier.CODEC.fieldOf("overclock").forGetter(EnchantmentBookModelsUnbaked::overclockModelId)
+                    Identifier.CODEC.fieldOf("overclock").forGetter(EnchantmentBookModelsUnbaked::overclockModelId),
+                    Identifier.CODEC.fieldOf("overdrive").forGetter(EnchantmentBookModelsUnbaked::overdriveModelId)
             ).apply(instance, EnchantmentBookModelsUnbaked::new)
     );
 
@@ -39,6 +41,7 @@ public record EnchantmentBookModelsUnbaked(
         resolver.markDependency(this.baseModelId);
         resolver.markDependency(this.overloadModelId);
         resolver.markDependency(this.overclockModelId);
+        resolver.markDependency(this.overdriveModelId);
     }
 
     @Override
@@ -78,6 +81,17 @@ public record EnchantmentBookModelsUnbaked(
                 transformation
         );
 
-        return new EnchantmentBookModels(bakedBase, bakedOverload, bakedOverclock);
+        ResolvedModel overdriveResolved = baker.getModel(this.overdriveModelId);
+        TextureSlots overdriveSlots = overdriveResolved.getTopTextureSlots();
+        QuadCollection overdriveQuads = overdriveResolved.bakeTopGeometry(overdriveSlots, baker, BlockModelRotation.IDENTITY);
+        ModelRenderProperties overdriveProperties = ModelRenderProperties.fromResolvedModel(baker, overdriveResolved, overdriveSlots);
+        ItemModel bakedOverdrive = new CuboidItemModelWrapper(
+                java.util.List.of(),
+                overdriveQuads,
+                overdriveProperties,
+                transformation
+        );
+
+        return new EnchantmentBookModels(bakedBase, bakedOverload, bakedOverclock, bakedOverdrive);
     }
 }

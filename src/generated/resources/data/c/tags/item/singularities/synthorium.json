@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:synthorium_singularity"
+    {
+      "id": "puremashtweaks:synthorium_singularity",
+      "required": false
+    }
   ]
 }

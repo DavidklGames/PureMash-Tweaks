@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:gunpowder_singularity"
+    {
+      "id": "puremashtweaks:gunpowder_singularity",
+      "required": false
+    }
   ]
 }

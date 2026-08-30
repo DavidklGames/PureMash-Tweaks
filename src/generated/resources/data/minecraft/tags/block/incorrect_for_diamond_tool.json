@@ -1,5 +1,7 @@
 {
   "values": [
-    "puremashtweaks:moldelonian_block"
+    "puremashtweaks:moldelonian_block",
+    "puremashtweaks:puremash_core_block",
+    "puremashtweaks:fake_bedrock"
   ]
 }

@@ -6,7 +6,7 @@
 		"1": "puremashtweaks:block/fluid_tank/fluid_tank_side",
 		"2": "puremashtweaks:block/fluid_tank/fluid_tank_top",
 		"3": "puremashtweaks:block/fluid_tank/fluid_tank_bottom",
-		"particle": "puremashtweaks:block/fluid_tank/fluid_tank_glass"
+		"particle": "puremashtweaks:block/fluid_tank/fluid_tank_side"
 	},
 	"elements": [
 		{

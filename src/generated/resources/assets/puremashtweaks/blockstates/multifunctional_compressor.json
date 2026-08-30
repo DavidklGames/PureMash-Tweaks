@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,lit=false": {
       "model": "puremashtweaks:block/multifunctional_compressor",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,lit=true": {
+      "model": "puremashtweaks:block/multifunctional_compressor_active",
+      "y": 90
+    },
+    "facing=north,lit=false": {
       "model": "puremashtweaks:block/multifunctional_compressor"
     },
-    "facing=south": {
+    "facing=north,lit=true": {
+      "model": "puremashtweaks:block/multifunctional_compressor_active"
+    },
+    "facing=south,lit=false": {
       "model": "puremashtweaks:block/multifunctional_compressor",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,lit=true": {
+      "model": "puremashtweaks:block/multifunctional_compressor_active",
+      "y": 180
+    },
+    "facing=west,lit=false": {
       "model": "puremashtweaks:block/multifunctional_compressor",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "puremashtweaks:block/multifunctional_compressor_active",
       "y": 270
     }
   }

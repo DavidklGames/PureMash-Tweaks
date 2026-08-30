@@ -21,7 +21,7 @@ public record OverloadEnchantmentProvider(Holder<Enchantment> enchantment) imple
 
     @Override
     public void enchant(@NonNull ItemStack item, ItemEnchantments.@NonNull Mutable itemEnchantments, RandomSource random, @NonNull DifficultyInstance difficulty) {
-        boolean isSynthoriumItem = isSynthoriumItem(item);
+        boolean isSynthoriumItem = isOverloadItem(item);
         int overloadLevelToApply = 0;
         int roll = random.nextInt(100);
 
@@ -48,7 +48,7 @@ public record OverloadEnchantmentProvider(Holder<Enchantment> enchantment) imple
         }
     }
 
-    private boolean isSynthoriumItem(ItemStack item) {
+    private boolean isOverloadItem(ItemStack item) {
         if (item.isEmpty()) return false;
         return item.is(ModItems.SYNTHORIUM_HELMET.get()) ||
                 item.is(ModItems.SYNTHORIUM_CHESTPLATE.get()) ||
@@ -59,7 +59,17 @@ public record OverloadEnchantmentProvider(Holder<Enchantment> enchantment) imple
                 item.is(ModItems.SYNTHORIUM_SHOVEL.get()) ||
                 item.is(ModItems.SYNTHORIUM_SWORD.get()) ||
                 item.is(ModItems.SYNTHORIUM_HOE.get()) ||
-                item.is(ModItems.SYNTHORIUM_PAXEL.get());
+                item.is(ModItems.SYNTHORIUM_PAXEL.get()) ||
+                item.is(ModItems.MOLDELONIAN_HELMET.get()) ||
+                item.is(ModItems.MOLDELONIAN_CHESTPLATE.get()) ||
+                item.is(ModItems.MOLDELONIAN_LEGGINGS.get()) ||
+                item.is(ModItems.MOLDELONIAN_BOOTS.get()) ||
+                item.is(ModItems.MOLDELONIAN_PICKAXE.get()) ||
+                item.is(ModItems.MOLDELONIAN_AXE.get()) ||
+                item.is(ModItems.MOLDELONIAN_SHOVEL.get()) ||
+                item.is(ModItems.MOLDELONIAN_SWORD.get()) ||
+                item.is(ModItems.MOLDELONIAN_HOE.get()) ||
+                item.is(ModItems.MOLDELONIAN_PAXEL.get());
     }
 
     @Override

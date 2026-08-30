@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("NullableProblems")
@@ -20,7 +21,6 @@ public class ShapelessSynthesisRecipe implements Recipe<CraftingInput> {
     private final String group;
     private final List<Ingredient> ingredients;
     private final ItemStackTemplate result;
-    private PlacementInfo placementInfo; // Lazy cache for correct synchronization with the client.
 
     public ShapelessSynthesisRecipe(String group, List<Ingredient> ingredients, ItemStackTemplate result) {
         this.group = group;
@@ -28,25 +28,49 @@ public class ShapelessSynthesisRecipe implements Recipe<CraftingInput> {
         this.result = result;
     }
 
-    public List<Ingredient> getIngredients() { return this.ingredients; }
-    public ItemStackTemplate getResult() { return this.result; }
+    public List<Ingredient> getIngredients() {
+        return this.ingredients;
+    }
+
+    public ItemStackTemplate getResult() {
+        return this.result;
+    }
+
+    /**
+     * Filters out ingredients that resolve to empty (e.g. uninstalled optional mod tags).
+     */
+    public List<Ingredient> getActiveIngredients() {
+        List<Ingredient> active = new ArrayList<>();
+        for (Ingredient ing : this.ingredients) {
+            try {
+                if (ing != null && !ing.isEmpty()) {
+                    active.add(ing);
+                }
+            } catch (Exception e) {
+                // Safe DataGen fallback when tags are not yet resolved
+                active.add(ing);
+            }
+        }
+        return active;
+    }
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
-        List<ItemStack> activeItems = new java.util.ArrayList<>();
+        List<ItemStack> activeItems = new ArrayList<>();
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
-            if (!stack.isEmpty()) activeItems.add(stack);
+            if (!stack.isEmpty()) {
+                activeItems.add(stack);
+            }
         }
 
-        // Filters out non-empty ingredients (ignores empty tags for ores from uninstalled mods).
-        List<Ingredient> nonEmptyIngredients = this.ingredients.stream()
-                .filter(ing -> !ing.isEmpty())
-                .toList();
+        List<Ingredient> activeIngredients = getActiveIngredients();
 
-        if (activeItems.size() != nonEmptyIngredients.size()) return false;
+        if (activeItems.size() != activeIngredients.size()) {
+            return false;
+        }
 
-        List<Ingredient> expected = new java.util.ArrayList<>(nonEmptyIngredients);
+        List<Ingredient> expected = new ArrayList<>(activeIngredients);
         for (ItemStack actual : activeItems) {
             boolean matched = false;
             for (int i = 0; i < expected.size(); i++) {
@@ -56,8 +80,11 @@ public class ShapelessSynthesisRecipe implements Recipe<CraftingInput> {
                     break;
                 }
             }
-            if (!matched) return false;
+            if (!matched) {
+                return false;
+            }
         }
+
         return expected.isEmpty();
     }
 
@@ -67,10 +94,14 @@ public class ShapelessSynthesisRecipe implements Recipe<CraftingInput> {
     }
 
     @Override
-    public boolean showNotification() { return true; }
+    public boolean showNotification() {
+        return true;
+    }
 
     @Override
-    public @NonNull String group() { return this.group; }
+    public @NonNull String group() {
+        return this.group;
+    }
 
     @Override
     public @NonNull RecipeSerializer<? extends Recipe<CraftingInput>> getSerializer() {
@@ -84,18 +115,13 @@ public class ShapelessSynthesisRecipe implements Recipe<CraftingInput> {
 
     @Override
     public @NonNull PlacementInfo placementInfo() {
-        if (this.placementInfo == null) {
-            // Filters and synchronizes only the ingredients that actually exist in the session.
-            List<Ingredient> nonEmptyIngredients = this.ingredients.stream()
-                    .filter(ing -> !ing.isEmpty())
-                    .toList();
-            this.placementInfo = PlacementInfo.create(nonEmptyIngredients);
-        }
-        return this.placementInfo;
+        return PlacementInfo.create(getActiveIngredients());
     }
 
     @Override
-    public @Nullable RecipeBookCategory recipeBookCategory() { return null; }
+    public @Nullable RecipeBookCategory recipeBookCategory() {
+        return null;
+    }
 
     public static final MapCodec<ShapelessSynthesisRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
@@ -106,9 +132,9 @@ public class ShapelessSynthesisRecipe implements Recipe<CraftingInput> {
     );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessSynthesisRecipe> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, r -> r.group,
-            Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.ingredients,
-            ItemStackTemplate.STREAM_CODEC, r -> r.result,
+            ByteBufCodecs.STRING_UTF8, ShapelessSynthesisRecipe::group,
+            Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), ShapelessSynthesisRecipe::getIngredients,
+            ItemStackTemplate.STREAM_CODEC, ShapelessSynthesisRecipe::getResult,
             ShapelessSynthesisRecipe::new
     );
 }

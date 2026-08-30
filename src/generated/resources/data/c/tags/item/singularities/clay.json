@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:clay_singularity"
+    {
+      "id": "puremashtweaks:clay_singularity",
+      "required": false
+    }
   ]
 }

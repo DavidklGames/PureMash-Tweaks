@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:insanium_singularity"
+    {
+      "id": "puremashtweaks:insanium_singularity",
+      "required": false
+    }
   ]
 }

@@ -7,8 +7,15 @@
     "puremashtweaks:synthesis_table",
     "puremashtweaks:multifunctional_compressor",
     "puremashtweaks:fake_bedrock",
+    "puremashtweaks:puremash_generator",
     "puremashtweaks:alchemical_synthesizer",
+    "puremashtweaks:chunk_loader",
     "puremashtweaks:fluid_tank",
-    "puremashtweaks:creative_fluid_tank"
+    "puremashtweaks:creative_fluid_tank",
+    "puremashtweaks:puremash_battery",
+    "puremashtweaks:creative_battery",
+    "puremashtweaks:suspicious_end_stone",
+    "puremashtweaks:synthorium_universal_cable",
+    "puremashtweaks:moldelonian_universal_cable"
   ]
 }

@@ -3,30 +3,6 @@
   "description": {
     "translate": "enchantment.puremashtweaks.overload"
   },
-  "effects": {
-    "minecraft:attributes": [
-      {
-        "amount": {
-          "type": "minecraft:linear",
-          "base": 1.0,
-          "per_level_above_first": 1.0
-        },
-        "attribute": "minecraft:block_interaction_range",
-        "id": "puremashtweaks:overload_reach_block",
-        "operation": "add_value"
-      },
-      {
-        "amount": {
-          "type": "minecraft:linear",
-          "base": 1.0,
-          "per_level_above_first": 1.0
-        },
-        "attribute": "minecraft:entity_interaction_range",
-        "id": "puremashtweaks:overload_reach_entity",
-        "operation": "add_value"
-      }
-    ]
-  },
   "max_cost": {
     "base": 65,
     "per_level_above_first": 15

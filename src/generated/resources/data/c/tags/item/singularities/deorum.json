@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:deorum_singularity"
+    {
+      "id": "puremashtweaks:deorum_singularity",
+      "required": false
+    }
   ]
 }

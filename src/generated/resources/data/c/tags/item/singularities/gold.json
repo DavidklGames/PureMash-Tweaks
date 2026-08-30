@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:gold_singularity"
+    {
+      "id": "puremashtweaks:gold_singularity",
+      "required": false
+    }
   ]
 }

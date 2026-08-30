@@ -19,11 +19,13 @@ public class EnchantmentBookModels implements ItemModel {
     private final ItemModel baseModel;
     private final ItemModel overloadModel;
     private final ItemModel overclockModel;
+    private final ItemModel overdriveModel;
 
-    public EnchantmentBookModels(ItemModel baseModel, ItemModel overloadModel, ItemModel overclockModel) {
+    public EnchantmentBookModels(ItemModel baseModel, ItemModel overloadModel, ItemModel overclockModel, ItemModel overdriveModel) {
         this.baseModel = baseModel;
         this.overloadModel = overloadModel;
         this.overclockModel = overclockModel;
+        this.overdriveModel = overdriveModel;
     }
 
     @Override
@@ -38,6 +40,7 @@ public class EnchantmentBookModels implements ItemModel {
     ) {
         boolean hasOverload = false;
         boolean hasOverclock = false;
+        boolean hasOverdrive = false;
 
         if (level != null) {
             var reg = level.registryAccess().lookup(Registries.ENCHANTMENT);
@@ -69,6 +72,20 @@ public class EnchantmentBookModels implements ItemModel {
                         hasOverclock = true;
                     }
                 }
+
+                var overdriveOpt = reg.get().get(dev.davidklgames.puremashtweaks.registry.ModEnchantments.OVERDRIVE);
+                if (overdriveOpt.isPresent()) {
+                    var overdrive = overdriveOpt.get();
+                    int activeLvl = EnchantmentHelper.getItemEnchantmentLevel(overdrive, item);
+                    int storedLvl = 0;
+                    ItemEnchantments stored = item.get(DataComponents.STORED_ENCHANTMENTS);
+                    if (stored != null) {
+                        storedLvl = stored.getLevel(overdrive);
+                    }
+                    if (activeLvl > 0 || storedLvl > 0) {
+                        hasOverdrive = true;
+                    }
+                }
             }
         }
 
@@ -76,6 +93,8 @@ public class EnchantmentBookModels implements ItemModel {
             this.overloadModel.update(output, item, resolver, displayContext, level, owner, seed);
         } else if (hasOverclock) {
             this.overclockModel.update(output, item, resolver, displayContext, level, owner, seed);
+        } else if (hasOverdrive) {
+            this.overdriveModel.update(output, item, resolver, displayContext, level, owner, seed);
         } else {
             this.baseModel.update(output, item, resolver, displayContext, level, owner, seed);
         }

@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:ender_pearl_singularity"
+    {
+      "id": "puremashtweaks:ender_pearl_singularity",
+      "required": false
+    }
   ]
 }

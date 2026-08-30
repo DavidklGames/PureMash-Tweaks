@@ -1,5 +1,6 @@
 package dev.davidklgames.puremashtweaks.block.entity;
 
+import dev.davidklgames.puremashtweaks.config.PureMashTweaksConfig;
 import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -11,6 +12,14 @@ import org.jspecify.annotations.NonNull;
 public class FluidTankBlockEntity extends BlockEntity {
 
     public final FluidStacksResourceHandler fluidTank = new FluidStacksResourceHandler(1, 32000) {
+        @Override
+        public long getCapacityAsLong(int slot, net.neoforged.neoforge.transfer.fluid.@NonNull FluidResource resource) {
+            if (PureMashTweaksConfig.COMMON_SPEC != null && PureMashTweaksConfig.COMMON_SPEC.isLoaded()) {
+                return PureMashTweaksConfig.COMMON.fluidTankCapacity.get();
+            }
+            return 32000L;
+        }
+
         @Override
         protected void onContentsChanged(int index, net.neoforged.neoforge.fluids.@NonNull FluidStack previousContents) {
             setChanged();

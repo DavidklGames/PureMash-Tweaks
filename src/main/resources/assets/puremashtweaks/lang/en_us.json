@@ -1,6 +1,6 @@
 {
   "itemGroup.puremashtweaks.puremash_tab": "PureMash Tweaks",
-  "itemGroup.puremashtweaks.puremash_singularity_tab": "PureMash: Singularity",
+  "itemGroup.puremashtweaks.puremash_singularity_tab": "PureMash: Singularities",
   "subtitles.puremashtweaks.puremash_goal": "PureMash Goal Achieved!",
 
   "item.puremashtweaks.puremash_core": "PureMash Core",
@@ -28,6 +28,7 @@
   "block.puremashtweaks.moldelonian_block": "Moldelonian Block",
   "item.puremashtweaks.moldelonian_core": "Moldelonian Core",
   "item.puremashtweaks.moldelonian_nugget": "Moldelonian Nugget",
+  "item.puremashtweaks.moldelonian_dust": "Moldelonian Dust",
 
   "block.puremashtweaks.synthesis_table": "Synthesis Table",
   "container.puremashtweaks.synthesis_table": "Synthesis Table",
@@ -36,6 +37,7 @@
   "tooltip.puremash.multifunctional_compressor.empty": "Empty",
   "item.puremashtweaks.memory_card": "Memory Card",
   "item.puremashtweaks.music_disc_beyond_the_final_stage": "Music Disc",
+  "item.puremashtweaks.music_disc_new_horizons": "Music Disc",
 
   "tooltip.puremashtweaks.memory_card.empty": "Oops! The Memory Card is empty.",
   "tooltip.puremashtweaks.memory_card.saved": "The recipe was saved successfully!",
@@ -104,16 +106,11 @@
   "item.puremashtweaks.cosmic_singularity": "Cosmic Singularity",
 
   "tooltip.puremashtweaks.synthorium_debris.desc": "Debris from an powerful ancient technology.",
-  "tooltip.puremashtweaks.moldelonian.desc": "The ultimate metal alloy. Fused from all ores into one single material.",
   "tooltip.puremashtweaks.moldelonian_core.desc": "A heavy piece, works as a battery. The centerpiece of the PureMash Core.",
   "tooltip.puremashtweaks.puremash_core.desc": "A highly powerful microchip capable of fabricating creative-tier technologies.",
-  "tooltip.puremashtweaks.synthesis_table.desc": "An intelligent automated workbench that automates crafting up to a 9x9 grid.",
-  "tooltip.puremashtweaks.multifunctional_compressor.desc": "A multi-mode machine: Compresses, condenses singularities, and pulverizes materials.",
+  "tooltip.puremashtweaks.synthesis_table.desc": "A smart workbench that automates crafting in a 9x9 grid.",
+  "tooltip.puremashtweaks.multifunctional_compressor.desc": "A multi-mode machine: compresses, condenses singularities, and pulverizes materials.",
   "tooltip.puremashtweaks.synthorium_tools.overload_bedrock": "Charged with Overload! This tool has gained enough strength to shatter Bedrock.",
-
-  "tooltip.puremashtweaks.speed_upgrade_1.desc": "Machine Speed Upgrade (Tier 1)",
-  "tooltip.puremashtweaks.speed_upgrade_2.desc": "Machine Speed & Duplication Upgrade (Tier 2)",
-  "tooltip.puremashtweaks.speed_upgrade_3.desc": "Max Machine Speed & Max Duplication Upgrade (Tier 3)",
 
   "block.puremashtweaks.alchemical_synthesizer": "Alchemical Synthesizer",
   "container.puremashtweaks.alchemical_synthesizer": "Alchemical Synthesizer",
@@ -124,11 +121,9 @@
   "key.puremashtweaks.toggle_flight": "Toggle Overload Flight",
   "key.category.puremashtweaks.main": "PureMash Tweaks",
   "crop.puremashtweaks.synthorium": "Synthorium",
+  "crop.puremashtweaks.moldelonian": "Moldelonian",
 
   "chat.puremashtweaks.prefix": "[PureMash Tweaks]: ",
-  "chat.puremashtweaks.no_synthorium_armor": "You are not wearing a Synthorium Armor!",
-  "chat.puremashtweaks.overload_full_set_required": "A full Synthorium set enchanted with Overload is required to fly!",
-
   "advancements.puremashtweaks.root.title": "PureMash Tweaks",
   "advancements.puremashtweaks.root.description": "The beginning of a PureMash journey.",
 
@@ -148,7 +143,7 @@
   "advancements.puremashtweaks.get_armor.description": "Have all 4 pieces of Synthorium armor.",
 
   "advancements.puremashtweaks.get_moldelonian_ingot.title": "All in One!",
-  "advancements.puremashtweaks.get_moldelonian_ingot.description": "Unify all ores into one, thus obtaining the Moldelonian Ingot.",
+  "advancements.puremashtweaks.get_moldelonian_ingot.description": "Unify all ingots into one, thus obtaining the Moldelonian Ingot.",
 
   "advancements.puremashtweaks.get_moldelonian_core.title": "The Weight of the World",
   "advancements.puremashtweaks.get_moldelonian_core.description": "Forge an impossibly dense core by fusing every single mineral this universe has to offer.",
@@ -182,7 +177,7 @@
   "config.jade.plugin_puremashtweaks.multifunctional_compressor": "Multifunctional Compressor Info",
 
   "tooltip.puremashtweaks.music_disc_beyond_the_final_stage.desc": "A melody that marks the end of your journey, but does not yet mark the end of what you can do.",
-  "tooltip.puremashtweaks.synthorium_debris_in_jei.desc": "Found in the depths of the Overworld, between layers -64 and 0.",
+  "tooltip.puremashtweaks.music_disc_new_horizons_in_jei.desc": "An uplifting track for anyone venturing into the unknown. Mastering Moldelonian was just the warm-up—there are always new horizons waiting for you!",  "tooltip.puremashtweaks.synthorium_debris_in_jei.desc": "Synthorium Debris can be found between Overworld layers -64 and 0.",
 
   "advancements.puremashtweaks.get_alchemical_synthesizer.title": "Alchemical Master",
   "advancements.puremashtweaks.get_alchemical_synthesizer.description": "Craft an Alchemical Synthesizer to process materials hydro-thermally, mechanically, and thermodynamically.",
@@ -199,8 +194,6 @@
   "enchantment.puremashtweaks.overload": "Overload",
   "item.puremashtweaks.overload_book": "Overload Book",
   "item.puremashtweaks.overclock_book": "Overclock Book",
-  "enchantment.puremashtweaks.overload.desc": "Increase the reach of tools. There are secret abilities in some Synthorium items—such as the armor: levels I and II grant limited creative flight, but at level III, it is unlimited!",
-
   "item.puremashtweaks.fluid_tank": "Fluid Tank",
   "item.puremashtweaks.creative_fluid_tank": "Creative Fluid Tank",
   "tooltip.puremashtweaks.fluid_tank.fluid": "Fluid: ",
@@ -209,8 +202,172 @@
   "tooltip.puremashtweaks.fluid_tank.empty": "Empty",
 
   "chat.puremashtweaks.creative_fluid_tank.reset": "§c[Creative Fluid Tank]: The Fluid Tank was reset and cleaned!",
-  "chat.puremashtweaks.creative_fluid_tank.empty": "§7[Creative Fluid Tank]: Empty (Insert a liquid to have an infinite supply of it)",
-  "chat.puremashtweaks.creative_fluid_tank.info": "§d[Creative Fluid Tank]: §fInfinity of %s §8(Shift + Click to clean)",
+  "chat.puremashtweaks.creative_fluid_tank.empty": "§7[Creative Fluid Tank]: Empty (Insert a liquid to have an infinite supply of it).",
+  "chat.puremashtweaks.creative_fluid_tank.info": "§d[Creative Fluid Tank]: §fInfinity of %s! §8(Press Shift + Right-Click to clean the Fluid Tank).",
   "chat.puremashtweaks.fluid_tank.empty": "§7[Fluid Tank]: Empty (0 / 32,000 mB)",
-  "chat.puremashtweaks.fluid_tank.info": "§b[Fluid Tank]: §f%s / 32,000 mB of %s"
+  "chat.puremashtweaks.fluid_tank.info": "§b[Fluid Tank]: §f%s / 32,000 mB of %s",
+
+  "fluid.puremashtweaks.molten_synthorium": "Molten Synthorium",
+  "item.puremashtweaks.molten_synthorium_bucket": "Molten Synthorium Bucket",
+  "block.puremashtweaks.molten_synthorium": "Molten Synthorium",
+
+  "fluid.puremashtweaks.molten_moldelonian": "Molten Moldelonian",
+  "item.puremashtweaks.molten_moldelonian_bucket": "Molten Moldelonian Bucket",
+  "block.puremashtweaks.molten_moldelonian": "Molten Moldelonian",
+
+  "block.puremashtweaks.puremash_generator": "PureMash Energy Generator",
+  "container.puremashtweaks.puremash_generator": "PureMash Energy Generator",
+
+  "enchantment.puremashtweaks.overdrive": "Overdrive",
+  "block.puremashtweaks.synthorium_energy_cable": "Synthorium Energy Cable",
+  "block.puremashtweaks.moldelonian_energy_cable": "Moldelonian Energy Cable",
+  "item.puremashtweaks.configuration_wrench": "Configuration Wrench",
+
+  "block.puremashtweaks.puremash_battery": "PureMash Energy Battery",
+  "item.puremashtweaks.creative_battery": "Creative Energy Battery",
+
+  "item.puremashtweaks.moldelonian_helmet": "Moldelonian Helmet",
+  "item.puremashtweaks.moldelonian_chestplate": "Moldelonian Chestplate",
+  "item.puremashtweaks.moldelonian_leggings": "Moldelonian Leggings",
+  "item.puremashtweaks.moldelonian_boots": "Moldelonian Boots",
+  "item.puremashtweaks.moldelonian_sword": "Moldelonian Sword",
+  "item.puremashtweaks.moldelonian_pickaxe": "Moldelonian Pickaxe",
+  "item.puremashtweaks.moldelonian_shovel": "Moldelonian Shovel",
+  "item.puremashtweaks.moldelonian_axe": "Moldelonian Axe",
+  "item.puremashtweaks.moldelonian_hoe": "Moldelonian Hoe",
+  "item.puremashtweaks.moldelonian_paxel": "Moldelonian Paxel",
+  "block.puremashtweaks.suspicious_end_stone": "Suspicious End Stone",
+  "item.puremashtweaks.moldelonian_smithing_template": "Moldelonian Smithing Template",
+  "item.puremashtweaks.moldelonian_smithing_template.applies_to": "Synthorium Equipments",
+  "item.puremashtweaks.moldelonian_smithing_template.ingredients": "Moldelonian Ingot",
+  "item.puremashtweaks.moldelonian_smithing_template.base_slot_description": "Add Synthorium armor, weapon, or tool",
+  "item.puremashtweaks.moldelonian_smithing_template.additions_slot_description": "Add Moldelonian Ingot",
+
+  "fluid.puremashtweaks.steam": "Steam",
+  "item.puremashtweaks.capacity_upgrade_1": "Capacity Upgrade Tier 1",
+  "item.puremashtweaks.capacity_upgrade_2": "Capacity Upgrade Tier 2",
+  "item.puremashtweaks.duplication_upgrade_1": "Duplication Upgrade Tier 1",
+  "item.puremashtweaks.duplication_upgrade_2": "Duplication Upgrade Tier 2",
+  "item.puremashtweaks.stack_processing_upgrade": "Stack Processing Upgrade",
+
+  "tooltip.puremashtweaks.speed_upgrade_1.desc": "Increases operation speed (Tier 1)",
+  "tooltip.puremashtweaks.speed_upgrade_2.desc": "increases operation speed (Tier 2)",
+  "tooltip.puremashtweaks.speed_upgrade_3.desc": "Increases operation speed (Tier 3)",
+  "tooltip.puremashtweaks.capacity_upgrade_1.desc": "Increases internal energy capacity (Tier 1)",
+  "tooltip.puremashtweaks.capacity_upgrade_2.desc": "Increases internal energy capacity (Tier 2)",
+  "tooltip.puremashtweaks.duplication_upgrade_1.desc": "Grants a chance to duplicate output items (Tier 1)",
+  "tooltip.puremashtweaks.duplication_upgrade_2.desc": "Grants a high chance to duplicate output items (Tier 2)",
+  "tooltip.puremashtweaks.stack_processing_upgrade.desc": "Enables processing a full stack of 64 items simultaneously per cycle!",
+
+  "config.jade.plugin_puremashtweaks.puremash_core_block": "PureMash Core Block Info",
+  "config.jade.plugin_productivebees.advanced_beehive": "Advanced Beehive Info",
+  "config.jade.plugin_productivebees.expansion_box": "Expansion Box Info",
+
+  "block.puremashtweaks.synthorium_item_cable": "Synthorium Item Cable",
+  "block.puremashtweaks.moldelonian_item_cable": "Moldelonian Item Cable",
+  "block.puremashtweaks.synthorium_fluid_cable": "Synthorium Fluid Cable",
+  "block.puremashtweaks.moldelonian_fluid_cable": "Moldelonian Fluid Cable",
+  "chat.puremashtweaks.overload_full_set_required": "A full Synthorium or Moldelonian set enchanted with Overload is required to fly!",
+  "tooltip.puremashtweaks.synthesis_table.desc2": "This workbench processes 9x9 recipes dynamically and so fast; insert a Memory Card and use processing patterns.",
+  "tooltip.puremashtweaks.suspicious_end_stone.desc": "A block of ancient End Stone containing traces of something from long ago.",
+  "tooltip.puremashtweaks.puremash_generator_in_jei.desc": "The PureMash Generator operates with higher efficiency the colder it is kept. Cooling it with water prevents overheating and maximizes energy generation.",
+  "tooltip.puremashtweaks.suspicious_end_stone_in_jei.desc": "Suspicious End Stone can be found across the End island surfaces (End Highlands and around End Cities).",
+  "chat.puremashtweaks.overdrive_mode": "[Overdrive Mode]: ",
+  "chat.puremashtweaks.overdrive_enabled": "Enabled.",
+  "chat.puremashtweaks.overdrive_disabled": "Disabled.",
+
+  "tooltip.puremashtweaks.moldelonian.desc": "The fusion of several ingots into one single material. Moldelonian is an extraordinarily powerful metal alloy.",
+  "enchantment.puremashtweaks.overdrive.desc": "Grants area mining and item teleportation on tools, along with enhanced mobility and fall protection on armor.",
+  "enchantment.puremashtweaks.overload.desc": "Increases tool interaction reach and enables flight on Synthorium and Moldelonian armor.",
+  "chat.puremashtweaks.overdrive.bound_to": "§a[Overdrive]: Bound to container at [%s]",
+  "chat.puremashtweaks.overdrive.bound_removed": "§c[Overdrive]: Bound container link removed.",
+
+  "block.puremashtweaks.synthorium_universal_cable": "Synthorium Universal Cable",
+  "block.puremashtweaks.moldelonian_universal_cable": "Moldelonian Universal Cable",
+  "item.puremashtweaks.distribution_filter": "Distribution Filter",
+
+  "tooltip.puremashtweaks.distribution": "Distribution Mode: %s",
+  "tooltip.puremashtweaks.distribution.round_robin": "Round-Robin",
+  "tooltip.puremashtweaks.distribution.random": "Random",
+  "tooltip.puremashtweaks.distribution.dynamically": "Dynamically (Gradual)",
+
+  "tooltip.puremashtweaks.redstone_mode": "Redstone Control: %s",
+  "tooltip.puremashtweaks.redstone_mode.ignored": "Ignored",
+  "tooltip.puremashtweaks.redstone_mode.high": "Active on Signal",
+  "tooltip.puremashtweaks.redstone_mode.low": "Active without Signal",
+
+  "tooltip.puremashtweaks.filter_mode": "Filter Policy: %s",
+  "tooltip.puremashtweaks.filter_mode.whitelist": "Whitelist (Allow)",
+  "tooltip.puremashtweaks.filter_mode.blacklist": "Blacklist (Block)",
+
+  "tooltip.puremashtweaks.upgrade.configured": "Configured for: %s",
+  "tooltip.puremashtweaks.upgrade.configured.item": "Items",
+  "tooltip.puremashtweaks.upgrade.configured.fluid": "Fluids",
+  "tooltip.puremashtweaks.upgrade.configured.energy": "Energy",
+
+  "tooltip.puremashtweaks.filter.item_tag.title": "Filter Target",
+  "tooltip.puremashtweaks.filter.item_tag.desc": "Insert an Item ID (e.g. minecraft:iron_ingot), Tag (e.g. #c:ingots), or Mod ID (@modid).",
+  "tooltip.puremashtweaks.filter.nbt.title": "NBT Metadata",
+  "tooltip.puremashtweaks.filter.nbt.desc": "Enter exact or fuzzy NBT data tags (SNBT format).",
+  "tooltip.puremashtweaks.filter.destination_slot.title": "Distribution Slot",
+  "tooltip.puremashtweaks.filter.destination_slot.desc": "Insert a Distribution Filter bound to a block/container face to route items to a target.",
+  "tooltip.puremashtweaks.filter.input_durability.title": "Custom Durability Threshold",
+  "tooltip.puremashtweaks.filter.input_durability.desc": "Enter an exact durability number. The item will be extracted once its durability drops to or below this value.",
+  "tooltip.puremashtweaks.filter.input_target_slot.title": "Target Slots / Sequence",
+  "tooltip.puremashtweaks.filter.input_target_slot.desc": "Enter target container slot index(es) separated by commas (e.g. 6, 1, 4). Single slot starts from that slot onward.",
+  "tooltip.puremashtweaks.filter.input_mod_id.title": "Mod ID Filter",
+  "tooltip.puremashtweaks.filter.input_mod_id.desc": "Filter all items from a specific mod by entering its ID (e.g. puremashtweaks or @powah).",
+  "tooltip.puremashtweaks.filter.input_priority.title": "Destination Priority",
+  "tooltip.puremashtweaks.filter.input_priority.desc": "Higher priority destinations are filled first before lower ones. Requires a bound destination tool.",
+  "tooltip.puremashtweaks.filter.input_stock_limit.title": "Stock Limit (Cap)",
+  "tooltip.puremashtweaks.filter.input_stock_limit.desc": "Limits the maximum item amount allowed per target slot. Once filled, moves to the next slot.",
+  "config.jade.plugin_puremashtweaks.universal_cable_client": "Universal Cable Info",
+
+  "advancements.puremashtweaks.get_moldelonian_template.title": "Secrets of the Void",
+  "advancements.puremashtweaks.get_moldelonian_template.description": "Brush a Suspicious End Stone and uncover the Moldelonian Smithing Template.",
+  "advancements.puremashtweaks.get_moldelonian_armor.title": "Absolute Shielding",
+  "advancements.puremashtweaks.get_moldelonian_armor.description": "Upgrade and obtain all 4 pieces of the Moldelonian Armor.",
+  "advancements.puremashtweaks.get_moldelonian_paxel.title": "Transcendent Power",
+  "advancements.puremashtweaks.get_moldelonian_paxel.description": "Upgrade your Synthorium Paxel into the devastating Moldelonian Paxel using the Smithing Table.",
+  "advancements.puremashtweaks.overclocked.title": "Overclocked!",
+  "advancements.puremashtweaks.overclocked.description": "Enchant an item with the power of Overclock to break the limits of enchantments.",
+  "advancements.puremashtweaks.overdriven.title": "Overdriven!",
+  "advancements.puremashtweaks.overdriven.description": "Enchant an item with the power of Overdrive and unlock area mining, teleportation, and extreme mobility.",
+
+  "advancements.puremashtweaks.get_universal_cable.title": "Universal Logistics",
+  "advancements.puremashtweaks.get_universal_cable.description": "Obtain a Universal Cable to transport items, fluids, and energy simultaneously.",
+  "advancements.puremashtweaks.get_fluid_tank.title": "Hydraulic Storage",
+  "advancements.puremashtweaks.get_fluid_tank.description": "Synthesize a Fluid Tank to store large volumes of liquids.",
+  "advancements.puremashtweaks.get_creative_fluid_tank.title": "Infinite Fountain",
+  "advancements.puremashtweaks.get_creative_fluid_tank.description": "Synthesize the Creative Fluid Tank and achieve an unlimited supply of any liquid.",
+  "advancements.puremashtweaks.get_battery.title": "Energy Reserve",
+  "advancements.puremashtweaks.get_battery.description": "Forge a PureMash Battery to store high amounts of Forge Energy (FE).",
+  "advancements.puremashtweaks.get_creative_battery.title": "Unlimited Power",
+  "advancements.puremashtweaks.get_creative_battery.description": "Synthesize the Creative Battery and have infinite energy for any machine.",
+
+  "advancements.puremashtweaks.get_generator.title": "Thermodynamic Power",
+  "advancements.puremashtweaks.get_generator.description": "Craft a PureMash Generator to convert fuels and dense minerals into massive amounts of Forge Energy (FE).",
+
+  "material.puremashtweaks.synthorium": "Synthorium",
+  "material.puremashtweaks.moldelonian": "Moldelonian",
+  "entity.productivebees.moldelonian_bee": "MoldelBee",
+  "entity.productivebees.synthorium_bee": "SynthBee",
+  "item.puremashtweaks.synthorium_plate": "Synthorium Plate",
+  "item.puremashtweaks.moldelonian_plate": "Moldelonian Plate",
+
+  "item.puremashtweaks.synthorium_apple": "Synthorium Apple",
+  "item.puremashtweaks.moldelonian_apple": "Moldelonian Apple",
+  "config.jade.plugin_puremashtweaks.synthesis_table": "Synthesis Table",
+  "config.jade.plugin_puremashtweaks.alchemical_synthesizer": "Alchemical Synthesizer",
+  "config.jade.plugin_puremashtweaks.alchemical_synthesizer_client": "Alchemical Synthesizer (Client)",
+
+  "key.puremashtweaks.toggle_overdrive": "Toggle Overdrive Mode",
+  "tooltip.puremashtweaks.overload.toggle_info": "Press §8[§7X§8] to toggle Overload Flight.",
+  "tooltip.puremashtweaks.overdrive.toggle_info": "Press §8[§7C§8] to toggle Overdrive.",
+  "part.puremashtweaks.rod": "Synthorium Rod",
+  "item.puremashtweaks.overdrive_book": "Overdrive Book",
+  "item.puremashtweaks.guide": "PureMash Tweaks Guide",
+  "block.puremashtweaks.fluid_tank": "Fluid Tank",
+  "block.puremashtweaks.creative_fluid_tank": "Creative Fluid Tank",
+  "block.puremashtweaks.creative_battery": "Creative Energy Battery"
 }

@@ -1,12 +1,12 @@
 package dev.davidklgames.puremashtweaks.api.compat.energy;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.NonNull;
 
@@ -42,7 +42,7 @@ public class ItemEnergyHandler implements EnergyHandler {
         ItemStack stack = this.itemAccess.getResource().toStack();
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
-        tag.putLong("Energy", amount);
+        tag.putLong("Energy", Math.clamp(amount, 0L, this.capacity));
 
         ItemStack newStack = stack.copy();
         newStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));

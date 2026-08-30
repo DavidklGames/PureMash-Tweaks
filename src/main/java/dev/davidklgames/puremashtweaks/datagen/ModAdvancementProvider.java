@@ -257,6 +257,20 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     ))
                     .save(saver, "puremashtweaks:secret/overloaded");
 
+            // --- OBTAIN MOLDELONIAN SMITHING TEMPLATE (Child of getArmor) ---
+            AdvancementHolder getMoldelonianTemplate = Advancement.Builder.advancement()
+                    .parent(getArmor)
+                    .display(
+                            ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get(),
+                            Component.translatable("advancements.puremashtweaks.get_moldelonian_template.title"),
+                            Component.translatable("advancements.puremashtweaks.get_moldelonian_template.description"),
+                            null,
+                            AdvancementType.CHALLENGE, // Moldura de desafio com som épico
+                            true, true, false
+                    )
+                    .addCriterion("has_moldelonian_template", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()))
+                    .save(saver, "puremashtweaks:main/get_moldelonian_template");
+
             // Synthesize Synthorium Block
             AdvancementHolder energyForAll = Advancement.Builder.advancement()
                     .parent(getIngot)
@@ -284,6 +298,179 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     )
                     .addCriterion("has_moldelonian_block", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.MOLDELONIAN_BLOCK.get()))
                     .save(saver, "puremashtweaks:secret/one_unites_all");
+
+            // --- 1. MOLDELONIAN ARMOR (Child of getMoldelonianTemplate) ---
+            AdvancementHolder getMoldelonianArmor = Advancement.Builder.advancement()
+                    .parent(getMoldelonianTemplate)
+                    .display(
+                            ModItems.MOLDELONIAN_CHESTPLATE.get(),
+                            Component.translatable("advancements.puremashtweaks.get_moldelonian_armor.title"),
+                            Component.translatable("advancements.puremashtweaks.get_moldelonian_armor.description"),
+                            null,
+                            AdvancementType.CHALLENGE,
+                            true, true, false
+                    )
+                    .addCriterion("has_helmet", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.MOLDELONIAN_HELMET.get()))
+                    .addCriterion("has_chestplate", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.MOLDELONIAN_CHESTPLATE.get()))
+                    .addCriterion("has_leggings", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.MOLDELONIAN_LEGGINGS.get()))
+                    .addCriterion("has_boots", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.MOLDELONIAN_BOOTS.get()))
+                    .save(saver, "puremashtweaks:main/get_moldelonian_armor");
+
+            // --- 2. MOLDELONIAN PAXEL (Child of getMoldelonianTemplate) ---
+            AdvancementHolder getMoldelonianPaxel = Advancement.Builder.advancement()
+                    .parent(getMoldelonianTemplate)
+                    .display(
+                            ModItems.MOLDELONIAN_PAXEL.get(),
+                            Component.translatable("advancements.puremashtweaks.get_moldelonian_paxel.title"),
+                            Component.translatable("advancements.puremashtweaks.get_moldelonian_paxel.description"),
+                            null,
+                            AdvancementType.CHALLENGE,
+                            true, true, false
+                    )
+                    .addCriterion("has_moldelonian_paxel", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.MOLDELONIAN_PAXEL.get()))
+                    .save(saver, "puremashtweaks:main/get_moldelonian_paxel");
+
+            // --- ENCHANT WITH OVERCLOCK (Secret Goal) ---
+            AdvancementHolder overclocked = Advancement.Builder.advancement()
+                    .parent(root)
+                    .display(
+                            ModItems.OVERCLOCK_BOOK.get(),
+                            Component.translatable("advancements.puremashtweaks.overclocked.title"),
+                            Component.translatable("advancements.puremashtweaks.overclocked.description"),
+                            null,
+                            AdvancementType.GOAL,
+                            true, true, true
+                    )
+                    .addCriterion("has_overclocked", InventoryChangeTrigger.TriggerInstance.hasItems(
+                            ItemPredicate.Builder.item()
+                                    .withComponents(
+                                            DataComponentMatchers.Builder.components()
+                                                    .partial(
+                                                            DataComponentPredicates.ENCHANTMENTS,
+                                                            EnchantmentsPredicate.Enchantments.enchantments(List.of(
+                                                                    new EnchantmentPredicate(
+                                                                            registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(ModEnchantments.OVERCLOCK),
+                                                                            MinMaxBounds.Ints.atLeast(1)
+                                                                    )
+                                                            ))
+                                                    ).build()
+                                    ).build()
+                    ))
+                    .save(saver, "puremashtweaks:secret/overclocked");
+
+            // --- ENCHANT WITH OVERDRIVE (Secret Goal) ---
+            AdvancementHolder overdriven = Advancement.Builder.advancement()
+                    .parent(root)
+                    .display(
+                            ModItems.OVERDRIVE_BOOK.get(),
+                            Component.translatable("advancements.puremashtweaks.overdriven.title"),
+                            Component.translatable("advancements.puremashtweaks.overdriven.description"),
+                            null,
+                            AdvancementType.GOAL,
+                            true, true, true
+                    )
+                    .addCriterion("has_overdriven", InventoryChangeTrigger.TriggerInstance.hasItems(
+                            ItemPredicate.Builder.item()
+                                    .withComponents(
+                                            DataComponentMatchers.Builder.components()
+                                                    .partial(
+                                                            DataComponentPredicates.ENCHANTMENTS,
+                                                            EnchantmentsPredicate.Enchantments.enchantments(List.of(
+                                                                    new EnchantmentPredicate(
+                                                                            registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(ModEnchantments.OVERDRIVE),
+                                                                            MinMaxBounds.Ints.atLeast(1)
+                                                                    )
+                                                            ))
+                                                    ).build()
+                                    ).build()
+                    ))
+                    .save(saver, "puremashtweaks:secret/overdriven");
+
+            // --- 1. UNIVERSAL CABLE (Task, Child of getIngot) ---
+            AdvancementHolder getUniversalCable = Advancement.Builder.advancement()
+                    .parent(getIngot)
+                    .display(
+                            ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get(),
+                            Component.translatable("advancements.puremashtweaks.get_universal_cable.title"),
+                            Component.translatable("advancements.puremashtweaks.get_universal_cable.description"),
+                            null,
+                            AdvancementType.TASK,
+                            true, true, false
+                    )
+                    .addCriterion("has_synthorium_cable", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get()))
+                    .addCriterion("has_moldelonian_cable", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.MOLDELONIAN_UNIVERSAL_CABLE.get()))
+                    .requirements(net.minecraft.advancements.AdvancementRequirements.Strategy.OR)
+                    .save(saver, "puremashtweaks:main/get_universal_cable");
+
+            // --- 2. FLUID TANK (Task, Child of getSynthesisTable) ---
+            AdvancementHolder getFluidTank = Advancement.Builder.advancement()
+                    .parent(getSynthesisTable)
+                    .display(
+                            ModBlocks.FLUID_TANK.get(),
+                            Component.translatable("advancements.puremashtweaks.get_fluid_tank.title"),
+                            Component.translatable("advancements.puremashtweaks.get_fluid_tank.description"),
+                            null,
+                            AdvancementType.TASK,
+                            true, true, false
+                    )
+                    .addCriterion("has_fluid_tank", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.FLUID_TANK.get()))
+                    .save(saver, "puremashtweaks:main/get_fluid_tank");
+
+            // --- 3. CREATIVE FLUID TANK (Challenge, Child of getFluidTank) ---
+            AdvancementHolder getCreativeFluidTank = Advancement.Builder.advancement()
+                    .parent(getFluidTank)
+                    .display(
+                            ModBlocks.CREATIVE_FLUID_TANK.get(),
+                            Component.translatable("advancements.puremashtweaks.get_creative_fluid_tank.title"),
+                            Component.translatable("advancements.puremashtweaks.get_creative_fluid_tank.description"),
+                            null,
+                            AdvancementType.CHALLENGE,
+                            true, true, false
+                    )
+                    .addCriterion("has_creative_fluid_tank", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.CREATIVE_FLUID_TANK.get()))
+                    .save(saver, "puremashtweaks:main/get_creative_fluid_tank");
+
+            // --- 4. PUREMASH BATTERY (Task, Child of getMoldelonianCore) ---
+            AdvancementHolder getBattery = Advancement.Builder.advancement()
+                    .parent(getMoldelonianCore)
+                    .display(
+                            ModBlocks.PUREMASH_BATTERY.get(),
+                            Component.translatable("advancements.puremashtweaks.get_battery.title"),
+                            Component.translatable("advancements.puremashtweaks.get_battery.description"),
+                            null,
+                            AdvancementType.TASK,
+                            true, true, false
+                    )
+                    .addCriterion("has_battery", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.PUREMASH_BATTERY.get()))
+                    .save(saver, "puremashtweaks:main/get_battery");
+
+            // --- 5. CREATIVE ENERGY BATTERY (Challenge, Child of getBattery) ---
+            AdvancementHolder getCreativeBattery = Advancement.Builder.advancement()
+                    .parent(getBattery)
+                    .display(
+                            ModBlocks.CREATIVE_BATTERY.get(),
+                            Component.translatable("advancements.puremashtweaks.get_creative_battery.title"),
+                            Component.translatable("advancements.puremashtweaks.get_creative_battery.description"),
+                            null,
+                            AdvancementType.CHALLENGE,
+                            true, true, false
+                    )
+                    .addCriterion("has_creative_battery", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.CREATIVE_BATTERY.get()))
+                    .save(saver, "puremashtweaks:main/get_creative_battery");
+
+            // --- PUREMASH GENERATOR (Task, Child of getFluidTank) ---
+            AdvancementHolder getGenerator = Advancement.Builder.advancement()
+                    .parent(getFluidTank)
+                    .display(
+                            ModBlocks.PUREMASH_GENERATOR.get(),
+                            Component.translatable("advancements.puremashtweaks.get_generator.title"),
+                            Component.translatable("advancements.puremashtweaks.get_generator.description"),
+                            null,
+                            AdvancementType.TASK,
+                            true, true, false
+                    )
+                    .addCriterion("has_generator", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.PUREMASH_GENERATOR.get()))
+                    .save(saver, "puremashtweaks:main/get_generator");
 
             // --- COSMIC SINGULARITY (Secret Goal, Child of getCompressor) ---
             AdvancementHolder cosmicSingularity = Advancement.Builder.advancement()

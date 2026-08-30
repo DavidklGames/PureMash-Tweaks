@@ -61,6 +61,9 @@ neoForge {
 
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+
+            //Guide
+            systemProperty 'guideme.puremashtweaks.guide.sources', file('src/main/resources/assets/puremashtweaks/guides/puremashtweaks/guide').absolutePath
         }
 
         server {
@@ -151,7 +154,7 @@ dependencies {
 
     // APPLIED ENERGISTICS 2
     implementation "curse.maven:applied-energistics-2-223794:8257570"
-    implementation "curse.maven:advancedae-1084104:8236325"
+    //implementation "curse.maven:advancedae-1084104:8236325"
     implementation "curse.maven:guideme-1173950:8204880"
     implementation "curse.maven:glodium-957920:8196173"
     implementation "curse.maven:geckolib-388172:8327201"
@@ -172,12 +175,12 @@ dependencies {
 
     // MYSTICAL AGRICULTURE
     implementation "curse.maven:mystical-agriculture-246640:8344253"
-    implementation "curse.maven:mystical-agradditions-256247:8344258"
+    implementation "curse.maven:mystical-agradditions-256247:8516018"
     implementation "curse.maven:cucumber-272335:8262058"
 
     // FORBIDEN ARCANUS
-    implementation "curse.maven:forbidden-arcanus-309858:8376181"
-    implementation "curse.maven:valhelsia-core-416935:7916512"
+    //implementation "curse.maven:forbidden-arcanus-309858:8376181"
+    //implementation "curse.maven:valhelsia-core-416935:7916512"
 
     // PIPEZ
     implementation "curse.maven:pipez-443900:8351634"
@@ -186,8 +189,9 @@ dependencies {
     implementation "curse.maven:cloth-config-348521:7817583"
 
     // KUBEJS
-    implementation "curse.maven:kubejs-238086:8299241"
-    implementation "curse.maven:rhino-416294:8218748"
+    implementation "curse.maven:kubejs-238086:8495199"
+    implementation "curse.maven:rhino-416294:8463898"
+    implementation "curse.maven:better-advanced-tooltips-1637623:8568911"
 
     // IRIS
     implementation "curse.maven:irisshaders-455508:8402602"
@@ -202,13 +206,43 @@ dependencies {
 
     // APOTHEOSIS
     implementation "curse.maven:apotheosis-313970:8249091"
-    implementation "curse.maven:apothic-spawners-986583:8171043"
+    implementation "curse.maven:apothic-spawners-986583:8529719"
     implementation "curse.maven:apothic-enchanting-1063926:8171092"
     implementation "curse.maven:apothic-attributes-898963:8182592"
     implementation "curse.maven:placebo-283644:8249025"
 
-    // POWAH
+    //POWAH
     implementation "curse.maven:powah-rearchitected-633483:8025339"
+
+    //FLUID TANKS
+    implementation "curse.maven:largefluidtank-291006:8047733"
+    implementation "curse.maven:scalable-cats-force-320926:8409896"
+
+    //PRODUCTIVE BEES AND METALWORKS
+    implementation "curse.maven:productivebees-377897:8455542"
+    implementation "curse.maven:productive-metalworks-1184570:8699160"
+
+    //CONSTRUCTION STICKS
+    implementation "curse.maven:construction-sticks-1156098:8049310"
+
+    //SILENT GEAR
+    implementation "curse.maven:silent-gear-297039:8563821"
+    implementation "curse.maven:silent-lib-242998:7936002"
+
+    //JUST DIRE THINGS
+    implementation "curse.maven:just-dire-things-1002348:8251776"
+
+    //PATCHOULI
+    implementation "curse.maven:patchouli-306770:8404543"
+
+    //LOGISTICS NETWORK
+    implementation "curse.maven:logistics-network-1448257:8419032"
+
+    //IRON FURNACES
+    //implementation "curse.maven:iron-furnaces-237664:8319004"
+
+    //GUIDEME
+    implementation "curse.maven:guideme-1173950:8204880"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

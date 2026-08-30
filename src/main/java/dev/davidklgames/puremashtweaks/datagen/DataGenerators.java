@@ -25,6 +25,7 @@ public class DataGenerators {
         // 5. (Tags)
         var blockTags = event.createProvider(out -> new ModBlockTagProvider(out, lookup));
         event.createProvider(out -> new ModItemTagProvider(out, lookup, blockTags.contentsGetter()));
+        event.createProvider(out -> new ModFluidTagProvider(out, lookup));
 
         // 6. (Loot Tables)
         event.createProvider(out -> ModLootTableProvider.create(out, lookup));

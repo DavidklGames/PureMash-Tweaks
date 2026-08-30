@@ -54,45 +54,46 @@ public class PureMashCoreBlock extends BaseEntityBlock {
     // MOUSE INTERACTION: Normal clicks and Crouch (SHIFT) to toggle modes
     @Override
     protected @NonNull InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
-        if (level.isClientSide()) {
-            return InteractionResult.SUCCESS;
-        }
-
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof PureMashCoreBlockEntity coreBe) {
-            // If the Overload level is less than or equal to zero, the click is ignored and behaves like a standard block
+            // Trava de Imersão: Se não estiver encantado com Overload, ignora totalmente
             if (coreBe.getOverloadLevel() <= 0) {
                 return InteractionResult.PASS;
             }
 
-            net.minecraft.network.chat.MutableComponent prefix = net.minecraft.network.chat.Component.literal("[PureMash Core Block]:")
-                    .withStyle(net.minecraft.ChatFormatting.AQUA);
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
+            }
 
             if (player.isCrouching()) {
-                // SHIFT + CLICK: Toggles Area Visualization
+                // SHIFT + CLICK: Alterna a visualização da área
                 boolean newState = !coreBe.isShowArea();
                 coreBe.setShowArea(newState);
 
-                net.minecraft.network.chat.Component msg = newState ?
-                        net.minecraft.network.chat.Component.literal(" Area visualization enabled!").withStyle(net.minecraft.ChatFormatting.GREEN) :
-                        net.minecraft.network.chat.Component.literal(" Area visualization disabled.").withStyle(net.minecraft.ChatFormatting.RED);
+                net.minecraft.ChatFormatting color = newState ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED;
+                net.minecraft.network.chat.Component prefix = net.minecraft.network.chat.Component.literal("[PureMash Core Block]: ").withStyle(color);
+                net.minecraft.network.chat.Component msg = net.minecraft.network.chat.Component.literal(
+                        newState ? "Area visualization enabled!" : "Area visualization disabled."
+                ).withStyle(color);
 
                 player.sendSystemMessage(net.minecraft.network.chat.Component.empty().append(prefix).append(msg));
             } else {
-                // NORMAL CLICK: Toggles Block Activation
+                // NORMAL CLICK: Alterna a ativação da aceleração
                 boolean newState = !coreBe.isActive();
                 coreBe.setActive(newState);
 
-                net.minecraft.network.chat.Component msg = newState ?
-                        net.minecraft.network.chat.Component.literal(" Area acceleration enabled.").withStyle(net.minecraft.ChatFormatting.GREEN) :
-                        net.minecraft.network.chat.Component.literal(" Area acceleration disabled.").withStyle(net.minecraft.ChatFormatting.RED);
+                net.minecraft.ChatFormatting color = newState ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED;
+                net.minecraft.network.chat.Component prefix = net.minecraft.network.chat.Component.literal("[PureMash Core Block]: ").withStyle(color);
+                net.minecraft.network.chat.Component msg = net.minecraft.network.chat.Component.literal(
+                        newState ? "Area acceleration enabled." : "Area acceleration disabled."
+                ).withStyle(color);
 
                 player.sendSystemMessage(net.minecraft.network.chat.Component.empty().append(prefix).append(msg));
             }
-            return net.minecraft.world.InteractionResult.CONSUME;
+            return InteractionResult.CONSUME;
         }
 
-        return net.minecraft.world.InteractionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     // Retains the Overload enchantment level when the block is broken
@@ -103,6 +104,7 @@ public class PureMashCoreBlock extends BaseEntityBlock {
         if (be instanceof PureMashCoreBlockEntity coreBe) {
             int overloadLvl = coreBe.getOverloadLevel();
             if (overloadLvl > 0) {
+                assert be.getLevel() != null;
                 var reg = be.getLevel().registryAccess().lookup(net.minecraft.core.registries.Registries.ENCHANTMENT);
                 if (reg.isPresent()) {
                     var overloadOpt = reg.get().get(dev.davidklgames.puremashtweaks.registry.ModEnchantments.OVERLOAD);

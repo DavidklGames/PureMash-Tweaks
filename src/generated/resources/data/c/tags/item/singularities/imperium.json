@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:imperium_singularity"
+    {
+      "id": "puremashtweaks:imperium_singularity",
+      "required": false
+    }
   ]
 }

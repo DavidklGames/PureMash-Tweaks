@@ -3,7 +3,8 @@
   "package": "dev.davidklgames.puremashtweaks.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "AnvilMenuMixin"
+    "AnvilMenuMixin",
+    "EnchantmentMixin"
   ],
   "client": [
     "client.AnvilScreenMixin"

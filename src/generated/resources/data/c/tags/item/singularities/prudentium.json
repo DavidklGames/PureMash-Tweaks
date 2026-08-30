@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:prudentium_singularity"
+    {
+      "id": "puremashtweaks:prudentium_singularity",
+      "required": false
+    }
   ]
 }

@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:quantum_alloy_singularity"
+    {
+      "id": "puremashtweaks:quantum_alloy_singularity",
+      "required": false
+    }
   ]
 }

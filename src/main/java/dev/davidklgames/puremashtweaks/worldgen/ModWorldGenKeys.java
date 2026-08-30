@@ -16,6 +16,9 @@ public class ModWorldGenKeys {
     public static final ResourceKey<PlacedFeature> SYNTHORIUM_RARE_PLACED = createPlacedKey("synthorium_rare_placed");
     public static final ResourceKey<PlacedFeature> SYNTHORIUM_EPIC_PLACED = createPlacedKey("synthorium_epic_placed");
 
+    public static final ResourceKey<ConfiguredFeature<?, ?>> SUSPICIOUS_END_STONE = createConfigKey("suspicious_end_stone");
+    public static final ResourceKey<PlacedFeature> SUSPICIOUS_END_STONE_PLACED = createPlacedKey("suspicious_end_stone_placed");
+
     private static ResourceKey<ConfiguredFeature<?, ?>> createConfigKey(String name) {
         return ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, name));
     }

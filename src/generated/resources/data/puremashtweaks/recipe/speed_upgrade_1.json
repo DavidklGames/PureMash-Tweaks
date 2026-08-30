@@ -4,13 +4,12 @@
   "key": {
     "E": "minecraft:redstone",
     "P": "minecraft:paper",
-    "R": "minecraft:repeater",
-    "S": "minecraft:sugar"
+    "R": "minecraft:repeater"
   },
   "pattern": [
     "RPR",
     "PEP",
-    "SPR"
+    "RPR"
   ],
   "result": {
     "id": "puremashtweaks:speed_upgrade_1"

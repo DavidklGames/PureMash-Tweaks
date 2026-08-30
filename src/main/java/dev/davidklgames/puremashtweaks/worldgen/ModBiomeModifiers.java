@@ -26,5 +26,16 @@ public class ModBiomeModifiers {
                         ),
                         GenerationStep.Decoration.UNDERGROUND_ORES
                 ));
+
+        // --- ADD SUSPICIOUS END STONE TO END HIGHLANDS (End Cities) & MIDLANDS ---
+        context.register(ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "add_suspicious_end_stone")),
+                new BiomeModifiers.AddFeaturesBiomeModifier(
+                        HolderSet.direct(
+                                biomes.getOrThrow(net.minecraft.world.level.biome.Biomes.END_HIGHLANDS),
+                                biomes.getOrThrow(net.minecraft.world.level.biome.Biomes.END_MIDLANDS)
+                        ),
+                        HolderSet.direct(placed.getOrThrow(ModWorldGenKeys.SUSPICIOUS_END_STONE_PLACED)),
+                        GenerationStep.Decoration.UNDERGROUND_ORES
+                ));
     }
 }

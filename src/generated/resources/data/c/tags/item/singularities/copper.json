@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:copper_singularity"
+    {
+      "id": "puremashtweaks:copper_singularity",
+      "required": false
+    }
   ]
 }

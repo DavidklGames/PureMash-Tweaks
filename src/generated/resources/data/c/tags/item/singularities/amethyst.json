@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:amethyst_singularity"
+    {
+      "id": "puremashtweaks:amethyst_singularity",
+      "required": false
+    }
   ]
 }

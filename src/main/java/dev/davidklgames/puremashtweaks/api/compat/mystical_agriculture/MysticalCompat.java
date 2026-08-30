@@ -12,10 +12,7 @@ import net.minecraft.resources.Identifier;
 @MysticalAgriculturePlugin
 public class MysticalCompat implements IMysticalAgriculturePlugin {
 
-    // =========================================================================
-    // SYNTHORIUM CROP
-    // =========================================================================
-
+    // --- SYNTHORIUM CROP (Tier 4) ---
     public static final Crop SYNTHORIUM = new Crop(
             Identifier.fromNamespaceAndPath("puremashtweaks", "synthorium"),
             CropTier.FOUR,
@@ -23,13 +20,17 @@ public class MysticalCompat implements IMysticalAgriculturePlugin {
             LazyIngredient.item("puremashtweaks:synthorium_ingot")
     );
 
+    // --- MOLDELONIAN CROP (Tier 5) ---
+    public static final Crop MOLDELONIAN = new Crop(
+            Identifier.fromNamespaceAndPath("puremashtweaks", "moldelonian"),
+            CropTier.FIVE,
+            CropType.RESOURCE,
+            LazyIngredient.item("puremashtweaks:moldelonian_ingot")
+    );
+
     @Override
     public void onRegisterCrops(ICropRegistry registry) {
-
-        // =========================================================================
-        // REGISTER
-        // =========================================================================
-
         registry.register(SYNTHORIUM);
+        registry.register(MOLDELONIAN);
     }
 }

@@ -2,6 +2,8 @@ package dev.davidklgames.puremashtweaks.event;
 
 import dev.davidklgames.puremashtweaks.PureMashTweaks;
 import dev.davidklgames.puremashtweaks.block.entity.MultifunctionalCompressorBlockEntity;
+import dev.davidklgames.puremashtweaks.block.entity.PureMashGeneratorBlockEntity;
+import dev.davidklgames.puremashtweaks.config.PureMashTweaksConfig;
 import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
 import dev.davidklgames.puremashtweaks.registry.ModItems;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -46,8 +48,19 @@ public class ModCapabilities {
 
         event.registerItem(
                 Capabilities.Energy.ITEM,
-                (stack, itemAccess) -> new dev.davidklgames.puremashtweaks.api.compat.energy.ItemEnergyHandler(itemAccess, 500000000L, 400000L, 400000L),
+                (stack, itemAccess) -> new dev.davidklgames.puremashtweaks.api.compat.energy.ItemEnergyHandler(
+                        itemAccess,
+                        PureMashTweaksConfig.COMMON.moldelonianCoreCapacity.get(),
+                        PureMashTweaksConfig.COMMON.moldelonianCoreTransferRate.get(),
+                        PureMashTweaksConfig.COMMON.moldelonianCoreTransferRate.get()
+                ),
                 ModItems.MOLDELONIAN_CORE.get()
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.MULTIFUNCIONAL_COMPRESSOR_BE.get(),
+                (be, side) -> be.energyTank
         );
 
         event.registerBlockEntity(
@@ -62,7 +75,6 @@ public class ModCapabilities {
                 (be, side) -> be.fluidTank
         );
 
-        // Register item fluid capabilities for both standard and creative fluid tanks
         event.registerItem(
                 Capabilities.Fluid.ITEM,
                 (stack, itemAccess) -> new dev.davidklgames.puremashtweaks.api.compat.fluid.TankItemFluidHandler(itemAccess, 32000L, false),
@@ -73,6 +85,36 @@ public class ModCapabilities {
                 Capabilities.Fluid.ITEM,
                 (stack, itemAccess) -> new dev.davidklgames.puremashtweaks.api.compat.fluid.TankItemFluidHandler(itemAccess, 1000000L, true),
                 ModItems.CREATIVE_FLUID_TANK_ITEM.get()
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.PUREMASH_GENERATOR_BE.get(),
+                (be, side) -> be.energyTank
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Fluid.BLOCK,
+                ModBlockEntities.PUREMASH_GENERATOR_BE.get(),
+                PureMashGeneratorBlockEntity::getFluidHandler
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Item.BLOCK,
+                ModBlockEntities.PUREMASH_GENERATOR_BE.get(),
+                PureMashGeneratorBlockEntity::getItemHandler
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.PUREMASH_BATTERY_BE.get(),
+                (be, side) -> be.energyTank
+        );
+
+        event.registerBlockEntity(
+                Capabilities.Energy.BLOCK,
+                ModBlockEntities.CREATIVE_BATTERY_BE.get(),
+                (be, side) -> be.infiniteEnergyHandler
         );
     }
 }

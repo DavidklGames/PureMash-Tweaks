@@ -3,8 +3,9 @@ package dev.davidklgames.puremashtweaks.block.entity;
 import dev.davidklgames.puremashtweaks.config.PureMashTweaksConfig;
 import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -25,13 +26,31 @@ public class PureMashCoreBlockEntity extends BlockEntity {
     }
 
     public boolean isActive() { return this.active; }
-    public void setActive(boolean active) { this.active = active; setChanged(); }
+    public void setActive(boolean active) {
+        this.active = active;
+        setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
 
     public boolean isShowArea() { return this.showArea; }
-    public void setShowArea(boolean showArea) { this.showArea = showArea; setChanged(); }
+    public void setShowArea(boolean showArea) {
+        this.showArea = showArea;
+        setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
 
     public int getOverloadLevel() { return this.overloadLevel; }
-    public void setOverloadLevel(int level) { this.overloadLevel = level; setChanged(); }
+    public void setOverloadLevel(int level) {
+        this.overloadLevel = level;
+        setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public static void tick(Level level, BlockPos pos, BlockState state, PureMashCoreBlockEntity blockEntity) {
@@ -40,16 +59,19 @@ public class PureMashCoreBlockEntity extends BlockEntity {
         if (!blockEntity.active || blockEntity.overloadLevel <= 0) return;
 
         int lvl = blockEntity.overloadLevel;
-        int radius;
-        int multiplier;
 
-        if (lvl >= 3) {
-            radius = 2;
-            multiplier = 4 + (PureMashTweaksConfig.OVERLOAD_SPEED_MULTIPLIER.get() * 2);
-        } else {
-            radius = 1;
-            multiplier = PureMashTweaksConfig.OVERLOAD_SPEED_LVL1_2.get();
-        }
+        // Escala da área: 3x3x3 (Lvl 1), 5x5x5 (Lvl 2), 7x7x7 (Lvl 3)
+        int radius = switch (lvl) {
+            case 3 -> 3; // 7x7x7
+            case 2 -> 2; // 5x5x5
+            default -> 1; // 3x3x3 (Nível 1)
+        };
+
+        int multiplier = switch (lvl) {
+            case 3 -> 4 + (PureMashTweaksConfig.COMMON.overloadSpeedMultiplier.get() * 2);
+            case 2 -> 2 + PureMashTweaksConfig.COMMON.overloadSpeedLvl1_2.get();
+            default -> PureMashTweaksConfig.COMMON.overloadSpeedLvl1_2.get();
+        };
 
         BlockPos.MutableBlockPos targetPos = new BlockPos.MutableBlockPos();
         ServerLevel serverLevel = (ServerLevel) level;
@@ -57,21 +79,25 @@ public class PureMashCoreBlockEntity extends BlockEntity {
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
-                    targetPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
-
                     if (x == 0 && y == 0 && z == 0) continue;
 
+                    targetPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
                     if (!level.isLoaded(targetPos)) continue;
 
                     BlockState targetState = level.getBlockState(targetPos);
+                    if (targetState.isAir()) continue;
 
+                    BlockPos immutableTargetPos = targetPos.immutable();
+
+                    // 1. Aceleração de Random Tick (Plantações, Saplings, etc.)
                     if (targetState.isRandomlyTicking()) {
                         for (int i = 0; i < multiplier; i++) {
-                            targetState.randomTick(serverLevel, targetPos.immutable(), level.getRandom());
+                            targetState.randomTick(serverLevel, immutableTargetPos, level.getRandom());
                         }
                     }
 
-                    BlockEntity targetBe = level.getBlockEntity(targetPos);
+                    // 2. Aceleração de Máquinas e Block Entities adjacentes
+                    BlockEntity targetBe = level.getBlockEntity(immutableTargetPos);
                     if (targetBe != null && !(targetBe instanceof PureMashCoreBlockEntity)) {
                         Block targetBlock = targetState.getBlock();
                         if (targetBlock instanceof EntityBlock entityBlock) {
@@ -80,7 +106,7 @@ public class PureMashCoreBlockEntity extends BlockEntity {
                                 for (int i = 0; i < multiplier; i++) {
                                     if (targetBe.isRemoved()) break;
                                     try {
-                                        ticker.tick(level, targetPos.immutable(), targetState, targetBe);
+                                        ticker.tick(level, immutableTargetPos, targetState, targetBe);
                                     } catch (Exception e) {
                                         break;
                                     }
@@ -88,26 +114,6 @@ public class PureMashCoreBlockEntity extends BlockEntity {
                             }
                         }
                     }
-                }
-            }
-        }
-
-        if (blockEntity.showArea && level.getGameTime() % 10 == 0) {
-            spawnEnhancedAreaParticles(serverLevel, pos, radius, lvl);
-        }
-    }
-
-    private static void spawnEnhancedAreaParticles(ServerLevel level, BlockPos pos, int radius, int lvl) {
-        SimpleParticleType p = (lvl >= 3) ? ParticleTypes.GLOW : ParticleTypes.HAPPY_VILLAGER;
-
-        for (int x : new int[]{-radius, radius}) {
-            for (int y : new int[]{-radius, radius}) {
-                for (int z : new int[]{-radius, radius}) {
-                    double px = (double)pos.getX() + 0.5D + (double)x;
-                    double py = (double)pos.getY() + 0.5D + (double)y;
-                    double pz = (double)pos.getZ() + 0.5D + (double)z;
-
-                    level.sendParticles(p, px, py, pz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
                 }
             }
         }
@@ -127,5 +133,15 @@ public class PureMashCoreBlockEntity extends BlockEntity {
         this.active = input.getBooleanOr("Active", true);
         this.showArea = input.getBooleanOr("ShowArea", false);
         this.overloadLevel = input.getIntOr("OverloadLevel", 0);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @NonNull CompoundTag getUpdateTag(HolderLookup.@NonNull Provider registries) {
+        return this.saveCustomOnly(registries);
     }
 }

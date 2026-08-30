@@ -1,3 +1,8 @@
 {
-  "values": []
+  "values": [
+    {
+      "id": "puremashtweaks:netherite_gold_singularity",
+      "required": false
+    }
+  ]
 }

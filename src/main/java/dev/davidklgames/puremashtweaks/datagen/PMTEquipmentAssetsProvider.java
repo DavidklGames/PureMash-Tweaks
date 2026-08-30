@@ -22,5 +22,12 @@ public class PMTEquipmentAssetsProvider extends EquipmentAssetProvider {
                         .addHumanoidLayers(PMT.id("synthorium"))
                         .build()
         );
+
+        output.accept(
+                ModArmorMaterials.MOLDELONIAN_ASSET,
+                EquipmentClientInfo.builder()
+                        .addHumanoidLayers(PMT.id("moldelonian"))
+                        .build()
+        );
     }
 }

@@ -1,162 +1,339 @@
 package dev.davidklgames.puremashtweaks.config;
 
+import dev.davidklgames.puremashtweaks.PureMashTweaks;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class PureMashTweaksConfig {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue ENABLE_MACHINES;
-    public static final ModConfigSpec.IntValue OVERLOAD_BLOCK_RANGE;
-    public static final ModConfigSpec.IntValue OVERLOAD_SPEED_MULTIPLIER;
-    public static final ModConfigSpec.DoubleValue OVERLOAD_REACH_BONUS;
+    // =========================================================================
+    // COMMON / SERVER CONFIG SPEC
+    // =========================================================================
+    public static final ModConfigSpec COMMON_SPEC;
+    public static final Common COMMON;
 
-    // MACHINE VARIABLES
-    public static final ModConfigSpec.IntValue MACHINE_SPEED_UPGRADE_1_POWER;
-    public static final ModConfigSpec.IntValue MACHINE_SPEED_UPGRADE_2_POWER;
-    public static final ModConfigSpec.IntValue MACHINE_SPEED_UPGRADE_3_POWER;
-    public static final ModConfigSpec.DoubleValue MACHINE_UPGRADE_2_DUPLICATION_CHANCE;
-    public static final ModConfigSpec.DoubleValue MACHINE_UPGRADE_3_DUPLICATION_CHANCE;
-    public static final ModConfigSpec.BooleanValue ENABLE_DUPLICATION;
-
-    // FLIGHT SYSTEM CONFIGURATION
-    public static final ModConfigSpec.IntValue OVERLOAD_FLIGHT_TICKS_LVL1;
-    public static final ModConfigSpec.IntValue OVERLOAD_FLIGHT_TICKS_LVL2;
-
-    // MULTIFUNCTIONAL COMPRESSOR CONFIGURATION
-    public static final ModConfigSpec.IntValue COMPRESSOR_SPEED_ITEMS;
-    public static final ModConfigSpec.IntValue COMPRESSOR_SPEED_SINGULARITY;
-    public static final ModConfigSpec.IntValue COMPRESSOR_SINGULARITY_BASE_COST;
-
-    public static final ModConfigSpec.IntValue OVERLOAD_SPEED_LVL1_2;
-    public static final ModConfigSpec.BooleanValue ENABLE_ADVANCEMENTS;
-
-    // RECIPES SYSTEM CONFIGURATION
-    public static final ModConfigSpec.BooleanValue ENABLE_CREATIVE_ESSENCE_FALLBACK;
+    // =========================================================================
+    // CLIENT CONFIG SPEC
+    // =========================================================================
+    public static final ModConfigSpec CLIENT_SPEC;
+    public static final Client CLIENT;
 
     static {
+        // Build Common
+        final var commonPair = new ModConfigSpec.Builder().configure(Common::new);
+        COMMON_SPEC = commonPair.getRight();
+        COMMON = commonPair.getLeft();
 
-        // =========================================================================
-        // CUSTOM RECIPES & FALLBACKS
-        // =========================================================================
-        BUILDER.push("Recipes");
-
-        ENABLE_CREATIVE_ESSENCE_FALLBACK = BUILDER
-                .comment("Whether the dynamic fallback recipe for Creative Essence (Mystical Agradditions) should be automatically registered and injected when no other recipes are active.")
-                .define("enableCreativeEssenceFallback", false);
-
-        BUILDER.pop();
-
-        // =========================================================================
-        // AUTOMATED MACHINES
-        // =========================================================================
-        BUILDER.push("Machines");
-
-        ENABLE_MACHINES = BUILDER
-                .comment("Whether the custom automation machines added by this mod (such as the Alchemical Synthesizer, Synthesis Table, and Multifunctional Compressor) are enabled and functional.")
-                .define("enableMachines", true);
-
-        OVERLOAD_BLOCK_RANGE = BUILDER
-                .comment("The spherical block radius affected by the PureMash Core Block's acceleration effect when enchanted with the Overload enchantment.")
-                .defineInRange("overloadBlockRange", 3, 1, 16);
-
-        OVERLOAD_SPEED_MULTIPLIER = BUILDER
-                .comment("How many extra processing ticks adjacent machines gain per level of the Overload enchantment applied to the PureMash Core Block (Level III).")
-                .defineInRange("overloadSpeedMultiplier", 2, 1, 10);
-
-        BUILDER.pop();
-
-        // =========================================================================
-        // UPGRADES AND SPEED MULTIPLIERS
-        // =========================================================================
-        BUILDER.push("Upgrades");
-
-        MACHINE_SPEED_UPGRADE_1_POWER = BUILDER
-                .comment("The speed multiplier bonus granted to automated machines by each installed Speed Upgrade Tier 1 (Default: 2).")
-                .defineInRange("machineSpeedUpgrade1Power", 2, 1, 1000);
-
-        MACHINE_SPEED_UPGRADE_2_POWER = BUILDER
-                .comment("The speed multiplier bonus granted to automated machines by each installed Speed Upgrade Tier 2 (Default: 4).")
-                .defineInRange("machineSpeedUpgrade2Power", 4, 1, 1000);
-
-        MACHINE_SPEED_UPGRADE_3_POWER = BUILDER
-                .comment("The speed multiplier bonus granted to automated machines by each installed Speed Upgrade Tier 3 (Default: 8).")
-                .defineInRange("machineSpeedUpgrade3Power", 8, 1, 1000);
-
-        MACHINE_UPGRADE_2_DUPLICATION_CHANCE = BUILDER
-                .comment("The extra output duplication chance granted to machines by each installed Speed Upgrade Tier 2. Defined as a decimal percentage (Default: 0.10 = 10% chance).")
-                .defineInRange("machineUpgrade2DuplicationChance", 0.10, 0.0, 1.0);
-
-        MACHINE_UPGRADE_3_DUPLICATION_CHANCE = BUILDER
-                .comment("The extra output duplication chance granted to machines by each installed Speed Upgrade Tier 3. Defined as a decimal percentage (Default: 0.35 = 35% chance).")
-                .defineInRange("machineUpgrade3DuplicationChance", 0.35, 0.0, 1.0);
-
-        // Upgrade system general configurations
-        ENABLE_DUPLICATION = BUILDER
-                .comment("Whether the item duplication mechanic granted by Tier 2 and Tier 3 speed upgrades is enabled in machines.")
-                .define("enableDuplication", true);
-
-        BUILDER.pop();
-
-        // =========================================================================
-        // MULTIFUNCTIONAL COMPRESSOR & REVEALING ACCELERATION
-        // =========================================================================
-        BUILDER.push("Multifunctional Compressor");
-
-        COMPRESSOR_SPEED_ITEMS = BUILDER
-                .comment("The base processing time (in ticks) required by the Multifunctional Compressor to process standard items in Compression or Dust modes (Default: 100 ticks = 5 seconds).")
-                .defineInRange("compressorSpeedItems", 100, 1, 10000);
-
-        COMPRESSOR_SPEED_SINGULARITY = BUILDER
-                .comment("The base processing time (in ticks) required by the Multifunctional Compressor to condense a Singularity (Default: 400 ticks = 20 seconds).")
-                .defineInRange("compressorSpeedSingularity", 400, 1, 10000);
-
-        COMPRESSOR_SINGULARITY_BASE_COST = BUILDER
-                .comment("The base number of items required to condense a single Singularity (Default: 1000 items).")
-                .defineInRange("compressorSingularityBaseCost", 1000, 1, 100000);
-
-        OVERLOAD_SPEED_LVL1_2 = BUILDER
-                .comment("The additional tick acceleration bonus applied to surrounding blocks for Overload enchantment levels I and II (Default: 1).")
-                .defineInRange("overloadSpeedLvl1_2", 1, 1, 100);
-
-        BUILDER.pop();
-
-        // =========================================================================
-        // CUSTOM ADVANCEMENTS
-        // =========================================================================
-        BUILDER.push("Advancements");
-
-        ENABLE_ADVANCEMENTS = BUILDER
-                .comment("Whether custom advancements and goal completions added by PureMash Tweaks are enabled and earnable in the game.")
-                .define("enableAdvancements", true);
-
-        BUILDER.pop();
-
-        // =========================================================================
-        // PHYSICAL TOOLS AND RANGE
-        // =========================================================================
-        BUILDER.push("Tools");
-
-        OVERLOAD_REACH_BONUS = BUILDER
-                .comment("The additional reach distance (for block interaction and entity hit ranges) granted to tools per level of the Overload enchantment (Default: 1.5 blocks/level).")
-                .defineInRange("overloadReachBonus", 1.5, 0.5, 5.0);
-
-        BUILDER.pop();
-
-        // =========================================================================
-        // ENCHANTMENTS AND TEMPORARY FLIGHT
-        // =========================================================================
-        BUILDER.push("Enchantments");
-
-        OVERLOAD_FLIGHT_TICKS_LVL1 = BUILDER
-                .comment("The maximum creative flight duration (in ticks) granted by the Overload I enchantment on Synthorium Armor (Default: 2400 ticks = 2 minutes).")
-                .defineInRange("overloadFlightLvl1", 2400, 1, Integer.MAX_VALUE);
-
-        OVERLOAD_FLIGHT_TICKS_LVL2 = BUILDER
-                .comment("The maximum creative flight duration (in ticks) granted by the Overload II enchantment on Synthorium Armor (Default: 4200 ticks = 3.5 minutes).")
-                .defineInRange("overloadFlightLvl2", 4200, 1, Integer.MAX_VALUE);
-
-        BUILDER.pop();
+        // Build Client
+        final var clientPair = new ModConfigSpec.Builder().configure(Client::new);
+        CLIENT_SPEC = clientPair.getRight();
+        CLIENT = clientPair.getLeft();
     }
 
-    public static final ModConfigSpec SPEC = BUILDER.build();
+    public static class Common {
+
+        // --- MACHINES ---
+        public final ModConfigSpec.BooleanValue enableMachines;
+        public final ModConfigSpec.IntValue compressorItemSpeed;
+        public final ModConfigSpec.IntValue compressorSingularitySpeed;
+        public final ModConfigSpec.IntValue compressorSingularityBaseCost;
+        public final ModConfigSpec.LongValue alchemicalSynthesizerBaseEnergyCapacity;
+        public final ModConfigSpec.LongValue puremashGeneratorBaseEnergyCapacity;
+
+        // --- UPGRADES & MULTIPLIERS ---
+        public final ModConfigSpec.IntValue speedUpgrade1Power;
+        public final ModConfigSpec.IntValue speedUpgrade2Power;
+        public final ModConfigSpec.IntValue speedUpgrade3Power;
+        public final ModConfigSpec.IntValue capacityUpgrade1Multiplier;
+        public final ModConfigSpec.IntValue capacityUpgrade2Multiplier;
+        public final ModConfigSpec.DoubleValue duplicationUpgrade1Chance;
+        public final ModConfigSpec.DoubleValue duplicationUpgrade2Chance;
+        public final ModConfigSpec.BooleanValue enableDuplication;
+        public final ModConfigSpec.BooleanValue enableStackProcessing;
+
+        // --- LOGISTICS & CABLES ---
+        public final ModConfigSpec.IntValue synthoriumCableTransferRate;
+        public final ModConfigSpec.IntValue moldelonianCableTransferRate;
+        public final ModConfigSpec.IntValue synthoriumCableFluidRate;
+        public final ModConfigSpec.IntValue moldelonianCableFluidRate;
+        public final ModConfigSpec.IntValue synthoriumCableItemRate;
+        public final ModConfigSpec.IntValue moldelonianCableItemRate;
+
+        // --- STORAGE & BATTERIES ---
+        public final ModConfigSpec.IntValue fluidTankCapacity;
+        public final ModConfigSpec.LongValue batteryBaseCapacity;
+        public final ModConfigSpec.LongValue moldelonianCoreCapacity;
+        public final ModConfigSpec.LongValue moldelonianCoreTransferRate;
+
+        // --- ENCHANTMENTS & OVERLOAD ---
+        public final ModConfigSpec.IntValue overloadFlightTicksLvl1;
+        public final ModConfigSpec.IntValue overloadFlightTicksLvl2;
+        public final ModConfigSpec.DoubleValue overloadReachBonus;
+        public final ModConfigSpec.IntValue overloadBlockRange;
+        public final ModConfigSpec.IntValue overloadSpeedMultiplier;
+        public final ModConfigSpec.IntValue overloadSpeedLvl1_2;
+
+        // --- RECIPES & ADVANCEMENTS ---
+        public final ModConfigSpec.BooleanValue enableCreativeEssenceFallback;
+        public final ModConfigSpec.BooleanValue enableAdvancements;
+
+        public Common(ModConfigSpec.Builder builder) {
+
+            // =========================================================================
+            // MACHINES
+            // =========================================================================
+            builder.comment("Settings for automated machines and processing units").push("Machines");
+
+            enableMachines = builder
+                    .comment("Enable custom automated processing machines.")
+                    .define("enableMachines", true);
+
+            compressorItemSpeed = builder
+                    .comment("Base ticks required for Compression & Dust crushing operations (Default: 20t = 1.0s).")
+                    .defineInRange("compressorItemSpeed", 20, 1, 72000);
+
+            compressorSingularitySpeed = builder
+                    .comment("Base ticks required to condense a Singularity (Default: 40t = 2.0s).")
+                    .defineInRange("compressorSingularitySpeed", 40, 1, 72000);
+
+            compressorSingularityBaseCost = builder
+                    .comment("Default item count required to form a single Singularity (Default: 1000).")
+                    .defineInRange("compressorSingularityBaseCost", 1000, 1, 1000000);
+
+            alchemicalSynthesizerBaseEnergyCapacity = builder
+                    .comment("Base Forge Energy (FE) capacity for the Alchemical Synthesizer (Default: 5,000,000 FE).")
+                    .defineInRange("alchemicalSynthesizerBaseEnergyCapacity", 5000000L, 10000L, Long.MAX_VALUE);
+
+            puremashGeneratorBaseEnergyCapacity = builder
+                    .comment("Base Forge Energy (FE) capacity for the PureMash Generator (Default: 400,000,000 FE).")
+                    .defineInRange("puremashGeneratorBaseEnergyCapacity", 400000000L, 10000L, 2000000000L);
+
+            builder.pop();
+
+            // =========================================================================
+            // UPGRADES
+            // =========================================================================
+            builder.comment("Modifiers and capabilities granted by machine upgrade cards").push("Upgrades");
+
+            speedUpgrade1Power = builder
+                    .comment("Speed power granted per Speed Upgrade Tier 1 (Default: +2).")
+                    .defineInRange("speedUpgrade1Power", 2, 1, 1000);
+
+            speedUpgrade2Power = builder
+                    .comment("Speed power granted per Speed Upgrade Tier 2 (Default: +4).")
+                    .defineInRange("speedUpgrade2Power", 4, 1, 1000);
+
+            speedUpgrade3Power = builder
+                    .comment("Base speed multiplier granted per Speed Upgrade Tier 3 (Default: 8).")
+                    .defineInRange("speedUpgrade3Power", 8, 1, 1000);
+
+            capacityUpgrade1Multiplier = builder
+                    .comment("Energy capacity multiplier for Tier 1 Capacity Upgrade (Default: 2x).")
+                    .defineInRange("capacityUpgrade1Multiplier", 2, 1, 100);
+
+            capacityUpgrade2Multiplier = builder
+                    .comment("Energy capacity multiplier for Tier 2 Capacity Upgrade (Default: 5x).")
+                    .defineInRange("capacityUpgrade2Multiplier", 5, 1, 100);
+
+            duplicationUpgrade1Chance = builder
+                    .comment("Duplication chance granted by Tier 1 Duplication Upgrade (Default: 0.15 = 15%).")
+                    .defineInRange("duplicationUpgrade1Chance", 0.15, 0.0, 1.0);
+
+            duplicationUpgrade2Chance = builder
+                    .comment("Duplication chance granted by Tier 2 Duplication Upgrade (Default: 0.50 = 50%).")
+                    .defineInRange("duplicationUpgrade2Chance", 0.50, 0.0, 1.0);
+
+            enableDuplication = builder
+                    .comment("Enable output duplication mechanics across machines.")
+                    .define("enableDuplication", true);
+
+            enableStackProcessing = builder
+                    .comment("Enable Stack Processing Upgrade (up to 64 items simultaneously per cycle).")
+                    .define("enableStackProcessing", true);
+
+            builder.pop();
+
+            // =========================================================================
+            // LOGISTICS & CABLES
+            // =========================================================================
+            builder.comment("Transfer rates and limits for Universal Cables").push("Logistics");
+
+            synthoriumCableTransferRate = builder
+                    .comment("Base energy transfer rate for Synthorium Universal Cable in FE/t (Default: 50,000 FE/t).")
+                    .defineInRange("synthoriumCableTransferRate", 50000, 1, Integer.MAX_VALUE);
+
+            moldelonianCableTransferRate = builder
+                    .comment("Base energy transfer rate for Moldelonian Universal Cable in FE/t (Default: 100,000 FE/t).")
+                    .defineInRange("moldelonianCableTransferRate", 100000, 1, Integer.MAX_VALUE);
+
+            synthoriumCableFluidRate = builder
+                    .comment("Base fluid transfer rate for Synthorium Universal Cable in mB/t (Default: 1,000 mB/t).")
+                    .defineInRange("synthoriumCableFluidRate", 1000, 1, Integer.MAX_VALUE);
+
+            moldelonianCableFluidRate = builder
+                    .comment("Base fluid transfer rate for Moldelonian Universal Cable in mB/t (Default: 10,000 mB/t).")
+                    .defineInRange("moldelonianCableFluidRate", 10000, 1, Integer.MAX_VALUE);
+
+            synthoriumCableItemRate = builder
+                    .comment("Base item transfer amount per extraction cycle for Synthorium Universal Cable (Default: 8 items).")
+                    .defineInRange("synthoriumCableItemRate", 8, 1, 64);
+
+            moldelonianCableItemRate = builder
+                    .comment("Base item transfer amount per extraction cycle for Moldelonian Universal Cable (Default: 64 items).")
+                    .defineInRange("moldelonianCableItemRate", 64, 1, 64);
+
+            builder.pop();
+
+            // =========================================================================
+            // STORAGE & BATTERIES
+            // =========================================================================
+            builder.comment("Capacities for Fluid Tanks, Batteries, and Portable Cores").push("Storage");
+
+            fluidTankCapacity = builder
+                    .comment("Standard Fluid Tank internal capacity in mB (Default: 32,000 mB).")
+                    .defineInRange("fluidTankCapacity", 32000, 1000, Integer.MAX_VALUE);
+
+            batteryBaseCapacity = builder
+                    .comment("Standard PureMash Energy Battery capacity in FE (Default: 50,000,000 FE).")
+                    .defineInRange("batteryBaseCapacity", 50000000L, 10000L, Long.MAX_VALUE);
+
+            moldelonianCoreCapacity = builder
+                    .comment("Moldelonian Core internal stored energy capacity in FE (Default: 500,000,000 FE).")
+                    .defineInRange("moldelonianCoreCapacity", 500000000L, 10000L, Long.MAX_VALUE);
+
+            moldelonianCoreTransferRate = builder
+                    .comment("Moldelonian Core passive item wireless charging transfer rate in FE/t (Default: 406,000 FE/t).")
+                    .defineInRange("moldelonianCoreTransferRate", 406000L, 1L, Long.MAX_VALUE);
+
+            builder.pop();
+
+            // =========================================================================
+            // ENCHANTMENTS & OVERLOAD
+            // =========================================================================
+            builder.comment("Flight durations, reach bonuses, and acceleration properties").push("Enchantments");
+
+            overloadFlightTicksLvl1 = builder
+                    .comment("Creative flight duration in ticks granted by Overload I armor set (Default: 2400t = 2.0 min).")
+                    .defineInRange("overloadFlightTicksLvl1", 2400, 20, Integer.MAX_VALUE);
+
+            overloadFlightTicksLvl2 = builder
+                    .comment("Creative flight duration in ticks granted by Overload II armor set (Default: 4200t = 3.5 min).")
+                    .defineInRange("overloadFlightTicksLvl2", 4200, 20, Integer.MAX_VALUE);
+
+            overloadReachBonus = builder
+                    .comment("Interaction and entity reach range added per level of the Overload enchantment (Default: 1.0).")
+                    .defineInRange("overloadReachBonus", 1.0, 0.1, 10.0);
+
+            overloadBlockRange = builder
+                    .comment("Block radius accelerated by the PureMash Core Block with Overload III (Default: 2 blocks radius).")
+                    .defineInRange("overloadBlockRange", 2, 1, 8);
+
+            overloadSpeedMultiplier = builder
+                    .comment("Extra processing tick rate multiplier for PureMash Core Block at Overload III (Default: 2).")
+                    .defineInRange("overloadSpeedMultiplier", 2, 1, 20);
+
+            overloadSpeedLvl1_2 = builder
+                    .comment("Tick acceleration bonus for PureMash Core Block at Overload I and II (Default: 1).")
+                    .defineInRange("overloadSpeedLvl1_2", 1, 1, 10);
+
+            builder.pop();
+
+            // =========================================================================
+            // RECIPES & ADVANCEMENTS
+            // =========================================================================
+            builder.comment("Compatibility switches and custom advancements").push("General");
+
+            enableCreativeEssenceFallback = builder
+                    .comment("Register dynamic fallback recipe for Creative Essence (Mystical Agradditions) if no other source exists.")
+                    .define("enableCreativeEssenceFallback", false);
+
+            enableAdvancements = builder
+                    .comment("Enable custom advancements and goal completion rewards.")
+                    .define("enableAdvancements", true);
+
+            builder.pop();
+        }
+    }
+
+    public static class Client {
+
+        // --- HUD SETTINGS ---
+        public final ModConfigSpec.BooleanValue showOverloadFlightHud;
+        public final ModConfigSpec.IntValue flightHudXOffset;
+        public final ModConfigSpec.IntValue flightHudYOffset;
+
+        // --- VISUAL HIGHLIGHTS & OUTLINES ---
+        public final ModConfigSpec.BooleanValue showBoundContainerBox;
+        public final ModConfigSpec.BooleanValue showOverdriveMiningPreview;
+        public final ModConfigSpec.BooleanValue showFlightParticles;
+
+        public Client(ModConfigSpec.Builder builder) {
+
+            // =========================================================================
+            // CLIENT HUD
+            // =========================================================================
+            builder.comment("Client-side Heads-Up Display (HUD) overlays").push("HUD");
+
+            showOverloadFlightHud = builder
+                    .comment("Render the Overload flight percentage and infinity gauge on screen.")
+                    .define("showOverloadFlightHud", true);
+
+            flightHudXOffset = builder
+                    .comment("Horizontal X pixel offset for the Overload flight gauge on screen.")
+                    .defineInRange("flightHudXOffset", 0, -1000, 1000);
+
+            flightHudYOffset = builder
+                    .comment("Vertical Y pixel offset for the Overload flight gauge on screen.")
+                    .defineInRange("flightHudYOffset", 0, -1000, 1000);
+
+            builder.pop();
+
+            // =========================================================================
+            // VISUAL OUTLINES & EFFECTS
+            // =========================================================================
+            builder.comment("Client in-world outlines, bounding boxes, and visual cues").push("Visuals");
+
+            showBoundContainerBox = builder
+                    .comment("Render the 3D lime green outline around containers bound by the Distribution Filter or Overdrive.")
+                    .define("showBoundContainerBox", true);
+
+            showOverdriveMiningPreview = builder
+                    .comment("Render 3x3 and 5x5 block selection outlines when holding an Overdrive mining tool.")
+                    .define("showOverdriveMiningPreview", true);
+
+            showFlightParticles = builder
+                    .comment("Spawn visual glowing particle trails beneath the player during Overload creative flight.")
+                    .define("showFlightParticles", true);
+
+            builder.pop();
+        }
+    }
+
+    // =========================================================================
+    // LIVE CONFIG RELOAD EVENT HANDLERS & LAZY CACHE INVALIDATION
+    // =========================================================================
+    public static void onConfigLoad(final ModConfigEvent.Loading event) {
+        if (event.getConfig().getType() == ModConfig.Type.COMMON) {
+            dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.reset();
+            dev.davidklgames.puremashtweaks.api.AlchemicalRecipeHelper.reset();
+            dev.davidklgames.puremashtweaks.api.SynthesisRecipeHelper.reset();
+        }
+        logConfigEvent(event.getConfig(), "loaded");
+    }
+
+    public static void onConfigReload(final ModConfigEvent.Reloading event) {
+        if (event.getConfig().getType() == ModConfig.Type.COMMON) {
+            dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.reset();
+            dev.davidklgames.puremashtweaks.api.AlchemicalRecipeHelper.reset();
+            dev.davidklgames.puremashtweaks.api.SynthesisRecipeHelper.reset();
+        }
+        logConfigEvent(event.getConfig(), "reloaded in real-time");
+    }
+
+    private static void logConfigEvent(ModConfig config, String action) {
+        if (config.getModId().equals(PureMashTweaks.MODID)) {
+            PureMashTweaks.LOGGER.info("[PureMash Tweaks]: Configuration '{}' {} successfully!", config.getFileName(), action);
+        }
+    }
 }

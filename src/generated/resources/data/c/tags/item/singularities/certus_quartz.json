@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:certus_quartz_singularity"
+    {
+      "id": "puremashtweaks:certus_quartz_singularity",
+      "required": false
+    }
   ]
 }

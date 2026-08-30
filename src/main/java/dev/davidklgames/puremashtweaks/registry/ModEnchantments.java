@@ -16,4 +16,9 @@ public class ModEnchantments {
             Registries.ENCHANTMENT,
             Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overclock")
     );
+
+    public static final ResourceKey<Enchantment> OVERDRIVE = ResourceKey.create(
+            Registries.ENCHANTMENT,
+            Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "overdrive")
+    );
 }

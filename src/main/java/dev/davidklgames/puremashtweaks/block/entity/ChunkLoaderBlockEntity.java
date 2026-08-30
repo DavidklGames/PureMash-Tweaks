@@ -17,7 +17,9 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -66,13 +68,58 @@ public class ChunkLoaderBlockEntity extends BlockEntity implements MenuProvider 
         }
     }
 
+    /**
+     * Energy consumption per tick scaling with chunk loading radius.
+     */
+    public static int getEnergyConsumption(int levelIndex) {
+        return switch (levelIndex) {
+            case 3 -> 500;   // Level 4 (9x9 Chunks) = 500 FE/t
+            case 4 -> 2500;  // Level 5 (15x15 Chunks) = 2,500 FE/t
+            case 5 -> 5000;  // Level 6 (17x17 Chunks) = 5,000 FE/t
+            default -> 0;    // Levels 1-3 (1x1 to 5x5) = Free
+        };
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, ChunkLoaderBlockEntity be) {
         if (level.isClientSide()) return;
 
-        if (be.activeLevel >= 3 && !be.hasCoreInstalled()) {
-            be.activeLevel = 2;
-            be.updateForcedChunks();
-            be.setChanged();
+        if (be.activeLevel >= 3) {
+            ItemStack coreStack = be.inventory.getStackInSlot(0);
+
+            if (!coreStack.isEmpty() && coreStack.is(ModItems.MOLDELONIAN_CORE.get())) {
+                int energyCost = getEnergyConsumption(be.activeLevel);
+
+                if (energyCost > 0) {
+                    var itemAccess = net.neoforged.neoforge.transfer.access.ItemAccess.forStack(coreStack);
+                    var energyHandler = coreStack.getCapability(Capabilities.Energy.ITEM, itemAccess);
+
+                    boolean energyDrained = false;
+
+                    if (energyHandler != null && energyHandler.getAmountAsLong() >= energyCost) {
+                        try (Transaction tx = Transaction.openRoot()) {
+                            int extracted = energyHandler.extract(energyCost, tx);
+                            if (extracted == energyCost) {
+                                tx.commit();
+                                energyDrained = true;
+                                be.setChanged();
+                            }
+                        }
+                    }
+
+                    // If Core runs out of FE, automatically downgrade to Level 3 (5x5 chunks)
+                    if (!energyDrained) {
+                        be.activeLevel = 2;
+                        be.updateForcedChunks();
+                        be.setChanged();
+                        level.getEntitiesOfClass(Player.class, new net.minecraft.world.phys.AABB(be.worldPosition).inflate(16))
+                                .forEach(player -> player.sendSystemMessage(Component.literal("§c[PureMash Chunk Loader]: Moldelonian Core is out of energy! Range downgraded to Level 3 (5x5).")));
+                    }
+                }
+            } else {
+                be.activeLevel = 2;
+                be.updateForcedChunks();
+                be.setChanged();
+            }
         }
     }
 

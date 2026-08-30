@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:slime_singularity"
+    {
+      "id": "puremashtweaks:slime_singularity",
+      "required": false
+    }
   ]
 }

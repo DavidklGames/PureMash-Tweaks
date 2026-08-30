@@ -3,17 +3,26 @@ package dev.davidklgames.puremashtweaks.menu;
 import dev.davidklgames.puremashtweaks.block.entity.AlchemicalSynthesizerBlockEntity;
 import dev.davidklgames.puremashtweaks.registry.ModItems;
 import dev.davidklgames.puremashtweaks.registry.ModMenus;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -22,7 +31,7 @@ import org.jspecify.annotations.NonNull;
 public class AlchemicalSynthesizerMenu extends AbstractContainerMenu {
     private final AlchemicalSynthesizerBlockEntity blockEntity;
     private final ContainerData data;
-    private final int[] localData = new int[11];
+    private final int[] localData = new int[12];
 
     public AlchemicalSynthesizerMenu(int id, Inventory playerInv, RegistryFriendlyByteBuf extraData) {
         this(id, playerInv, (AlchemicalSynthesizerBlockEntity) playerInv.player.level().getBlockEntity(extraData.readBlockPos()));
@@ -41,18 +50,15 @@ public class AlchemicalSynthesizerMenu extends AbstractContainerMenu {
                         case 0 -> blockEntity.getProgress();
                         case 1 -> blockEntity.getMaxProgress();
                         case 2 -> (int) blockEntity.fluidTank.getAmountAsLong(0);
-                        case 3 -> (int) blockEntity.fluidTank.getCapacityAsLong(0, net.neoforged.neoforge.transfer.fluid.FluidResource.EMPTY);
-                        case 4 -> {
-                            var f = blockEntity.fluidTank.getResource(0).getFluid();
-                            if (f == Fluids.LAVA) yield 1;
-                            if (f == Fluids.WATER) yield 2;
-                            yield 0;
-                        }
+                        case 3 -> (int) blockEntity.fluidTank.getCapacityAsLong(0, FluidResource.EMPTY);
+                        case 4 -> BuiltInRegistries.FLUID.getId(blockEntity.fluidTank.getResource(0).getFluid());
                         case 5 -> blockEntity.isArrowTopActive() ? 1 : 0;
                         case 6 -> blockEntity.isArrowMiddleActive() ? 1 : 0;
                         case 7 -> blockEntity.isArrowBottomActive() ? 1 : 0;
-                        case 8 -> (int) blockEntity.energyTank.getAmountAsLong();
-                        case 9 -> (int) blockEntity.energyTank.getCapacityAsLong();
+                        case 8 -> (int) (blockEntity.energyTank.getAmountAsLong() & 0xFFFF);
+                        case 9 -> (int) ((blockEntity.energyTank.getAmountAsLong() >> 16) & 0xFFFF);
+                        case 10 -> (int) (blockEntity.getEnergyCapacity() & 0xFFFF);
+                        case 11 -> (int) ((blockEntity.getEnergyCapacity() >> 16) & 0xFFFF);
                         default -> 0;
                     };
                 }
@@ -65,22 +71,28 @@ public class AlchemicalSynthesizerMenu extends AbstractContainerMenu {
             }
 
             @Override
-            public int getCount() { return 10; }
+            public int getCount() { return 12; }
         };
 
         this.addDataSlots(this.data);
 
         net.neoforged.neoforge.items.IItemHandler invHandler = (entity != null) ? entity.inventory : new net.neoforged.neoforge.items.ItemStackHandler(26);
 
+        // Slot 0: Fluid Catalyst Valve
         this.addSlot(new SlotItemHandler(invHandler, 0, 30, 35) {
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
                 return false;
             }
         });
+
+        // Slot 1: Input Sample
         this.addSlot(new SlotItemHandler(invHandler, 1, 30, 56));
+
+        // Slot 2: Tool Catalyst
         this.addSlot(new SlotItemHandler(invHandler, 2, 30, 77));
 
+        // Slots 3 to 22: Output Grid (5x4 = 20 slots)
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 5; col++) {
                 int index = 3 + col + (row * 5);
@@ -91,84 +103,130 @@ public class AlchemicalSynthesizerMenu extends AbstractContainerMenu {
             }
         }
 
-        this.addSlot(new SlotItemHandler(invHandler, 23, 182, 18));
-        this.addSlot(new SlotItemHandler(invHandler, 24, 182, 39));
-        this.addSlot(new SlotItemHandler(invHandler, 25, 182, 60));
+        // Slots 23, 24, 25: Upgrades
+        this.addSlot(new SlotItemHandler(invHandler, 23, 182, 18) {
+            @Override
+            public int getMaxStackSize() { return 1; }
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack stack) { return 1; }
+        });
+        this.addSlot(new SlotItemHandler(invHandler, 24, 182, 39) {
+            @Override
+            public int getMaxStackSize() { return 1; }
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack stack) { return 1; }
+        });
+        this.addSlot(new SlotItemHandler(invHandler, 25, 182, 60) {
+            @Override
+            public int getMaxStackSize() { return 1; }
+            @Override
+            public int getMaxStackSize(@NotNull ItemStack stack) { return 1; }
+        });
 
         addPlayerInventory(playerInv);
     }
 
     @Override
     public void clicked(int slotId, int button, @NonNull ContainerInput containerInput, @NonNull Player player) {
-        if (slotId == 0) {
+        // Universal Cursor Drain & Fill Valve (Slot 0)
+        if (slotId == 0 && blockEntity != null) {
             ItemStack carried = this.getCarried();
             long fluidAmount = blockEntity.fluidTank.getAmountAsLong(0);
-            Fluid fluidType = blockEntity.fluidTank.getResource(0).getFluid();
+            Fluid currentTankFluid = blockEntity.fluidTank.getResource(0).getFluid();
 
-            if (carried.is(net.minecraft.world.item.Items.WATER_BUCKET) || carried.is(net.minecraft.world.item.Items.LAVA_BUCKET)) {
-                Fluid bucketFluid = carried.is(net.minecraft.world.item.Items.WATER_BUCKET) ? Fluids.WATER : Fluids.LAVA;
-                if ((fluidType == Fluids.EMPTY || fluidType == bucketFluid) && fluidAmount <= 7000) {
-                    try (Transaction tx = Transaction.openRoot()) {
-                        long inserted = blockEntity.fluidTank.insert(0, net.neoforged.neoforge.transfer.fluid.FluidResource.of(bucketFluid), 1000, tx);
-                        if (inserted == 1000) {
-                            tx.commit();
+            // 1. Drain carried fluid bucket / container into tank
+            if (!carried.isEmpty()) {
+                FluidStack contained = getContainedFluid(carried);
 
-                            ItemStack emptyBucket = new ItemStack(net.minecraft.world.item.Items.BUCKET);
-                            if (carried.getCount() == 1) {
-                                this.setCarried(emptyBucket);
-                            } else {
-                                carried.shrink(1);
-                                if (!player.getInventory().add(emptyBucket)) {
-                                    player.drop(emptyBucket, false);
+                if (!contained.isEmpty()) {
+                    Fluid bucketFluid = contained.getFluid();
+
+                    if ((currentTankFluid == Fluids.EMPTY || currentTankFluid == bucketFluid) && fluidAmount + contained.getAmount() <= 16000) {
+                        try (Transaction tx = Transaction.openRoot()) {
+                            long inserted = blockEntity.fluidTank.insert(0, FluidResource.of(bucketFluid), contained.getAmount(), tx);
+                            if (inserted == contained.getAmount()) {
+                                tx.commit();
+
+                                ItemStack emptyBucket = new ItemStack(Items.BUCKET);
+                                if (carried.getCount() == 1) {
+                                    this.setCarried(emptyBucket);
+                                } else {
+                                    carried.shrink(1);
+                                    if (!player.getInventory().add(emptyBucket)) {
+                                        player.drop(emptyBucket, false);
+                                    }
                                 }
+                                blockEntity.setChanged();
                             }
-                            blockEntity.setChanged();
                         }
                     }
+                    return;
                 }
-                return;
-            }
 
-            if (carried.is(net.minecraft.world.item.Items.BUCKET)) {
-                if (fluidAmount >= 1000 && fluidType != Fluids.EMPTY) {
-                    net.minecraft.world.item.Item fullBucket = (fluidType == Fluids.LAVA) ? net.minecraft.world.item.Items.LAVA_BUCKET : net.minecraft.world.item.Items.WATER_BUCKET;
-                    try (Transaction tx = Transaction.openRoot()) {
-                        long extracted = blockEntity.fluidTank.extract(0, net.neoforged.neoforge.transfer.fluid.FluidResource.of(fluidType), 1000, tx);
-                        if (extracted == 1000) {
-                            tx.commit();
+                // 2. Extract fluid from tank into carried empty bucket
+                if (carried.is(Items.BUCKET)) {
+                    if (fluidAmount >= 1000 && currentTankFluid != Fluids.EMPTY) {
+                        Item fullBucketItem = currentTankFluid.getBucket();
 
-                            ItemStack filledBucket = new ItemStack(fullBucket);
-                            if (carried.getCount() == 1) {
-                                this.setCarried(filledBucket);
-                            } else {
-                                carried.shrink(1);
-                                if (!player.getInventory().add(filledBucket)) {
-                                    player.drop(filledBucket, false);
+                        if (fullBucketItem != Items.AIR) {
+                            try (Transaction tx = Transaction.openRoot()) {
+                                long extracted = blockEntity.fluidTank.extract(0, FluidResource.of(currentTankFluid), 1000, tx);
+                                if (extracted == 1000) {
+                                    tx.commit();
+
+                                    ItemStack filledBucket = new ItemStack(fullBucketItem);
+                                    if (carried.getCount() == 1) {
+                                        this.setCarried(filledBucket);
+                                    } else {
+                                        carried.shrink(1);
+                                        if (!player.getInventory().add(filledBucket)) {
+                                            player.drop(filledBucket, false);
+                                        }
+                                    }
+                                    blockEntity.setChanged();
                                 }
                             }
-                            blockEntity.setChanged();
                         }
                     }
+                    return;
                 }
-                return;
             }
             return;
         }
         super.clicked(slotId, button, containerInput, player);
     }
 
+    private static FluidStack getContainedFluid(ItemStack stack) {
+        if (stack.getItem() instanceof BucketItem bucket && bucket.content != Fluids.EMPTY) {
+            return new FluidStack(bucket.content, 1000);
+        }
+        return FluidUtil.getFirstStackContained(stack);
+    }
+
     public int getProgress() { return this.data.get(0); }
     public int getMaxProgress() { return this.data.get(1); }
     public int getFluidAmount() { return this.data.get(2); }
     public int getFluidCapacity() { return this.data.get(3); }
-    public int getFluidType() { return this.data.get(4); }
+
+    public Fluid getFluid() {
+        return BuiltInRegistries.FLUID.byId(this.data.get(4));
+    }
 
     public boolean isArrowTopActive() { return this.data.get(5) == 1; }
     public boolean isArrowMiddleActive() { return this.data.get(6) == 1; }
     public boolean isArrowBottomActive() { return this.data.get(7) == 1; }
 
-    public int getEnergyAmount() { return this.data.get(8); }
-    public int getEnergyCapacity() { return this.data.get(9); }
+    public long getEnergyAmountLong() {
+        long low = this.data.get(8) & 0xFFFFL;
+        long high = this.data.get(9) & 0xFFFFL;
+        return low | (high << 16);
+    }
+
+    public long getEnergyCapacityLong() {
+        long low = this.data.get(10) & 0xFFFFL;
+        long high = this.data.get(11) & 0xFFFFL;
+        return low | (high << 16);
+    }
 
     public AlchemicalSynthesizerBlockEntity getBlockEntity() { return this.blockEntity; }
 
@@ -183,16 +241,14 @@ public class AlchemicalSynthesizerMenu extends AbstractContainerMenu {
             if (index < 26) {
                 if (!this.moveItemStackTo(stackInSlot, 26, this.slots.size(), true)) return ItemStack.EMPTY;
             } else {
-                if (stackInSlot.is(ModItems.SPEED_UPGRADE_1.get()) ||
-                        stackInSlot.is(ModItems.SPEED_UPGRADE_2.get()) ||
-                        stackInSlot.is(ModItems.SPEED_UPGRADE_3.get())) {
+                if (AlchemicalSynthesizerBlockEntity.isUpgradeValid(stackInSlot)) {
                     if (!this.moveItemStackTo(stackInSlot, 23, 26, false)) {
                         if (!this.moveItemStackTo(stackInSlot, 1, 2, false)) return ItemStack.EMPTY;
                     }
-                } else if (stackInSlot.has(net.minecraft.core.component.DataComponents.TOOL) ||
-                        stackInSlot.is(net.minecraft.tags.ItemTags.PICKAXES) ||
-                        stackInSlot.is(net.minecraft.tags.ItemTags.SHOVELS) ||
-                        stackInSlot.is(net.minecraft.tags.ItemTags.AXES)) {
+                } else if (stackInSlot.has(DataComponents.TOOL) ||
+                        stackInSlot.is(ItemTags.PICKAXES) ||
+                        stackInSlot.is(ItemTags.SHOVELS) ||
+                        stackInSlot.is(ItemTags.AXES)) {
                     if (!this.moveItemStackTo(stackInSlot, 2, 3, false)) {
                         if (!this.moveItemStackTo(stackInSlot, 1, 2, false)) return ItemStack.EMPTY;
                     }
@@ -210,7 +266,11 @@ public class AlchemicalSynthesizerMenu extends AbstractContainerMenu {
     public boolean stillValid(@NotNull Player player) {
         if (this.blockEntity == null) return true;
         assert blockEntity.getLevel() != null;
-        return AbstractContainerMenu.stillValid(net.minecraft.world.inventory.ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()), player, blockEntity.getBlockState().getBlock());
+        return AbstractContainerMenu.stillValid(
+                net.minecraft.world.inventory.ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos()),
+                player,
+                blockEntity.getBlockState().getBlock()
+        );
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

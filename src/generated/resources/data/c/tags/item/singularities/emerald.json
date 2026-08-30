@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:emerald_singularity"
+    {
+      "id": "puremashtweaks:emerald_singularity",
+      "required": false
+    }
   ]
 }

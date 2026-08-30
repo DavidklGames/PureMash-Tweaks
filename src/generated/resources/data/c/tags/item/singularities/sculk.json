@@ -1,5 +1,8 @@
 {
   "values": [
-    "puremashtweaks:sculk_singularity"
+    {
+      "id": "puremashtweaks:sculk_singularity",
+      "required": false
+    }
   ]
 }

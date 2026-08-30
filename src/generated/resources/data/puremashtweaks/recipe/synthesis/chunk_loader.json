@@ -4,6 +4,7 @@
     "C": "puremashtweaks:puremash_core",
     "D": "minecraft:diamond_block",
     "M": "puremashtweaks:moldelonian_ingot",
+    "O": "minecraft:obsidian",
     "P": "puremashtweaks:synthorium_nugget",
     "R": "puremashtweaks:synthorium_rod",
     "S": "puremashtweaks:synthorium_block"
@@ -12,9 +13,9 @@
     ".........",
     "..PPSPP..",
     ".PSDMDSP.",
-    ".PDRSRDP.",
-    ".SMSCSMS.",
-    ".PDRSRDP.",
+    ".PDRORDP.",
+    ".SMOCOMS.",
+    ".PDRORDP.",
     ".PSDMDSP.",
     "..PPSPP..",
     "........."

@@ -1,17 +1,26 @@
 package dev.davidklgames.puremashtweaks.datagen;
 
+import dev.davidklgames.puremashtweaks.PureMashTweaks;
+import dev.davidklgames.puremashtweaks.recipe.ShapelessSynthesisRecipe;
 import dev.davidklgames.puremashtweaks.registry.ModBlocks;
+import dev.davidklgames.puremashtweaks.registry.ModEnchantments;
 import dev.davidklgames.puremashtweaks.registry.ModItems;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import dev.davidklgames.puremashtweaks.recipe.ShapedSynthesisRecipe;
 import dev.davidklgames.puremashtweaks.registry.ModSingularities;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.data.PackOutput;
@@ -21,15 +30,16 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("unchecked")
 public class ModRecipeProvider extends RecipeProvider {
 
-    private final HolderLookup.Provider lookupProvider; // Safely stores the registries!
+    private final HolderLookup.Provider lookupProvider;
 
-    // Updated constructor to save the reference
     protected ModRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
         super(registries, output);
         this.lookupProvider = registries;
@@ -39,9 +49,48 @@ public class ModRecipeProvider extends RecipeProvider {
     protected void buildRecipes() {
 
         // =========================================================================
-        // SYNTHORIUM ARMOR (Native and clean using instance methods)
+        // PUREMASH GUIDE BOOK RECIPE (GUIDEME)
         // =========================================================================
+        Item guideItem = BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath("guideme", "guide"))
+                .map(net.minecraft.core.Holder::value)
+                .orElse(Items.AIR);
 
+        if (guideItem != Items.AIR) {
+            var guideIdComponent = BuiltInRegistries.DATA_COMPONENT_TYPE.get(Identifier.fromNamespaceAndPath("guideme", "guide_id"));
+            DataComponentPatch patch = DataComponentPatch.EMPTY;
+            if (guideIdComponent.isPresent()) {
+                patch = DataComponentPatch.builder()
+                        .set((net.minecraft.core.component.DataComponentType<Identifier>) guideIdComponent.get().value(), Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "guide"))
+                        .build();
+            }
+
+            ItemStackTemplate guideTemplate = new ItemStackTemplate(guideItem, 1, patch);
+            RecipeOutput guidemeOutput = this.output.withConditions(
+                    new net.neoforged.neoforge.common.conditions.ModLoadedCondition("guideme")
+            );
+
+            TagKey<Item> glassPanesTag = TagKey.create(
+                    Registries.ITEM,
+                    Identifier.fromNamespaceAndPath("c", "glass_panes")
+            );
+
+            this.shaped(RecipeCategory.MISC, guideTemplate)
+                    .pattern("SGS")
+                    .pattern("GBG")
+                    .pattern("SGS")
+                    .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                    .define('G', glassPanesTag)
+                    .define('B', Items.BOOK)
+                    .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
+                    .save(guidemeOutput, ResourceKey.create(
+                            Registries.RECIPE,
+                            Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "guide_book")
+                    ));
+        }
+
+        // =========================================================================
+        // SYNTHORIUM ARMOR
+        // =========================================================================
         this.shaped(RecipeCategory.COMBAT, ModItems.SYNTHORIUM_HELMET.get())
                 .pattern("III")
                 .pattern("I I")
@@ -73,10 +122,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(this.output);
 
         // =========================================================================
-        // NEW RECIPES: SMELT SYNTHORIUM DUST TO GENERATE 2x INGOTS
+        // SMELTING SYNTHORIUM DUST
         // =========================================================================
-
-        // Smelt Synthorium Dust in a normal furnace (Yield: 2x Ingots)
         SimpleCookingRecipeBuilder.smelting(
                         Ingredient.of(ModItems.SYNTHORIUM_DUST.get()),
                         RecipeCategory.MISC,
@@ -88,7 +135,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_dust", this.has(ModItems.SYNTHORIUM_DUST.get()))
                 .save(this.output, "synthorium_ingots_from_smelting_dust");
 
-        // Smelt Synthorium Dust in a blast furnace (Yield: 2x Ingots in half the time)
         SimpleCookingRecipeBuilder.blasting(
                         Ingredient.of(ModItems.SYNTHORIUM_DUST.get()),
                         RecipeCategory.MISC,
@@ -101,22 +147,43 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(this.output, "synthorium_ingots_from_blasting_dust");
 
         // =========================================================================
-        // COMPRESSOR SPEED UPGRADES (Speed Upgrades)
+        // MOLDELONIAN DUST SMELTING
         // =========================================================================
+        SimpleCookingRecipeBuilder.smelting(
+                        Ingredient.of(ModItems.MOLDELONIAN_DUST.get()),
+                        RecipeCategory.MISC,
+                        CookingBookCategory.MISC,
+                        new net.minecraft.world.item.ItemStackTemplate(ModItems.MOLDELONIAN_INGOT.get(), 1),
+                        1.0f,
+                        200
+                )
+                .unlockedBy("has_moldelonian_dust", this.has(ModItems.MOLDELONIAN_DUST.get()))
+                .save(this.output, "moldelonian_ingot_from_smelting_dust");
 
-        // Speed Upgrade Tier 1 (R=Repeater, P=Paper, E=Redstone, S=Sugar)
+        SimpleCookingRecipeBuilder.blasting(
+                        Ingredient.of(ModItems.MOLDELONIAN_DUST.get()),
+                        RecipeCategory.MISC,
+                        CookingBookCategory.MISC,
+                        new net.minecraft.world.item.ItemStackTemplate(ModItems.MOLDELONIAN_INGOT.get(), 1),
+                        1.0f,
+                        100
+                )
+                .unlockedBy("has_moldelonian_dust", this.has(ModItems.MOLDELONIAN_DUST.get()))
+                .save(this.output, "moldelonian_ingot_from_blasting_dust");
+
+        // =========================================================================
+        // COMPRESSOR SPEED UPGRADES
+        // =========================================================================
         this.shaped(RecipeCategory.MISC, ModItems.SPEED_UPGRADE_1.get())
                 .pattern("RPR")
                 .pattern("PEP")
-                .pattern("SPR")
+                .pattern("RPR")
                 .define('R', Items.REPEATER)
                 .define('P', Items.PAPER)
                 .define('E', Items.REDSTONE)
-                .define('S', Items.SUGAR)
                 .unlockedBy("has_repeater", this.has(Items.REPEATER))
                 .save(this.output);
 
-        // Speed Upgrade Tier 2 (R=Repeater, I=Synthorium Ingot, U=Speed Upgrade 1, D=Diamond)
         this.shaped(RecipeCategory.MISC, ModItems.SPEED_UPGRADE_2.get())
                 .pattern("DID")
                 .pattern("IUI")
@@ -127,7 +194,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_speed_upgrade_1", this.has(ModItems.SPEED_UPGRADE_1.get()))
                 .save(this.output);
 
-        // Speed Upgrade Tier 3 (New Recipe: M=Moldelonian Ingot, C=PureMash Core, U=Speed Upgrade 2)
         this.shaped(RecipeCategory.MISC, ModItems.SPEED_UPGRADE_3.get())
                 .pattern("UMU")
                 .pattern("MCM")
@@ -141,7 +207,6 @@ public class ModRecipeProvider extends RecipeProvider {
         // =========================================================================
         // SYNTHORIUM TOOLS
         // =========================================================================
-
         this.shaped(RecipeCategory.COMBAT, ModItems.SYNTHORIUM_SWORD.get())
                 .pattern("I")
                 .pattern("I")
@@ -187,12 +252,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
                 .save(this.output);
 
-        // =========================================================================
-        // SYNTHORIUM PAXEL (Pickaxe, Shovel, Axe + Bar + Rod)
-        // =========================================================================
-
         this.shaped(RecipeCategory.TOOLS, ModItems.SYNTHORIUM_PAXEL.get())
-                .pattern("PSA")
+                .pattern("APS")
                 .pattern(" I ")
                 .pattern(" R ")
                 .define('P', ModItems.SYNTHORIUM_PICKAXE.get())
@@ -204,51 +265,63 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(this.output);
 
         // =========================================================================
-        // ORE AND METAL PROCESSING (Smelting, Blasting, Nugget <-> Ingot)
+        // PUREMASH APPLES
         // =========================================================================
+        this.shaped(RecipeCategory.FOOD, ModItems.SYNTHORIUM_APPLE.get())
+                .pattern("SSS")
+                .pattern("SAS")
+                .pattern("SSS")
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .define('A', Items.APPLE)
+                .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
+                .save(this.output, "synthorium_apple");
 
-        // Smelt Synthorium Debris in a normal furnace to generate Scrap
+        this.shaped(RecipeCategory.FOOD, ModItems.MOLDELONIAN_APPLE.get())
+                .pattern("MMM")
+                .pattern("MAM")
+                .pattern("MMM")
+                .define('M', ModItems.MOLDELONIAN_INGOT.get())
+                .define('A', ModItems.SYNTHORIUM_APPLE.get())
+                .unlockedBy("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "moldelonian_apple");
+
+        // =========================================================================
+        // ORE AND METAL PROCESSING
+        // =========================================================================
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModBlocks.SYNTHORIUM_DEBRIS.get()), RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.SYNTHORIUM_SCRAP.get(), 2.0f, 200)
                 .unlockedBy("has_synthorium_debris", this.has(ModBlocks.SYNTHORIUM_DEBRIS.get()))
                 .save(this.output, "synthorium_scrap_from_smelting");
 
-        // Smelt Synthorium Debris in a blast furnace (Blasting)
         SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModBlocks.SYNTHORIUM_DEBRIS.get()), RecipeCategory.MISC, CookingBookCategory.MISC, ModItems.SYNTHORIUM_SCRAP.get(), 2.0f, 100)
                 .unlockedBy("has_synthorium_debris", this.has(ModBlocks.SYNTHORIUM_DEBRIS.get()))
                 .save(this.output, "synthorium_scrap_from_blasting");
 
-        // Shapeless craft for Synthorium Ingot (4 Scrap + 4 Diamonds, Netherite style)
         this.shapeless(RecipeCategory.MISC, ModItems.SYNTHORIUM_INGOT.get(), 1)
                 .requires(ModItems.SYNTHORIUM_SCRAP.get(), 4)
                 .requires(Items.DIAMOND, 4)
                 .unlockedBy("has_synthorium_scrap", this.has(ModItems.SYNTHORIUM_SCRAP.get()))
-                .save(this.output, net.minecraft.resources.ResourceKey.create(
-                        net.minecraft.core.registries.Registries.RECIPE,
-                        net.minecraft.resources.Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthorium_ingot")
+                .save(this.output, ResourceKey.create(
+                        Registries.RECIPE,
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthorium_ingot")
                 ));
 
-        // =========================================================================
-        // ALCHEMICAL SYNTHESIZER (Alchemical Synthesizer)
-        // =========================================================================
         this.shaped(RecipeCategory.DECORATIONS, ModBlocks.ALCHEMICAL_SYNTHESIZER.get())
-                .pattern("MBM")
-                .pattern("SCS")
                 .pattern("MRM")
+                .pattern("SCS")
+                .pattern("MFM")
                 .define('M', ModItems.MOLDELONIAN_INGOT.get())
-                .define('B', Items.BUCKET)
                 .define('S', ModItems.SYNTHORIUM_INGOT.get())
-                .define('C', Items.CAULDRON)
+                .define('C', ModBlocks.FLUID_TANK.get())
                 .define('R', Items.REDSTONE_BLOCK)
+                .define('F', Blocks.FURNACE)
                 .unlockedBy("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
                 .save(this.output);
 
-        // Unpack Synthorium Ingot -> 9 Nuggets
         this.shapeless(RecipeCategory.MISC, ModItems.SYNTHORIUM_NUGGET.get(), 9)
                 .requires(ModItems.SYNTHORIUM_INGOT.get())
                 .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
                 .save(this.output, "synthorium_nuggets_from_ingot");
 
-        // Pack 9 Synthorium Nuggets -> 1 Ingot
         this.shaped(RecipeCategory.MISC, ModItems.SYNTHORIUM_INGOT.get())
                 .pattern("NNN")
                 .pattern("NNN")
@@ -257,7 +330,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_nugget", this.has(ModItems.SYNTHORIUM_NUGGET.get()))
                 .save(this.output, "synthorium_ingot_from_nuggets");
 
-        // Pack 9 Synthorium Ingots -> 1 Block
         this.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.SYNTHORIUM_BLOCK.get())
                 .pattern("III")
                 .pattern("III")
@@ -266,7 +338,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
                 .save(this.output, "synthorium_block_from_ingots");
 
-        // Unpack Synthorium Block -> 9 Ingots
         this.shapeless(RecipeCategory.MISC, ModItems.SYNTHORIUM_INGOT.get(), 9)
                 .requires(ModBlocks.SYNTHORIUM_BLOCK.get())
                 .unlockedBy("has_synthorium_block", this.has(ModBlocks.SYNTHORIUM_BLOCK.get()))
@@ -275,29 +346,48 @@ public class ModRecipeProvider extends RecipeProvider {
         // =========================================================================
         // DYNAMIC MYSTICAL AGRICULTURE COMPATIBILITY
         // =========================================================================
-        net.minecraft.world.item.Item synthoriumEssence = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("mysticalagriculture", "synthorium_essence")
-        ).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR);
+        Item synthoriumEssence = BuiltInRegistries.ITEM.get(
+                Identifier.fromNamespaceAndPath("mysticalagriculture", "synthorium_essence")
+        ).map(Holder::value).orElse(Items.AIR);
 
-        if (synthoriumEssence != net.minecraft.world.item.Items.AIR) {
+        if (synthoriumEssence != Items.AIR) {
             RecipeOutput mysticalAgriOutput = this.output.withConditions(
                     new net.neoforged.neoforge.common.conditions.ModLoadedCondition("mysticalagriculture")
             );
 
-            // Shaped recipe generation via Essence - ID hardcoded as puremashtweaks:synthorium_ingot_from_essence
             this.shaped(RecipeCategory.MISC, ModItems.SYNTHORIUM_INGOT.get())
                     .pattern("EEE")
                     .pattern("EEE")
                     .pattern("EEE")
                     .define('E', synthoriumEssence)
                     .unlockedBy("has_synthorium_essence", this.has(synthoriumEssence))
-                    .save(mysticalAgriOutput, net.minecraft.resources.ResourceKey.create(
-                            net.minecraft.core.registries.Registries.RECIPE,
-                            net.minecraft.resources.Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthorium_ingot_from_essence")
+                    .save(mysticalAgriOutput, ResourceKey.create(
+                            Registries.RECIPE,
+                            Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthorium_ingot_from_essence")
                     ));
         }
 
-        // PureMash Core Block (M = Moldelonian Ingot, C = PureMash Core, S = Synthorium Block)
+        Item moldelonianEssence = BuiltInRegistries.ITEM.get(
+                Identifier.fromNamespaceAndPath("mysticalagriculture", "moldelonian_essence")
+        ).map(Holder::value).orElse(Items.AIR);
+
+        if (moldelonianEssence != Items.AIR) {
+            RecipeOutput mysticalAgriOutput = this.output.withConditions(
+                    new net.neoforged.neoforge.common.conditions.ModLoadedCondition("mysticalagriculture")
+            );
+
+            this.shaped(RecipeCategory.MISC, ModItems.MOLDELONIAN_INGOT.get())
+                    .pattern("EEE")
+                    .pattern("EEE")
+                    .pattern("EEE")
+                    .define('E', moldelonianEssence)
+                    .unlockedBy("has_moldelonian_essence", this.has(moldelonianEssence))
+                    .save(mysticalAgriOutput, ResourceKey.create(
+                            Registries.RECIPE,
+                            Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "moldelonian_ingot_from_essence")
+                    ));
+        }
+
         this.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.PUREMASH_CORE_BLOCK.get())
                 .pattern("MCM")
                 .pattern("CSC")
@@ -311,8 +401,6 @@ public class ModRecipeProvider extends RecipeProvider {
         // =========================================================================
         // MOLDELONIAN PACKING
         // =========================================================================
-
-        // Pack 9 Moldelonian Ingots -> 1 Block
         this.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.MOLDELONIAN_BLOCK.get())
                 .pattern("MMM")
                 .pattern("MMM")
@@ -321,19 +409,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
                 .save(this.output, "moldelonian_block_from_ingots");
 
-        // Unpack Moldelonian Block -> 9 Ingots
         this.shapeless(RecipeCategory.MISC, ModItems.MOLDELONIAN_INGOT.get(), 9)
                 .requires(ModBlocks.MOLDELONIAN_BLOCK.get())
                 .unlockedBy("has_moldelonian_block", this.has(ModBlocks.MOLDELONIAN_BLOCK.get()))
                 .save(this.output, "moldelonian_ingots_from_block");
 
-        // Unpack Moldelonian Ingot -> 9 Nuggets
         this.shapeless(RecipeCategory.MISC, ModItems.MOLDELONIAN_NUGGET.get(), 9)
                 .requires(ModItems.MOLDELONIAN_INGOT.get())
                 .unlockedBy("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
                 .save(this.output, "moldelonian_nuggets_from_ingot");
 
-        // Pack 9 Moldelonian Nuggets -> 1 Ingot
         this.shaped(RecipeCategory.MISC, ModItems.MOLDELONIAN_INGOT.get())
                 .pattern("NNN")
                 .pattern("NNN")
@@ -343,10 +428,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(this.output, "moldelonian_ingot_from_nuggets");
 
         // =========================================================================
-        // OTHER COMPONENTS AND AUTOMATION COMPONENTS
+        // OTHER COMPONENTS
         // =========================================================================
-
-        // Memory Card (R=Redstone, N=Synthorium Nugget, P=Paper)
         this.shaped(RecipeCategory.MISC, ModItems.MEMORY_CARD.get())
                 .pattern(" R ")
                 .pattern("RNR")
@@ -357,7 +440,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_nugget", this.has(ModItems.SYNTHORIUM_NUGGET.get()))
                 .save(this.output);
 
-        // Synthorium Rod (3 Synthorium Ingots vertically)
         this.shaped(RecipeCategory.MISC, ModItems.SYNTHORIUM_ROD.get(), 4)
                 .pattern("I")
                 .pattern("I")
@@ -366,7 +448,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
                 .save(this.output);
 
-        // Synthesis Table (X=DIAMOND BLOCK, Y=BEACON, Z=Synthorium Block, C=Crafter)
         this.shaped(RecipeCategory.DECORATIONS, ModBlocks.SYNTHESIS_TABLE.get())
                 .pattern("XYX")
                 .pattern("ZCZ")
@@ -378,7 +459,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_puremash_core", this.has(Items.DIAMOND))
                 .save(this.output);
 
-        // Compressor (M=Moldelonian Ingot, S=Synthorium Block, P=Paxel)
         this.shaped(RecipeCategory.DECORATIONS, ModBlocks.MULTIFUNCTIONAL_COMPRESSOR.get())
                 .pattern("MSM")
                 .pattern("SPS")
@@ -389,33 +469,251 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_synthorium_paxel", this.has(ModItems.SYNTHORIUM_PAXEL.get()))
                 .save(this.output);
 
-        // --- CREATIVE ESSENCE FALLBACK RECIPE ---
+        // --- MOLDELONIAN SMITHING UPGRADES ---
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_SWORD.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.COMBAT,
+                        ModItems.MOLDELONIAN_SWORD.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_sword_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_PICKAXE.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.TOOLS,
+                        ModItems.MOLDELONIAN_PICKAXE.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_pickaxe_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_SHOVEL.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.TOOLS,
+                        ModItems.MOLDELONIAN_SHOVEL.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_shovel_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_AXE.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.TOOLS,
+                        ModItems.MOLDELONIAN_AXE.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_axe_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_HOE.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.TOOLS,
+                        ModItems.MOLDELONIAN_HOE.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_hoe_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_PAXEL.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.TOOLS,
+                        ModItems.MOLDELONIAN_PAXEL.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_paxel_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_HELMET.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.COMBAT,
+                        ModItems.MOLDELONIAN_HELMET.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_helmet_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_CHESTPLATE.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.COMBAT,
+                        ModItems.MOLDELONIAN_CHESTPLATE.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_chestplate_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_LEGGINGS.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.COMBAT,
+                        ModItems.MOLDELONIAN_LEGGINGS.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_leggings_smithing");
+
+        SmithingTransformRecipeBuilder.smithing(
+                        Ingredient.of(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()),
+                        Ingredient.of(ModItems.SYNTHORIUM_BOOTS.get()),
+                        Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()),
+                        RecipeCategory.COMBAT,
+                        ModItems.MOLDELONIAN_BOOTS.get()
+                ).unlocks("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output, "puremashtweaks:moldelonian_boots_smithing");
+
+        this.shaped(RecipeCategory.MISC, ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get(), 2)
+                .pattern("DTD")
+                .pattern("DSD")
+                .pattern("DDD")
+                .define('D', Blocks.END_STONE)
+                .define('T', ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get())
+                .define('S', ModItems.MOLDELONIAN_INGOT.get())
+                .unlockedBy("has_template", this.has(ModItems.MOLDELONIAN_SMITHING_TEMPLATE.get()))
+                .save(this.output, "moldelonian_smithing_template_duplication");
+
+        this.shaped(RecipeCategory.TOOLS, ModItems.CONFIGURATION_WRENCH.get())
+                .pattern("I I")
+                .pattern(" N ")
+                .pattern(" I ")
+                .define('I', Items.IRON_INGOT)
+                .define('N', Items.IRON_NUGGET)
+                .unlockedBy("has_iron_ingot", this.has(Items.IRON_INGOT))
+                .save(this.output);
+
+        // =========================================================================
+        // UNIVERSAL CABLES RECIPES (16x Yield)
+        // =========================================================================
+        this.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get(), 16)
+                .pattern("SSS")
+                .pattern("RGR")
+                .pattern("SSS")
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .define('R', Items.REDSTONE)
+                .define('G', Blocks.GLASS)
+                .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.MOLDELONIAN_UNIVERSAL_CABLE.get(), 16)
+                .pattern("MMM")
+                .pattern("RCR")
+                .pattern("MMM")
+                .define('M', ModItems.MOLDELONIAN_INGOT.get())
+                .define('R', Blocks.REDSTONE_BLOCK)
+                .define('C', ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get())
+                .unlockedBy("has_moldelonian_ingot", this.has(ModItems.MOLDELONIAN_INGOT.get()))
+                .save(this.output);
+
+        var overclockHolder = this.lookupProvider.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(ModEnchantments.OVERCLOCK);
+
+        ItemEnchantments.Mutable overclockEnchants1 = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        overclockEnchants1.set(overclockHolder, 1);
+        DataComponentPatch patch1 = DataComponentPatch.builder()
+                .set(DataComponents.STORED_ENCHANTMENTS, overclockEnchants1.toImmutable())
+                .build();
+        Ingredient overclock1 = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(
+                false,
+                patch1,
+                Items.ENCHANTED_BOOK
+        );
+
+        ItemEnchantments.Mutable overclockEnchants2 = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        overclockEnchants2.set(overclockHolder, 2);
+        DataComponentPatch patch2 = DataComponentPatch.builder()
+                .set(DataComponents.STORED_ENCHANTMENTS, overclockEnchants2.toImmutable())
+                .build();
+        Ingredient overclock2 = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(
+                false,
+                patch2,
+                Items.ENCHANTED_BOOK
+        );
+
+        Ingredient overclockBookIngredient = net.neoforged.neoforge.common.crafting.CompoundIngredient.of(
+                overclock1,
+                overclock2
+        );
+
+        this.shaped(RecipeCategory.MISC, ModItems.DUPLICATION_UPGRADE_1.get())
+                .pattern("SNS")
+                .pattern("NON")
+                .pattern("SNS")
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .define('N', ModBlocks.SYNTHORIUM_BLOCK.get())
+                .define('O', overclockBookIngredient)
+                .unlockedBy("has_synthorium_ingot", this.has(ModItems.SYNTHORIUM_INGOT.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.MISC, ModItems.DUPLICATION_UPGRADE_2.get())
+                .pattern("MNM")
+                .pattern("NDN")
+                .pattern("MNM")
+                .define('M', ModItems.MOLDELONIAN_INGOT.get())
+                .define('N', Items.NETHER_STAR)
+                .define('D', ModItems.DUPLICATION_UPGRADE_1.get())
+                .unlockedBy("has_duplication_upgrade_1", this.has(ModItems.DUPLICATION_UPGRADE_1.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.MISC, ModItems.STACK_PROCESSING_UPGRADE.get())
+                .pattern("MSM")
+                .pattern("SCS")
+                .pattern("MSM")
+                .define('M', ModItems.MOLDELONIAN_INGOT.get())
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .define('C', ModItems.MEMORY_CARD.get())
+                .unlockedBy("has_memory_card", this.has(ModItems.MEMORY_CARD.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.MISC, ModItems.CAPACITY_UPGRADE_1.get())
+                .pattern("SMS")
+                .pattern("MRM")
+                .pattern("SMS")
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .define('M', ModItems.MEMORY_CARD.get())
+                .define('R', Blocks.REDSTONE_BLOCK)
+                .unlockedBy("has_memory_card", this.has(ModItems.MEMORY_CARD.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.MISC, ModItems.CAPACITY_UPGRADE_2.get())
+                .pattern("MSM")
+                .pattern("SCS")
+                .pattern("MSM")
+                .define('M', ModItems.MOLDELONIAN_INGOT.get())
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .define('C', ModItems.CAPACITY_UPGRADE_1.get())
+                .unlockedBy("has_capacity_upgrade_1", this.has(ModItems.CAPACITY_UPGRADE_1.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.BUILDING_BLOCKS, ModBlocks.PUREMASH_BATTERY.get())
+                .pattern("SRS")
+                .pattern("RCR")
+                .pattern("SRS")
+                .define('S', ModBlocks.SYNTHORIUM_BLOCK.get())
+                .define('R', Blocks.REDSTONE_BLOCK)
+                .define('C', ModItems.MOLDELONIAN_CORE.get())
+                .unlockedBy("has_moldelonian_core", this.has(ModItems.MOLDELONIAN_CORE.get()))
+                .save(this.output);
+
+        this.shaped(RecipeCategory.MISC, ModItems.DISTRIBUTION_FILTER.get())
+                .pattern("ESE")
+                .pattern("SPS")
+                .pattern("ESE")
+                .define('P', Items.PAPER)
+                .define('E', Items.REDSTONE)
+                .define('S', ModItems.SYNTHORIUM_INGOT.get())
+                .unlockedBy("has_redstone", this.has(Items.REDSTONE))
+                .save(this.output);
+
         this.registerCreativeEssenceFallback(this.output);
 
         // =========================================================================
         // SYNTHESIS TABLE RECIPES (9x9)
         // =========================================================================
-
-        // --- PUREMASH CORE RECIPE ---
         registerPureMashCore(this.output);
-
-        // --- MOLDELONIAN CORE RECIPE ---
         registerMoldelonianCore(this.output);
-
-        // --- DYNAMIC MOLDELONIAN INGOT RECIPE ---
         this.registerMoldelonianIngotRecipe(this.output);
-
-        // --- SUPREME SINGULARITY RECIPE (COSMIC SINGULARITY) ---
-        this.registerCosmicSingularityRecipe(this.output);
-
-        // --- CREATIVE FLUID TANK RECIPE ---
         this.registerCreativeFluidTank(this.output);
-
-        // --- NORMAL FLUID TANK RECIPE ---
         this.registerFluidTank(this.output);
-
-        // --- CHUNK LOADER RECIPE ---
         this.registerChunkLoader(this.output);
+        this.registerCreativeBattery(this.output);
+        this.registerPureMashGenerator(this.output);
     }
 
     private void saveShapedSynthesis(
@@ -425,51 +723,49 @@ public class ModRecipeProvider extends RecipeProvider {
             Map<Character, Ingredient> keys,
             ItemLike resultItem
     ) {
-        java.util.List<String> patternList = java.util.List.of(pattern);
-        java.util.Map<String, Ingredient> keyMap = new java.util.HashMap<>();
+        List<String> patternList = List.of(pattern);
+        Map<String, Ingredient> keyMap = new java.util.HashMap<>();
         for (var entry : keys.entrySet()) {
             keyMap.put(String.valueOf(entry.getKey()), entry.getValue());
         }
 
-        net.minecraft.world.item.ItemStackTemplate safeResult = new net.minecraft.world.item.ItemStackTemplate(resultItem.asItem(), 1);
-
+        ItemStackTemplate safeResult = new ItemStackTemplate(resultItem.asItem(), 1);
         ShapedSynthesisRecipe recipe = ShapedSynthesisRecipe.newFromCodec("", patternList, keyMap, safeResult);
         recipeOutput.accept(keyId, recipe, null);
     }
 
-    // Look up a partner mod item or return the fallback if not found
-    private Ingredient getModItem(String modId, String path, net.minecraft.world.item.Item fallback) {
+    private Ingredient getModItem(String modId, String path, Item fallback) {
         return Ingredient.of(BuiltInRegistries.ITEM.get(
                 Identifier.fromNamespaceAndPath(modId, path)
-        ).map(net.minecraft.core.Holder::value).orElse(fallback));
+        ).map(Holder::value).orElse(fallback));
     }
 
-    // Register the Moldelonian Core recipe
     private void registerMoldelonianCore(RecipeOutput recipeOutput) {
         String[] pattern = new String[] {
                 ".MMSDSMM.",
                 "MSSDIDSSM",
                 "MSDIMIDSM",
-                "SDIDSDIDS",
+                "SDIASAIDS",
                 "DIMSNSMID",
-                "SDIDSDIDS",
+                "SDIASAIDS",
                 "MSDIMIDSM",
                 "MSSDIDSSM",
                 ".MMSDSMM."
         };
 
-        java.util.Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
         keys.put('M', Ingredient.of(ModBlocks.MOLDELONIAN_BLOCK.get()));
         keys.put('S', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
         keys.put('I', Ingredient.of(ModItems.SYNTHORIUM_INGOT.get()));
         keys.put('N', Ingredient.of(Items.NETHER_STAR));
         keys.put('D', Ingredient.of(Blocks.DIAMOND_BLOCK));
+        keys.put('A', Ingredient.of(Blocks.REDSTONE_BLOCK));
 
         saveShapedSynthesis(
                 recipeOutput,
                 ResourceKey.create(
                         Registries.RECIPE,
-                        Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/moldelonian_core")
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/moldelonian_core")
                 ),
                 pattern,
                 keys,
@@ -477,40 +773,42 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    // Register the PureMash Core recipe
     private void registerPureMashCore(RecipeOutput recipeOutput) {
-        // Resolve modded ingredients locally to clean up the method signature
         Ingredient creativeEssence = getModItem("mysticalagradditions", "creative_essence", Items.NETHER_STAR);
         Ingredient controller = getModItem("ae2", "controller", Blocks.NETHERITE_BLOCK.asItem());
 
         String[] pattern = new String[] {
                 "SSSSYSSSS",
-                "SMMINIMMS",
+                "STMINIMTS",
                 "SMYNSNYMS",
                 "SINGCGNIS",
                 "YNSCKCSNY",
                 "SINGCGNIS",
                 "SMYNSNYMS",
-                "SMMINIMMS",
+                "STMINIMTS",
                 "SSSSYSSSS"
         };
 
-        java.util.Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
         keys.put('S', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
         keys.put('M', Ingredient.of(ModBlocks.MOLDELONIAN_BLOCK.get()));
         keys.put('I', Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()));
-        assert ModSingularities.SYNTHORIUM_SINGULARITY != null;
-        keys.put('G', Ingredient.of(ModSingularities.SYNTHORIUM_SINGULARITY.get()));
+        if (ModSingularities.SYNTHORIUM_SINGULARITY != null) {
+            keys.put('G', Ingredient.of(ModSingularities.SYNTHORIUM_SINGULARITY.get()));
+        } else {
+            keys.put('G', Ingredient.of(ModItems.SYNTHORIUM_INGOT.get()));
+        }
         keys.put('C', controller);
         keys.put('Y', creativeEssence);
         keys.put('N', Ingredient.of(Blocks.DIAMOND_BLOCK));
         keys.put('K', Ingredient.of(ModItems.MOLDELONIAN_CORE.get()));
+        keys.put('T', Ingredient.of(ModSingularities.COSMIC_SINGULARITY.get()));
 
         saveShapedSynthesis(
                 recipeOutput,
                 ResourceKey.create(
                         Registries.RECIPE,
-                        Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/puremash_core")
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/puremash_core")
                 ),
                 pattern,
                 keys,
@@ -518,50 +816,71 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    // Utility method to register Shapeless recipes on the 9x9 Synthesis Table
+    private void registerCreativeBattery(RecipeOutput recipeOutput) {
+        String[] pattern = new String[] {
+                "IIIIAIIII",
+                "IRRSMSRRI",
+                "IRSMCMSRI",
+                "ISMARAMSI",
+                "AMCRBRCMA",
+                "ISMARAMSI",
+                "IRSMCMSRI",
+                "IRRSMSRRI",
+                "IIIIAIIII"
+        };
+
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        keys.put('I', Ingredient.of(ModBlocks.MOLDELONIAN_BLOCK.get()));
+        keys.put('S', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
+        keys.put('R', Ingredient.of(Blocks.REDSTONE_BLOCK));
+        keys.put('M', Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()));
+        keys.put('C', Ingredient.of(ModItems.MOLDELONIAN_CORE.get()));
+        keys.put('B', Ingredient.of(ModBlocks.PUREMASH_BATTERY.get()));
+        keys.put('A', Ingredient.of(ModBlocks.PUREMASH_CORE_BLOCK.get()));
+
+        saveShapedSynthesis(
+                recipeOutput,
+                ResourceKey.create(
+                        Registries.RECIPE,
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/creative_battery")
+                ),
+                pattern,
+                keys,
+                ModBlocks.CREATIVE_BATTERY.get()
+        );
+    }
+
     private void saveShapelessSynthesis(
             RecipeOutput recipeOutput,
             ResourceKey<Recipe<?>> keyId,
             List<Ingredient> ingredients,
             ItemLike resultItem
     ) {
-        net.minecraft.world.item.ItemStackTemplate safeResult = new net.minecraft.world.item.ItemStackTemplate(resultItem.asItem(), 1);
-
-        dev.davidklgames.puremashtweaks.recipe.ShapelessSynthesisRecipe recipe =
-                new dev.davidklgames.puremashtweaks.recipe.ShapelessSynthesisRecipe("", ingredients, safeResult);
-
+        ItemStackTemplate safeResult = new ItemStackTemplate(resultItem.asItem(), 1);
+        ShapelessSynthesisRecipe recipe = new ShapelessSynthesisRecipe("", ingredients, safeResult);
         recipeOutput.accept(keyId, recipe, null);
     }
 
-    // Look up official Tag ingredient via DataGen registries in a secure way
     private Ingredient getTagIngredient(String metal) {
-        net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.TagKey.create(
+        TagKey<Item> tagKey = TagKey.create(
                 Registries.ITEM,
                 Identifier.fromNamespaceAndPath("c", "ingots/" + metal)
         );
         return Ingredient.of(this.lookupProvider.lookupOrThrow(Registries.ITEM).getOrThrow(tagKey));
     }
 
-    // Register the dynamic and moldable Moldelonian Ingot recipe using official Tags
     private void registerMoldelonianIngotRecipe(RecipeOutput recipeOutput) {
-        java.util.List<Ingredient> ingredients = new java.util.ArrayList<>();
+        List<Ingredient> ingredients = new ArrayList<>();
 
-        // 1. Base Ingredients (Always included)
         ingredients.add(Ingredient.of(ModItems.SYNTHORIUM_INGOT.get()));
         ingredients.add(Ingredient.of(Items.IRON_INGOT));
         ingredients.add(Ingredient.of(Items.GOLD_INGOT));
         ingredients.add(Ingredient.of(Items.COPPER_INGOT));
         ingredients.add(Ingredient.of(Items.NETHERITE_INGOT));
 
-        // 2. Dynamic ingredients retrieved by official "c:ingots/" Tags (The game only requires them if the corresponding mod is active!)
         String[] atoIngots = new String[] {
-                // Common mining metals from AllTheOres (already included in your environment)
                 "aluminum", "lead", "nickel", "osmium", "platinum", "silver", "tin", "zinc", "uranium",
-
-                // Metal alloys and advanced industrial metals
                 "steel", "bronze", "brass", "electrum", "invar", "constantan", "iridium", "titanium", "tungsten",
-
-                // Mystic, magical, or special metals from popular mods (Forbidden & Arcanus, Advanced AE, Mystical Agriculture, etc.)
                 "cobalt", "ardite", "manyullyn", "refined_glowstone", "refined_obsidian", "rose_gold",
                 "enderium", "lumium", "signalum", "deorum", "quantum_alloy", "prosperity", "inferium", "prudentium", "tertium", "imperium", "supremium"
         };
@@ -574,67 +893,27 @@ public class ModRecipeProvider extends RecipeProvider {
                 recipeOutput,
                 ResourceKey.create(
                         Registries.RECIPE,
-                        Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/moldelonian_ingot")
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/moldelonian_ingot")
                 ),
                 ingredients,
                 ModItems.MOLDELONIAN_INGOT.get()
         );
     }
 
-    // Look up individual singularity Tag ingredient securely against nulls
-    private Ingredient getSingularityTagIngredient(String name) {
-        net.minecraft.tags.TagKey<Item> tagKey = net.minecraft.tags.TagKey.create(
-                Registries.ITEM,
-                Identifier.fromNamespaceAndPath("c", "singularities/" + name)
-        );
-        return Ingredient.of(this.lookupProvider.lookupOrThrow(Registries.ITEM).getOrThrow(tagKey));
-    }
-
-    // Register the dynamic unification recipe of all singularities for the Cosmic Singularity
-    private void registerCosmicSingularityRecipe(RecipeOutput recipeOutput) {
-        java.util.List<Ingredient> ingredients = new java.util.ArrayList<>();
-
-        // Dynamically iterate over the mod's singularity registry list
-        for (var itemHolder : dev.davidklgames.puremashtweaks.registry.ModSingularities.REGISTERED_SINGULARITIES) {
-            // Avoid adding the Cosmic Singularity itself to its synthesis recipe!
-            if (itemHolder == dev.davidklgames.puremashtweaks.registry.ModSingularities.COSMIC_SINGULARITY) {
-                continue;
-            }
-
-            String pathName = itemHolder.getId().getPath();
-            // Remove the "_singularity" suffix to extract the clean tag (e.g., "coal_singularity" -> "coal")
-            String cleanName = pathName.replace("_singularity", "");
-
-            // Collect the corresponding tag ingredient from the list of placeholders or registries
-            ingredients.add(getSingularityTagIngredient(cleanName));
-        }
-
-        saveShapelessSynthesis(
-                recipeOutput,
-                ResourceKey.create(
-                        Registries.RECIPE,
-                        Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/cosmic_singularity")
-                ),
-                ingredients,
-                ModSingularities.COSMIC_SINGULARITY.get()
-        );
-    }
-
-    // Registry of Creative Fluid Tank recipe
     private void registerCreativeFluidTank(RecipeOutput recipeOutput) {
         String[] pattern = new String[] {
                 "BBRBCBRBB",
                 "BRBRMRBRB",
                 "RBRMBMRBR",
-                "BRMBBBMRB",
-                "CMBBTBBMC",
-                "BRMBBBMRB",
+                "BRMBRBMRB",
+                "CMBRTRBMC",
+                "BRMBRBMRB",
                 "RBRMBMRBR",
                 "BRBRMRBRB",
                 "BBRBCBRBB"
         };
 
-        java.util.Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
         keys.put('B', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
         keys.put('R', Ingredient.of(Blocks.REDSTONE_BLOCK));
         keys.put('M', Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()));
@@ -645,7 +924,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 recipeOutput,
                 ResourceKey.create(
                         Registries.RECIPE,
-                        Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/creative_fluid_tank")
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/creative_fluid_tank")
                 ),
                 pattern,
                 keys,
@@ -653,7 +932,6 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    // Registry of Fluid Tank recipe
     private void registerFluidTank(RecipeOutput recipeOutput) {
         String[] pattern = new String[] {
                 ".........",
@@ -667,14 +945,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 "........."
         };
 
-        java.util.Map<Character, Ingredient> keys = new java.util.HashMap<>();
-
-        // Safe use of global tag "c:glass_panes" in 26.1.2
-        net.minecraft.tags.TagKey<net.minecraft.world.item.Item> glassPanesTag = net.minecraft.tags.TagKey.create(
-                net.minecraft.core.registries.Registries.ITEM,
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("c", "glass_panes")
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        TagKey<Item> glassPanesTag = TagKey.create(
+                Registries.ITEM,
+                Identifier.fromNamespaceAndPath("c", "glass_panes")
         );
-        keys.put('G', Ingredient.of(this.lookupProvider.lookupOrThrow(net.minecraft.core.registries.Registries.ITEM).getOrThrow(glassPanesTag)));
+        keys.put('G', Ingredient.of(this.lookupProvider.lookupOrThrow(Registries.ITEM).getOrThrow(glassPanesTag)));
         keys.put('B', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
         keys.put('K', Ingredient.of(Items.BUCKET));
 
@@ -682,7 +958,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 recipeOutput,
                 ResourceKey.create(
                         Registries.RECIPE,
-                        Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/fluid_tank")
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/fluid_tank")
                 ),
                 pattern,
                 keys,
@@ -690,33 +966,33 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    // Registry od Chunk Loader recipe
     private void registerChunkLoader(RecipeOutput recipeOutput) {
         String[] pattern = new String[] {
                 ".........",
                 "..PPSPP..",
                 ".PSDMDSP.",
-                ".PDRSRDP.",
-                ".SMSCSMS.",
-                ".PDRSRDP.",
+                ".PDRORDP.",
+                ".SMOCOMS.",
+                ".PDRORDP.",
                 ".PSDMDSP.",
                 "..PPSPP..",
                 "........."
         };
 
-        java.util.Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
         keys.put('R', Ingredient.of(ModItems.SYNTHORIUM_ROD.get()));
-        keys.put('D', Ingredient.of(net.minecraft.world.level.block.Blocks.DIAMOND_BLOCK));
+        keys.put('D', Ingredient.of(Blocks.DIAMOND_BLOCK));
         keys.put('M', Ingredient.of(ModItems.MOLDELONIAN_INGOT.get()));
         keys.put('S', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
+        keys.put('O', Ingredient.of(Blocks.OBSIDIAN));
         keys.put('C', Ingredient.of(ModItems.PUREMASH_CORE.get()));
         keys.put('P', Ingredient.of(ModItems.SYNTHORIUM_NUGGET.get()));
 
         saveShapedSynthesis(
                 recipeOutput,
-                net.minecraft.resources.ResourceKey.create(
-                        net.minecraft.core.registries.Registries.RECIPE,
-                        net.minecraft.resources.Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "synthesis/chunk_loader")
+                ResourceKey.create(
+                        Registries.RECIPE,
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/chunk_loader")
                 ),
                 pattern,
                 keys,
@@ -724,43 +1000,70 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    // Registry of Conditional Recipe to Creative Essence (Mystical Agradditions)
     private void registerCreativeEssenceFallback(RecipeOutput recipeOutput) {
-        // Retrieves the result item safely during DataGen.
-        net.minecraft.world.item.Item creativeEssence = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("mysticalagradditions", "creative_essence")
-        ).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR);
+        Item creativeEssence = BuiltInRegistries.ITEM.get(
+                Identifier.fromNamespaceAndPath("mysticalagradditions", "creative_essence")
+        ).map(Holder::value).orElse(Items.AIR);
 
-        if (creativeEssence != net.minecraft.world.item.Items.AIR) {
-
-            // Packages the recipe output with our two bulletproof conditions.
+        if (creativeEssence != Items.AIR) {
             RecipeOutput conditionalOutput = recipeOutput.withConditions(
                     new net.neoforged.neoforge.common.conditions.ModLoadedCondition("mysticalagradditions"),
                     new dev.davidklgames.puremashtweaks.recipe.condition.FallbackConfigCondition()
             );
 
-            this.shaped(net.minecraft.data.recipes.RecipeCategory.MISC, creativeEssence)
+            this.shaped(RecipeCategory.MISC, creativeEssence)
                     .pattern("PIT")
                     .pattern("INI")
                     .pattern("MIS")
-
-                    .define('P', getModItem("mysticalagriculture", "prudentium_block", net.minecraft.world.item.Items.AIR))
-                    .define('I', getModItem("mysticalagradditions", "insanium_block", net.minecraft.world.item.Items.AIR))
-                    .define('T', getModItem("mysticalagriculture", "tertium_block", net.minecraft.world.item.Items.AIR))
-                    .define('N', net.minecraft.world.item.Items.NETHER_STAR)
-                    .define('M', getModItem("mysticalagriculture", "imperium_block", net.minecraft.world.item.Items.AIR))
-                    .define('S', getModItem("mysticalagriculture", "supremium_block", net.minecraft.world.item.Items.AIR))
-                    .unlockedBy("has_nether_star", this.has(net.minecraft.world.item.Items.NETHER_STAR))
-                    .save(conditionalOutput, net.minecraft.resources.ResourceKey.create(
-                            net.minecraft.core.registries.Registries.RECIPE,
-                            net.minecraft.resources.Identifier.fromNamespaceAndPath(dev.davidklgames.puremashtweaks.PureMashTweaks.MODID, "creative_essence")
+                    .define('P', getModItem("mysticalagriculture", "prudentium_block", Items.AIR))
+                    .define('I', getModItem("mysticalagradditions", "insanium_block", Items.AIR))
+                    .define('T', getModItem("mysticalagriculture", "tertium_block", Items.AIR))
+                    .define('N', Items.NETHER_STAR)
+                    .define('M', getModItem("mysticalagriculture", "imperium_block", Items.AIR))
+                    .define('S', getModItem("mysticalagriculture", "supremium_block", Items.AIR))
+                    .unlockedBy("has_nether_star", this.has(Items.NETHER_STAR))
+                    .save(conditionalOutput, ResourceKey.create(
+                            Registries.RECIPE,
+                            Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "creative_essence")
                     ));
         }
     }
 
-    // ----------------------------------------------------------------------------------------------------
-    // OFFICIAL INTERNAL RUNNER CLASS OF 26.1.2 (Concrete, implements all abstract methods)
-    // ----------------------------------------------------------------------------------------------------
+    private void registerPureMashGenerator(RecipeOutput recipeOutput) {
+        String[] pattern = new String[] {
+                ".........",
+                "..GCCCG..",
+                ".GGGIGGG.",
+                ".CGBDBGC.",
+                ".CIATAIC.",
+                ".CGBDBGC.",
+                ".GGGIGGG.",
+                "..GCCCG..",
+                "........."
+        };
+
+        Map<Character, Ingredient> keys = new java.util.HashMap<>();
+        keys.put('I', Ingredient.of(Items.NETHERITE_INGOT));
+        keys.put('B', Ingredient.of(ModBlocks.SYNTHORIUM_BLOCK.get()));
+        keys.put('C', Ingredient.of(ModBlocks.SYNTHORIUM_UNIVERSAL_CABLE.get()));
+        keys.put('A', Ingredient.of(ModBlocks.FLUID_TANK.get()));
+        keys.put('R', Ingredient.of(Items.REDSTONE_BLOCK));
+        keys.put('G', Ingredient.of(Blocks.DIAMOND_BLOCK));
+        keys.put('D', Ingredient.of(Blocks.REDSTONE_BLOCK));
+        keys.put('T', Ingredient.of(Blocks.FURNACE));
+
+        saveShapedSynthesis(
+                recipeOutput,
+                ResourceKey.create(
+                        Registries.RECIPE,
+                        Identifier.fromNamespaceAndPath(PureMashTweaks.MODID, "synthesis/puremash_generator")
+                ),
+                pattern,
+                keys,
+                ModBlocks.PUREMASH_GENERATOR.get()
+        );
+    }
+
     public static class Runner extends RecipeProvider.Runner {
         public Runner(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
             super(output, registries);

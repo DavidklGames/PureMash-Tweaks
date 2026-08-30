@@ -12,7 +12,7 @@ public record FallbackConfigCondition() implements ICondition {
     @Override
     public boolean test(@NonNull IContext context) {
         // Returns TRUE if the fallback configuration is enabled, activating the recipe in the game!
-        return PureMashTweaksConfig.ENABLE_CREATIVE_ESSENCE_FALLBACK.get();
+        return PureMashTweaksConfig.COMMON.enableCreativeEssenceFallback.get();
     }
 
     @Override

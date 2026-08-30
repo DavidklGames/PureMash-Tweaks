@@ -1,5 +1,6 @@
 package dev.davidklgames.puremashtweaks.item;
 
+import dev.davidklgames.puremashtweaks.config.PureMashTweaksConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -65,7 +66,7 @@ public class MoldelonianCoreItem extends Item {
 
             textConsumer.accept(Component.literal("Max I/O:")
                     .withStyle(ChatFormatting.GRAY)
-                    .append(Component.literal(" 400k FE/t")
+                    .append(Component.literal(" 500k FE/t")
                             .withStyle(ChatFormatting.DARK_GRAY)));
         }
         super.appendHoverText(stack, context, display, textConsumer, flag);
@@ -79,7 +80,8 @@ public class MoldelonianCoreItem extends Item {
             var coreEnergy = stack.getCapability(Capabilities.Energy.ITEM, ItemAccess.forStack(stack));
 
             if (coreEnergy != null && coreEnergy.getAmountAsLong() > 0) {
-                long maxPulseTransfer = 1600000L;
+                // Configurable transfer rate * 4 ticks pulse
+                long maxPulseTransfer = PureMashTweaksConfig.COMMON.moldelonianCoreTransferRate.get() * 4L;
 
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                     ItemStack targetStack = player.getInventory().getItem(i);

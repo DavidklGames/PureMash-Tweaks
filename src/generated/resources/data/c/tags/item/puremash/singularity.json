@@ -1,33 +1,136 @@
 {
   "values": [
-    "puremashtweaks:coal_singularity",
-    "puremashtweaks:copper_singularity",
-    "puremashtweaks:iron_singularity",
-    "puremashtweaks:gold_singularity",
-    "puremashtweaks:diamond_singularity",
-    "puremashtweaks:redstone_singularity",
-    "puremashtweaks:lapis_singularity",
-    "puremashtweaks:emerald_singularity",
-    "puremashtweaks:amethyst_singularity",
-    "puremashtweaks:quartz_singularity",
-    "puremashtweaks:glowstone_singularity",
-    "puremashtweaks:netherite_singularity",
-    "puremashtweaks:synthorium_singularity",
-    "puremashtweaks:sculk_singularity",
-    "puremashtweaks:slime_singularity",
-    "puremashtweaks:ender_pearl_singularity",
-    "puremashtweaks:sugar_singularity",
-    "puremashtweaks:gunpowder_singularity",
-    "puremashtweaks:clay_singularity",
-    "puremashtweaks:nether_star_singularity",
-    "puremashtweaks:inferium_singularity",
-    "puremashtweaks:prudentium_singularity",
-    "puremashtweaks:tertium_singularity",
-    "puremashtweaks:imperium_singularity",
-    "puremashtweaks:supremium_singularity",
-    "puremashtweaks:insanium_singularity",
-    "puremashtweaks:deorum_singularity",
-    "puremashtweaks:quantum_alloy_singularity",
-    "puremashtweaks:certus_quartz_singularity"
+    {
+      "id": "puremashtweaks:coal_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:copper_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:iron_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:gold_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:diamond_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:redstone_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:lapis_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:emerald_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:amethyst_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:quartz_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:glowstone_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:netherite_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:synthorium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:sculk_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:slime_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:ender_pearl_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:sugar_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:gunpowder_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:clay_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:nether_star_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:inferium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:prudentium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:tertium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:imperium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:supremium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:insanium_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:deorum_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:quantum_alloy_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:certus_quartz_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:netherite_iron_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:netherite_gold_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:netherite_emerald_singularity",
+      "required": false
+    },
+    {
+      "id": "puremashtweaks:netherite_diamond_singularity",
+      "required": false
+    }
   ]
 }

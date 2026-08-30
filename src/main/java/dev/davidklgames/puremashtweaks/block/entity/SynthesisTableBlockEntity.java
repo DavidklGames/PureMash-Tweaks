@@ -1,33 +1,44 @@
 package dev.davidklgames.puremashtweaks.block.entity;
 
 import dev.davidklgames.puremashtweaks.api.SynthesisRecipeHelper;
-import dev.davidklgames.puremashtweaks.component.ModDataComponents;
+import dev.davidklgames.puremashtweaks.registry.PureMashDataComponents;
 import dev.davidklgames.puremashtweaks.menu.SynthesisTableMenu;
 import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
 import dev.davidklgames.puremashtweaks.registry.ModItems;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @SuppressWarnings({"removal"})
@@ -39,19 +50,23 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
     private int expectedOutputCount = 0;
     private boolean bypassGridLock = false;
 
-    // High-speed Memory Card Cache
+    // High-Speed Pre-Cached Resources & Maps for instant O(1) AE2 pattern delivery
+    private final ItemResource[] cachedExpectedResources = new ItemResource[81];
+    private final int[] cachedExpectedCounts = new int[81];
+    private final Map<ItemResource, List<Integer>> resourceToSlotsMap = new Object2ObjectOpenHashMap<>();
     private final ItemStack[] memoryCardCache = new ItemStack[81];
-    // Memory Card result item cache
     private ItemStack memoryCardOutputCache = ItemStack.EMPTY;
+    private ItemResource cachedOutputResource = ItemResource.EMPTY;
     private boolean hasMemoryCardRecipe = false;
 
     {
-        for (int i = 0; i < 81; i++) memoryCardCache[i] = ItemStack.EMPTY;
+        for (int i = 0; i < 81; i++) {
+            cachedExpectedResources[i] = ItemResource.EMPTY;
+            cachedExpectedCounts[i] = 0;
+            memoryCardCache[i] = ItemStack.EMPTY;
+        }
     }
 
-    // ----------------------------------------------------------------------------------------------------
-    // CUSTOM INVENTORY: To resolve visibility conflicts and allow Transactions
-    // ----------------------------------------------------------------------------------------------------
     public class SynthesisInventory extends ItemStackHandler {
         public SynthesisInventory() { super(83); }
 
@@ -68,21 +83,21 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (slot >= 81 || isGridLocked()) return stack;
-            if (stack.isEmpty()) return stack;
+            if (slot >= 81 || isGridLocked() || stack.isEmpty()) return stack;
 
-            // Handling for AE2 and Restricted Automation (1 Recipe at a time)
             if (automationActive && automationMode == 0 && hasMemoryCardRecipe) {
-                ItemStack expected = memoryCardCache[slot];
-                if (expected.isEmpty() || !ItemStack.isSameItemSameComponents(stack, expected)) {
+                ItemResource expectedRes = cachedExpectedResources[slot];
+                if (expectedRes.isEmpty() || !expectedRes.equals(ItemResource.of(stack))) {
                     return stack;
                 }
-                int required = expected.getCount();
+
                 ItemStack currentStack = this.getStackInSlot(slot);
-                if (currentStack.getCount() >= required) {
+                int limit = Math.min(stack.getMaxStackSize(), this.getSlotLimit(slot));
+                if (currentStack.getCount() >= limit) {
                     return stack;
                 }
-                int space = required - currentStack.getCount();
+
+                int space = limit - currentStack.getCount();
                 int toInsertAmount = Math.min(stack.getCount(), space);
 
                 if (!simulate) {
@@ -110,7 +125,6 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
             return result;
         }
 
-        // Special Functions for the Transaction API (SnapshotJournal)
         public void setStackSilent(int slot, ItemStack stack) {
             this.stacks.set(slot, stack);
         }
@@ -132,10 +146,6 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
 
     public final SynthesisInventory inventory = new SynthesisInventory();
 
-    // ----------------------------------------------------------------------------------------------------
-    // CONSTRUCTOR AND CRAFTING LOGIC
-    // ----------------------------------------------------------------------------------------------------
-
     public SynthesisTableBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SYNTHESIS_TABLE_BE.get(), pos, state);
     }
@@ -146,20 +156,71 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
         updateMemoryCardCache();
     }
 
-    private void updateMemoryCardCache() {
+    public static void tick(Level level, BlockPos pos, BlockState state, SynthesisTableBlockEntity be) {
+        if (level.isClientSide()) return;
+
+        if (be.automationActive && be.automationMode == 0 && be.hasMemoryCardRecipe) {
+            be.autoProcessAndEject(level, pos);
+        }
+    }
+
+    private void autoProcessAndEject(Level level, BlockPos pos) {
+        this.updateCraftingResult();
+
+        ItemStack outputStack = this.inventory.getStackInSlot(81);
+        if (outputStack.isEmpty()) return;
+
+        // Auto-eject result directly to adjacent AE2 Pattern Providers or containers (0-tick response)
+        for (Direction dir : Direction.values()) {
+            BlockPos targetPos = pos.relative(dir);
+            ResourceHandler<ItemResource> targetHandler = level.getCapability(Capabilities.Item.BLOCK, targetPos, dir.getOpposite());
+
+            if (targetHandler != null) {
+                ItemResource res = ItemResource.of(outputStack);
+                int amountToPush = outputStack.getCount();
+
+                try (Transaction tx = Transaction.openRoot()) {
+                    int inserted = targetHandler.insert(res, amountToPush, tx);
+                    if (inserted > 0) {
+                        tx.commit();
+                        outputStack.shrink(inserted);
+                        if (outputStack.isEmpty()) {
+                            this.inventory.setStackSilent(81, ItemStack.EMPTY);
+                            this.consumeCraftingIngredientsSilent();
+                        }
+                        this.setChanged();
+                        this.updateCraftingResult();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void updateMemoryCardCache() {
         if (this.level == null) {
             this.hasMemoryCardRecipe = false;
             this.memoryCardOutputCache = ItemStack.EMPTY;
+            this.cachedOutputResource = ItemResource.EMPTY;
+            this.resourceToSlotsMap.clear();
             return;
         }
-        for (int i = 0; i < 81; i++) memoryCardCache[i] = ItemStack.EMPTY;
+
+        for (int i = 0; i < 81; i++) {
+            memoryCardCache[i] = ItemStack.EMPTY;
+            cachedExpectedResources[i] = ItemResource.EMPTY;
+            cachedExpectedCounts[i] = 0;
+        }
+        this.resourceToSlotsMap.clear();
         this.hasMemoryCardRecipe = false;
         this.memoryCardOutputCache = ItemStack.EMPTY;
+        this.cachedOutputResource = ItemResource.EMPTY;
 
         ItemStack card = inventory.getStackInSlot(82);
-        if (automationActive && automationMode == 0 && !card.isEmpty() && card.is(ModItems.MEMORY_CARD.get()) && card.has(ModDataComponents.RECIPE_CARD_DATA.get())) {
-            CompoundTag recipeData = card.get(ModDataComponents.RECIPE_CARD_DATA.get());
+        if (automationActive && automationMode == 0 && !card.isEmpty() && card.is(ModItems.MEMORY_CARD.get()) && card.has(PureMashDataComponents.RECIPE_CARD_DATA.get())) {
+            CompoundTag recipeData = card.get(PureMashDataComponents.RECIPE_CARD_DATA.get());
             if (recipeData == null) return;
+
             ListTag itemsList = recipeData.getListOrEmpty("GridItems");
             var context = this.level.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE);
 
@@ -167,13 +228,23 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
                 CompoundTag itemTag = itemsList.getCompoundOrEmpty(i);
                 int slot = itemTag.getIntOr("Slot", -1);
                 if (slot >= 0 && slot < 81) {
-                    memoryCardCache[slot] = ItemStack.CODEC.parse(context, itemTag.getCompoundOrEmpty("Item")).result().orElse(ItemStack.EMPTY);
+                    ItemStack stack = ItemStack.CODEC.parse(context, itemTag.getCompoundOrEmpty("Item")).result().orElse(ItemStack.EMPTY);
+                    if (!stack.isEmpty()) {
+                        memoryCardCache[slot] = stack;
+                        ItemResource res = ItemResource.of(stack);
+                        cachedExpectedResources[slot] = res;
+                        cachedExpectedCounts[slot] = Math.max(1, stack.getCount());
+
+                        this.resourceToSlotsMap.computeIfAbsent(res, k -> new ArrayList<>()).add(slot);
+                    }
                 }
             }
 
-            // NEW: Loads and saves the result item in the cache as soon as the card is read
             if (recipeData.contains("OutputItem")) {
                 this.memoryCardOutputCache = ItemStack.CODEC.parse(context, recipeData.getCompoundOrEmpty("OutputItem")).result().orElse(ItemStack.EMPTY);
+                if (!this.memoryCardOutputCache.isEmpty()) {
+                    this.cachedOutputResource = ItemResource.of(this.memoryCardOutputCache);
+                }
             }
 
             this.hasMemoryCardRecipe = true;
@@ -191,38 +262,35 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
         if (this.level == null || this.level.isClientSide()) return;
 
         if (this.level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-            NonNullList<ItemStack> ingredients = NonNullList.withSize(81, ItemStack.EMPTY);
-            for (int i = 0; i < 81; i++) {
-                ingredients.set(i, this.inventory.getStackInSlot(i));
-            }
-
-            // =========================================================================
-            // INTERCEPTION AND READING OF THE MEMORY CARD STRICT RECIPE (Phase 4)
-            // =========================================================================
+            // 1. FAST MEMORY CARD RECIPE CHECK
             if (hasMemoryCardRecipe) {
+                int possibleCrafts = Integer.MAX_VALUE;
                 boolean recipeMatches = true;
 
                 for (int i = 0; i < 81; i++) {
-                    ItemStack expected = memoryCardCache[i];
+                    ItemResource expectedRes = cachedExpectedResources[i];
                     ItemStack actual = this.inventory.getStackInSlot(i);
 
-                    if (expected.isEmpty()) {
+                    if (expectedRes.isEmpty()) {
                         if (!actual.isEmpty()) {
                             recipeMatches = false;
                             break;
                         }
                     } else {
-                        if (actual.isEmpty() || !ItemStack.isSameItemSameComponents(actual, expected) || actual.getCount() < expected.getCount()) {
+                        if (actual.isEmpty() || !expectedRes.equals(ItemResource.of(actual)) || actual.getCount() < cachedExpectedCounts[i]) {
                             recipeMatches = false;
                             break;
                         }
+                        int craftsForSlot = actual.getCount() / cachedExpectedCounts[i];
+                        possibleCrafts = Math.min(possibleCrafts, craftsForSlot);
                     }
                 }
 
-                if (recipeMatches && !this.memoryCardOutputCache.isEmpty()) {
-                    // Directly uses the item preloaded in the cache (saving CPU)
+                if (recipeMatches && !this.memoryCardOutputCache.isEmpty() && possibleCrafts > 0 && possibleCrafts != Integer.MAX_VALUE) {
                     this.expectedOutputCount = this.memoryCardOutputCache.getCount();
-                    this.inventory.setStackInSlot(81, this.memoryCardOutputCache.copy());
+                    if (this.inventory.getStackInSlot(81).isEmpty()) {
+                        this.inventory.setStackInSlot(81, this.memoryCardOutputCache.copy());
+                    }
                     setChanged();
                     return;
                 }
@@ -233,9 +301,7 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
                 return;
             }
 
-            // =========================================================================
-            // INTERCEPTION AND READING OF CUSTOM 9x9 RECIPES (Phase 2)
-            // =========================================================================
+            // 2. CUSTOM JSON RECIPES
             ItemStack[] gridArray = new ItemStack[81];
             for (int i = 0; i < 81; i++) {
                 gridArray[i] = this.inventory.getStackInSlot(i);
@@ -249,12 +315,13 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
                 return;
             }
 
-            // =========================================================================
-            // MOD DATAPACK 9x9 RECIPES (Phase 3 - NEW INTEGRATION)
-            // =========================================================================
-            net.minecraft.world.item.crafting.CraftingInput input = net.minecraft.world.item.crafting.CraftingInput.of(9, 9, ingredients);
+            // 3. DATAPACK 9x9 RECIPES
+            NonNullList<ItemStack> ingredients = NonNullList.withSize(81, ItemStack.EMPTY);
+            for (int i = 0; i < 81; i++) {
+                ingredients.set(i, gridArray[i]);
+            }
+            CraftingInput input = CraftingInput.of(9, 9, ingredients);
 
-            // Attempts to validate the Shaped (9x9) Datapack recipe generated by DataGen
             Optional<RecipeHolder<dev.davidklgames.puremashtweaks.recipe.ShapedSynthesisRecipe>> shapedMatch = serverLevel.recipeAccess().getRecipeFor(
                     dev.davidklgames.puremashtweaks.registry.ModRecipes.SHAPED_SYNTHESIS_TYPE.get(),
                     input,
@@ -269,7 +336,6 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
                 return;
             }
 
-            // Attempts to validate the Shapeless (9x9) Datapack recipe generated by DataGen
             Optional<RecipeHolder<dev.davidklgames.puremashtweaks.recipe.ShapelessSynthesisRecipe>> shapelessMatch = serverLevel.recipeAccess().getRecipeFor(
                     dev.davidklgames.puremashtweaks.registry.ModRecipes.SHAPELESS_SYNTHESIS_TYPE.get(),
                     input,
@@ -284,30 +350,9 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
                 return;
             }
 
-            // =========================================================================
-            // VANILLA 3x3 FALLBACK (Phase 4 - RECIPE TOGGLING)
-            // =========================================================================
-            List<RecipeHolder<net.minecraft.world.item.crafting.CraftingRecipe>> matches = serverLevel.recipeAccess().recipeMap().getRecipesFor(
-                    RecipeType.CRAFTING,
-                    input,
-                    serverLevel
-            ).toList();
-
-            this.matchingVanillaRecipesCount = matches.size();
-
-            if (!matches.isEmpty()) {
-                if (this.selectedVanillaRecipeIndex >= this.matchingVanillaRecipesCount) {
-                    this.selectedVanillaRecipeIndex = 0;
-                }
-                RecipeHolder<net.minecraft.world.item.crafting.CraftingRecipe> activeMatch = matches.get(this.selectedVanillaRecipeIndex);
-                ItemStack result = activeMatch.value().assemble(input);
-                this.expectedOutputCount = result.getCount();
-                this.inventory.setStackInSlot(81, result);
-            } else {
-                this.selectedVanillaRecipeIndex = 0;
-                this.expectedOutputCount = 0;
-                this.inventory.setStackInSlot(81, ItemStack.EMPTY);
-            }
+            this.expectedOutputCount = 0;
+            this.inventory.setStackInSlot(81, ItemStack.EMPTY);
+            setChanged();
         }
     }
 
@@ -317,9 +362,11 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
             for (int i = 0; i < 81; i++) {
                 ItemStack stack = this.inventory.getStackInSlot(i);
                 if (!stack.isEmpty()) {
+                    int toShrink = hasMemoryCardRecipe ? Math.max(1, cachedExpectedCounts[i]) : 1;
                     ItemStackTemplate remainderTemplate = stack.getCraftingRemainder();
                     ItemStack remaining = remainderTemplate != null ? remainderTemplate.create() : ItemStack.EMPTY;
-                    stack.shrink(1);
+
+                    stack.shrink(toShrink);
                     if (stack.isEmpty() && !remaining.isEmpty()) {
                         this.inventory.setStackSilent(i, remaining);
                     }
@@ -362,7 +409,6 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
             recipeTag.putString("OutputName", outputStack.getHoverName().getString());
             recipeTag.putInt("OutputCount", outputStack.getCount());
 
-            // NEW: Saves the complete result ItemStack securely in 26.1.2
             assert this.level != null;
             ItemStack.CODEC.encodeStart(this.level.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), outputStack)
                     .result().ifPresent(tag -> {
@@ -373,7 +419,7 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
             recipeTag.putInt("OutputCount", 0);
         }
 
-        cardStack.set(ModDataComponents.RECIPE_CARD_DATA.get(), recipeTag);
+        cardStack.set(PureMashDataComponents.RECIPE_CARD_DATA.get(), recipeTag);
         this.inventory.setStackInSlot(82, cardStack);
         updateMemoryCardCache();
         setChanged();
@@ -414,7 +460,6 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
         output.putInt("Mode", this.activeMode);
         output.putBoolean("Automation", this.automationActive);
         output.putInt("AutomationMode", this.automationMode);
-        output.putInt("SelectedVanillaRecipeIndex", this.selectedVanillaRecipeIndex);
     }
 
     @Override
@@ -424,93 +469,108 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
         this.activeMode = input.getIntOr("Mode", 0);
         this.automationActive = input.getBooleanOr("Automation", false);
         this.automationMode = input.getIntOr("AutomationMode", 0);
-        this.selectedVanillaRecipeIndex = input.getIntOr("SelectedVanillaRecipeIndex", 0);
     }
 
     // ----------------------------------------------------------------------------------------------------
-    // SECURED EXTERNAL AUTOMATION SECTION (Transfer API + SnapshotJournal)
+    // HIGH-PERFORMANCE TRANSFER API HANDLER (BALANCED PATTERN RECONSTRUCTION)
     // ----------------------------------------------------------------------------------------------------
 
-    // The "Patchwork Diary" that records item snapshots before AE2 performs actions.
     private final SnapshotJournal<ItemStack[]> journal = new SnapshotJournal<>() {
         @Override
         protected ItemStack[] createSnapshot() {
-            return inventory.createSnapshot(); // Takes a "snapshot" of the table
+            return inventory.createSnapshot();
         }
 
         @Override
         protected void revertToSnapshot(ItemStack[] snapshot) {
-            inventory.restoreSnapshot(snapshot); // Returns the old snapshot if AE2 cancels
+            inventory.restoreSnapshot(snapshot);
         }
 
         @Override
         protected void onRootCommit(ItemStack[] originalState) {
             setChanged();
-            updateCraftingResult(); // Commits the operation and recalculates the result!
+            updateCraftingResult();
         }
     };
 
-    private final net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> automationHandler = new net.neoforged.neoforge.transfer.ResourceHandler<>() {
+    private final net.neoforged.neoforge.transfer.ResourceHandler<ItemResource> automationHandler = new net.neoforged.neoforge.transfer.ResourceHandler<>() {
         @Override
         public int size() { return 82; }
 
         @Override
-        public net.neoforged.neoforge.transfer.item.@NonNull ItemResource getResource(int slot) {
-            return net.neoforged.neoforge.transfer.item.ItemResource.of(inventory.getStackInSlot(slot));
+        public @NonNull ItemResource getResource(int slot) {
+            if (slot == 81) {
+                ItemStack currentResult = inventory.getStackInSlot(81);
+                if (!currentResult.isEmpty()) {
+                    return ItemResource.of(currentResult);
+                }
+                if (hasMemoryCardRecipe && !memoryCardOutputCache.isEmpty()) {
+                    return cachedOutputResource;
+                }
+            }
+            return ItemResource.of(inventory.getStackInSlot(slot));
         }
 
         @Override
-        public long getAmountAsLong(int slot) { return inventory.getStackInSlot(slot).getCount(); }
+        public long getAmountAsLong(int slot) {
+            return inventory.getStackInSlot(slot).getCount();
+        }
 
         @Override
-        public long getCapacityAsLong(int slot, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource) {
+        public long getCapacityAsLong(int slot, @NonNull ItemResource resource) {
+            if (slot == 81) {
+                return cachedOutputResource.isEmpty() ? 64 : cachedOutputResource.toStack().getMaxStackSize();
+            }
+            if (automationActive && automationMode == 0 && hasMemoryCardRecipe) {
+                ItemResource expected = cachedExpectedResources[slot];
+                if (!expected.isEmpty() && expected.equals(resource)) {
+                    return resource.toStack().getMaxStackSize();
+                }
+                return 0;
+            }
             return inventory.getSlotLimit(slot);
         }
 
         @Override
-        public boolean isValid(int slot, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource) {
+        public boolean isValid(int slot, @NonNull ItemResource resource) {
             if (slot == 81) return false;
+            if (automationActive && automationMode == 0 && hasMemoryCardRecipe) {
+                return cachedExpectedResources[slot].equals(resource);
+            }
             return inventory.isItemValid(slot, resource.toStack(1));
         }
 
         @Override
-        public int insert(int index, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, net.neoforged.neoforge.transfer.transaction.@NonNull TransactionContext transaction) {
-            if (automationActive && automationMode == 1) {
-                return 0;
-            }
-
+        public int insert(int index, @NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
+            if (automationActive && automationMode == 1) return 0;
             if (index >= 81 || amount <= 0 || resource.isEmpty() || isGridLocked()) return 0;
 
-            ItemStack stack = resource.toStack(amount);
-
             if (automationActive && automationMode == 0 && hasMemoryCardRecipe) {
-                ItemStack expected = memoryCardCache[index];
-                if (expected.isEmpty() || !ItemStack.isSameItemSameComponents(stack, expected)) {
-                    return 0;
-                }
-                int required = expected.getCount();
+                ItemResource expected = cachedExpectedResources[index];
+                if (!expected.equals(resource)) return 0;
+
+                int maxStack = resource.toStack().getMaxStackSize();
                 ItemStack currentStack = inventory.getStackInSlot(index);
-                if (currentStack.getCount() >= required) {
-                    return 0;
-                }
+                if (currentStack.getCount() >= maxStack) return 0;
 
-                int toInsertAmount = Math.min(amount, required - currentStack.getCount());
+                int space = maxStack - currentStack.getCount();
+                int toInsertAmount = Math.min(amount, space);
 
-                // ACTIVATES THE JOURNAL BEFORE MODIFICATION
                 journal.updateSnapshots(transaction);
 
-                ItemStack newStack = stack.copyWithCount(currentStack.getCount() + toInsertAmount);
+                ItemStack newStack = resource.toStack(currentStack.getCount() + toInsertAmount);
                 inventory.setStackSilent(index, newStack);
+
                 return toInsertAmount;
             }
 
-            // Free Auto-Crafter Mode
-            ItemStack remainder = inventory.insertItem(index, stack, true); // Simulates
+            ItemStack stack = resource.toStack(amount);
+            ItemStack remainder = inventory.insertItem(index, stack, true);
             int inserted = amount - remainder.getCount();
             if (inserted > 0) {
-                journal.updateSnapshots(transaction); // Prepares for rollback
+                journal.updateSnapshots(transaction);
                 ItemStack newStack = inventory.getStackInSlot(index).copy();
-                if (newStack.isEmpty()) newStack = stack.copyWithCount(inserted);
+                if (newStack.isEmpty()) newStack = resource.toStack(inserted);
                 else newStack.grow(inserted);
                 inventory.setStackSilent(index, newStack);
             }
@@ -518,21 +578,17 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
         }
 
         @Override
-        public int extract(int index, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, net.neoforged.neoforge.transfer.transaction.@NonNull TransactionContext transaction) {
-
-            // If automation is active and in 'Add' (1) mode, summarily rejects any extraction!
+        public int extract(int index, @NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
             if (automationActive && automationMode == 1) return 0;
-
             if (index != 81 || amount <= 0 || resource.isEmpty()) return 0;
 
             ItemStack currentResult = inventory.getStackInSlot(81);
-            if (currentResult.isEmpty() || !net.neoforged.neoforge.transfer.item.ItemResource.of(currentResult).equals(resource)) {
+            if (currentResult.isEmpty() || !ItemResource.of(currentResult).equals(resource)) {
                 return 0;
             }
 
             int extracted = Math.min(amount, currentResult.getCount());
             if (extracted > 0) {
-                // ACTIVATES THE JOURNAL BEFORE CONSUMING THE CRAFT
                 journal.updateSnapshots(transaction);
 
                 ItemStack newStack = currentResult.copy();
@@ -541,13 +597,76 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
 
                 if (newStack.isEmpty()) {
                     consumeCraftingIngredientsSilent();
+
+                    boolean canCraftNext = true;
+                    for (int i = 0; i < 81; i++) {
+                        if (!cachedExpectedResources[i].isEmpty()) {
+                            if (inventory.getStackInSlot(i).getCount() < cachedExpectedCounts[i]) {
+                                canCraftNext = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (canCraftNext && !memoryCardOutputCache.isEmpty()) {
+                        inventory.setStackSilent(81, memoryCardOutputCache.copy());
+                    }
                 }
             }
             return extracted;
         }
 
         @Override
-        public int insert(net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, net.neoforged.neoforge.transfer.transaction.@NonNull TransactionContext transaction) {
+        public int insert(@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
+            if (automationActive && automationMode == 1) return 0;
+            if (amount <= 0 || resource.isEmpty()) return 0;
+
+            if (automationActive && automationMode == 0 && hasMemoryCardRecipe) {
+                List<Integer> validSlots = resourceToSlotsMap.get(resource);
+                if (validSlots == null || validSlots.isEmpty()) return 0;
+
+                int totalInserted = 0;
+                int maxStack = resource.toStack().getMaxStackSize();
+
+                while (amount > 0) {
+                    int minRatio = Integer.MAX_VALUE;
+                    for (int slot : validSlots) {
+                        int neededPerCraft = cachedExpectedCounts[slot];
+                        int currentCount = inventory.getStackInSlot(slot).getCount();
+                        minRatio = Math.min(minRatio, currentCount / neededPerCraft);
+                    }
+
+                    boolean insertedInRound = false;
+
+                    for (int slot : validSlots) {
+                        if (amount <= 0) break;
+
+                        int neededPerCraft = cachedExpectedCounts[slot];
+                        int currentCount = inventory.getStackInSlot(slot).getCount();
+                        int currentRatio = currentCount / neededPerCraft;
+
+                        if (currentRatio == minRatio && currentCount < maxStack) {
+                            int spaceInQuota = ((minRatio + 1) * neededPerCraft) - currentCount;
+                            int toInsert = Math.min(amount, Math.min(spaceInQuota, maxStack - currentCount));
+
+                            if (toInsert > 0) {
+                                int insertedHere = this.insert(slot, resource, toInsert, transaction);
+                                if (insertedHere > 0) {
+                                    amount -= insertedHere;
+                                    totalInserted += insertedHere;
+                                    insertedInRound = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!insertedInRound) {
+                        break;
+                    }
+                }
+
+                return totalInserted;
+            }
+
             int totalInserted = 0;
             for (int i = 0; i < 81; i++) {
                 if (amount <= 0) break;
@@ -559,37 +678,33 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
         }
 
         @Override
-        public int extract(net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, net.neoforged.neoforge.transfer.transaction.@NonNull TransactionContext transaction) {
+        public int extract(@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
             return this.extract(81, resource, amount, transaction);
         }
     };
 
-    // Official 26.1.2 logic to drop the items stored on the table before the block disappears from the world
     @Override
     public void preRemoveSideEffects(@NonNull BlockPos pos, @NonNull BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (this.level != null && !this.level.isClientSide()) {
-            // 1. Drops the items from the crafting grid (Slots 0 to 80)
             for (int i = 0; i < 81; i++) {
                 ItemStack stack = this.inventory.getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    net.minecraft.world.Containers.dropItemStack(
+                    Containers.dropItemStack(
                             this.level,
                             pos.getX(), pos.getY(), pos.getZ(),
                             stack
                     );
                 }
             }
-            // 2. Drops the memory card if one is inserted (Slot 82)
             ItemStack card = this.inventory.getStackInSlot(82);
             if (!card.isEmpty()) {
-                net.minecraft.world.Containers.dropItemStack(
+                Containers.dropItemStack(
                         this.level,
                         pos.getX(), pos.getY(), pos.getZ(),
                         card
                 );
             }
-            // NOTE: We ignore slot 81 (Result) to prevent item duplication exploits!
         }
     }
 
@@ -599,40 +714,11 @@ public class SynthesisTableBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    public net.minecraft.nbt.@NonNull CompoundTag getUpdateTag(HolderLookup.@NonNull Provider registries) {
+    public @NonNull CompoundTag getUpdateTag(HolderLookup.@NonNull Provider registries) {
         return this.saveCustomOnly(registries);
     }
 
-
-
-    private int matchingVanillaRecipesCount = 0;
-    private int selectedVanillaRecipeIndex = 0;
-
-    public int getMatchingVanillaRecipesCount() {
-        return this.matchingVanillaRecipesCount;
-    }
-
-    public void setMatchingVanillaRecipesCount(int count) {
-        this.matchingVanillaRecipesCount = count;
-    }
-
-    public int getSelectedVanillaRecipeIndex() {
-        return this.selectedVanillaRecipeIndex;
-    }
-
-    public void setSelectedVanillaRecipeIndex(int index) {
-        this.selectedVanillaRecipeIndex = index;
-    }
-
-    public void cycleVanillaRecipe() {
-        if (this.matchingVanillaRecipesCount > 1) {
-            this.selectedVanillaRecipeIndex = (this.selectedVanillaRecipeIndex + 1) % this.matchingVanillaRecipesCount;
-            updateCraftingResult();
-            setChanged();
-        }
-    }
-
-    public net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> getAutomationHandler() {
+    public net.neoforged.neoforge.transfer.ResourceHandler<ItemResource> getAutomationHandler() {
         return this.automationHandler;
     }
 }

@@ -2,10 +2,12 @@ package dev.davidklgames.puremashtweaks.util;
 
 import net.neoforged.fml.loading.FMLPaths;
 import dev.davidklgames.puremashtweaks.PureMashTweaks;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class PureMashUtility {
 
@@ -24,12 +26,6 @@ public class PureMashUtility {
     }
 
     private static void copyResource(String resourcePath, Path targetPath) {
-        // If the README.txt file already physically exists in the destination folder, it does not overwrite it.
-        // This preserves any notes or modifications made by the modpack creator.
-        if (Files.exists(targetPath)) {
-            return;
-        }
-
         try {
             // Ensures the parent directory exists before attempting to copy the file.
             Path parentDir = targetPath.getParent();
@@ -39,14 +35,26 @@ public class PureMashUtility {
 
             try (InputStream in = PureMashUtility.class.getResourceAsStream(resourcePath)) {
                 if (in == null) {
-                    PureMashTweaks.LOGGER.error("[PureMash Utility] Internal resource not found in JAR: {}", resourcePath);
+                    PureMashTweaks.LOGGER.error("[PureMash Utility]: Internal resource not found in JAR: {}", resourcePath);
                     return;
                 }
-                Files.copy(in, targetPath);
-                PureMashTweaks.LOGGER.info("[PureMash Utility] Successfully copied resource {} to {}", resourcePath, targetPath);
+
+                byte[] resourceBytes = in.readAllBytes();
+
+                // If file exists and content is identical, do not overwrite to save disk I/O
+                if (Files.exists(targetPath)) {
+                    byte[] existingBytes = Files.readAllBytes(targetPath);
+                    if (Arrays.equals(resourceBytes, existingBytes)) {
+                        return;
+                    }
+                }
+
+                // If file does not exist or has outdated content, update it with the new version
+                Files.write(targetPath, resourceBytes);
+                PureMashTweaks.LOGGER.info("[PureMash Utility]: Successfully updated/copied resource {} to {}", resourcePath, targetPath);
             }
         } catch (IOException e) {
-            PureMashTweaks.LOGGER.error("[PureMash Utility] Failed to copy resource {} to {}", resourcePath, targetPath, e);
+            PureMashTweaks.LOGGER.error("[PureMash Utility]: Failed to copy resource {} to {}", resourcePath, targetPath, e);
         }
     }
 }

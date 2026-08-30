@@ -1,23 +1,38 @@
 package dev.davidklgames.puremashtweaks.block.entity;
 
-import dev.davidklgames.puremashtweaks.menu.MultifunctionalCompressorMenu;
-import dev.davidklgames.puremashtweaks.registry.ModItems;
-import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
+import dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper;
+import dev.davidklgames.puremashtweaks.block.MultifunctionalCompressorBlock;
 import dev.davidklgames.puremashtweaks.config.PureMashTweaksConfig;
+import dev.davidklgames.puremashtweaks.menu.MultifunctionalCompressorMenu;
+import dev.davidklgames.puremashtweaks.registry.ModBlockEntities;
+import dev.davidklgames.puremashtweaks.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,16 +43,89 @@ import java.util.Objects;
 @SuppressWarnings("removal")
 public class MultifunctionalCompressorBlockEntity extends BlockEntity implements MenuProvider {
 
-    private int mode = 0;
+    private int mode = 0; // 0 = Compression, 1 = Singularity, 2 = Dust
     private int progress = 0;
-    private int maxProgress = 100;
+    private int maxProgress = 20;
     private int singularityCount = 0;
     private boolean locked = false;
-    private net.minecraft.world.item.Item lockedItem = net.minecraft.world.item.Items.AIR;
-    private net.minecraft.world.item.Item singularityItem = net.minecraft.world.item.Items.AIR;
-    private final int[] sideConfig = new int[]{0, 0, 0, 0, 0, 0};
+    private Item lockedItem = Items.AIR;
+    private Item singularityItem = Items.AIR;
+    private ItemResource cachedExpectedInput = ItemResource.EMPTY;
+    private ItemResource cachedOutputResource = ItemResource.EMPTY;
 
-    public net.minecraft.world.item.Item getSingularityItem() {
+    // Base 5,000,000 FE energy storage with Capacity Upgrades support
+    public final SimpleEnergyHandler energyTank = new SimpleEnergyHandler(5000000, 5000000, 5000000) {
+        @Override
+        public long getCapacityAsLong() {
+            return getEnergyCapacity();
+        }
+
+        @Override
+        protected void onEnergyChanged(int previousAmount) {
+            setChanged();
+        }
+    };
+
+    public long getEnergyCapacity() {
+        long baseCapacity = 5000000L;
+        return baseCapacity * getCapacityMultiplier();
+    }
+
+    public int getCapacityMultiplier() {
+        int mult = 1;
+        for (int i = 2; i <= 4; i++) {
+            ItemStack upgrade = this.inventory.getStackInSlot(i);
+            if (upgrade.is(ModItems.CAPACITY_UPGRADE_1.get())) {
+                mult += (PureMashTweaksConfig.COMMON.capacityUpgrade1Multiplier.get() - 1) * upgrade.getCount();
+            } else if (upgrade.is(ModItems.CAPACITY_UPGRADE_2.get())) {
+                mult += (PureMashTweaksConfig.COMMON.capacityUpgrade2Multiplier.get() - 1) * upgrade.getCount();
+            }
+        }
+        return Math.max(1, mult);
+    }
+
+    public int getBaseEnergyUsage() {
+        return switch (this.mode) {
+            case 0 -> 50;   // Compression: 50 FE/t base
+            case 1 -> 250;  // Singularity: 250 FE/t base
+            case 2 -> 100;  // Dust Crushing: 100 FE/t base
+            default -> 50;
+        };
+    }
+
+    public void updateRecipeCache() {
+        if (this.level == null) {
+            this.cachedExpectedInput = ItemResource.EMPTY;
+            this.cachedOutputResource = ItemResource.EMPTY;
+            this.maxProgress = PureMashTweaksConfig.COMMON.compressorItemSpeed.get();
+            return;
+        }
+
+        ItemStack input = this.inventory.getStackInSlot(0);
+        if (!input.isEmpty()) {
+            var recipe = CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
+            if (recipe != null && !recipe.result().isEmpty()) {
+                this.cachedExpectedInput = ItemResource.of(input);
+                this.cachedOutputResource = ItemResource.of(recipe.result());
+                this.maxProgress = Math.max(1, recipe.time());
+                return;
+            }
+        } else if (this.locked && this.lockedItem != Items.AIR) {
+            var recipe = CompressorRecipeHelper.getRecipe(this.level, new ItemStack(this.lockedItem), this.mode);
+            if (recipe != null && !recipe.result().isEmpty()) {
+                this.cachedExpectedInput = ItemResource.of(new ItemStack(this.lockedItem));
+                this.cachedOutputResource = ItemResource.of(recipe.result());
+                this.maxProgress = Math.max(1, recipe.time());
+                return;
+            }
+        }
+
+        this.cachedExpectedInput = ItemResource.EMPTY;
+        this.cachedOutputResource = ItemResource.EMPTY;
+        updateMaxProgress();
+    }
+
+    public Item getSingularityItem() {
         return this.singularityItem;
     }
 
@@ -47,19 +135,23 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
+            if (slot == 0) {
+                updateRecipeCache();
+            }
         }
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             if (slot == 1) return false;
             if (slot >= 2 && slot <= 4) {
-                return stack.is(ModItems.SPEED_UPGRADE_1.get()) ||
-                        stack.is(ModItems.SPEED_UPGRADE_2.get()) ||
-                        stack.is(ModItems.SPEED_UPGRADE_3.get());
+                return isUpgradeValid(stack);
             }
             if (slot == 0) {
-                if (locked && lockedItem != net.minecraft.world.item.Items.AIR) {
+                if (locked && lockedItem != Items.AIR) {
                     return stack.is(lockedItem);
+                }
+                if (level != null) {
+                    return CompressorRecipeHelper.getRecipe(level, stack, mode) != null;
                 }
             }
             return true;
@@ -86,128 +178,211 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         super(ModBlockEntities.MULTIFUNCIONAL_COMPRESSOR_BE.get(), pos, state);
     }
 
+    public static boolean isUpgradeValid(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        return stack.is(ModItems.SPEED_UPGRADE_1.get()) ||
+                stack.is(ModItems.SPEED_UPGRADE_2.get()) ||
+                stack.is(ModItems.SPEED_UPGRADE_3.get()) ||
+                stack.is(ModItems.CAPACITY_UPGRADE_1.get()) ||
+                stack.is(ModItems.CAPACITY_UPGRADE_2.get()) ||
+                stack.is(ModItems.DUPLICATION_UPGRADE_1.get()) ||
+                stack.is(ModItems.DUPLICATION_UPGRADE_2.get()) ||
+                stack.is(ModItems.STACK_PROCESSING_UPGRADE.get());
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, MultifunctionalCompressorBlockEntity blockEntity) {
         if (level.isClientSide()) return;
 
         ItemStack input = blockEntity.inventory.getStackInSlot(0);
         ItemStack output = blockEntity.inventory.getStackInSlot(1);
 
+        boolean isWorking;
         if (blockEntity.mode == 1) {
-            blockEntity.tickSingularityMode(input, output);
+            isWorking = blockEntity.tickSingularityMode(input, output);
         } else {
-            blockEntity.tickStandardMode(input, output);
+            isWorking = blockEntity.tickStandardMode(input, output);
+        }
+
+        blockEntity.updateLitState(level, pos, isWorking);
+        blockEntity.autoPushOutput(level, pos);
+    }
+
+    private void updateLitState(Level level, BlockPos pos, boolean isWorking) {
+        BlockState currentState = level.getBlockState(pos);
+        if (currentState.hasProperty(MultifunctionalCompressorBlock.LIT) && currentState.getValue(MultifunctionalCompressorBlock.LIT) != isWorking) {
+            level.setBlock(pos, currentState.setValue(MultifunctionalCompressorBlock.LIT, isWorking), 3);
         }
     }
 
-    private void tickStandardMode(ItemStack input, ItemStack output) {
-        var recipe = dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
+    // Direct active auto-ejection to adjacent AE2 pattern providers / chests (0-tick push)
+    private void autoPushOutput(Level level, BlockPos pos) {
+        ItemStack output = this.inventory.getStackInSlot(1);
+        if (output.isEmpty()) return;
+
+        for (Direction dir : Direction.values()) {
+            BlockPos targetPos = pos.relative(dir);
+            ResourceHandler<ItemResource> targetHandler = level.getCapability(Capabilities.Item.BLOCK, targetPos, dir.getOpposite());
+
+            if (targetHandler != null) {
+                ItemResource res = ItemResource.of(output);
+                int toPush = output.getCount();
+
+                try (Transaction tx = Transaction.openRoot()) {
+                    int inserted = targetHandler.insert(res, toPush, tx);
+                    if (inserted > 0) {
+                        tx.commit();
+                        output.shrink(inserted);
+                        if (output.isEmpty()) {
+                            this.inventory.setStackSilent(1, ItemStack.EMPTY);
+                        }
+                        this.setChanged();
+                        if (output.isEmpty()) break;
+                    }
+                }
+            }
+        }
+    }
+
+    // High-throughput multi-operation cycle per tick
+    private boolean tickStandardMode(ItemStack input, ItemStack output) {
+        var recipe = CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
         if (recipe != null) {
-            this.maxProgress = recipe.time();
+            this.maxProgress = Math.max(1, recipe.time());
         } else {
             updateMaxProgress();
         }
 
-        if (canProcess(input, output)) {
-            this.progress += getSpeedLevel();
+        int energyRequired = this.getBaseEnergyUsage() * getSpeedLevel();
 
-            if (this.progress >= this.maxProgress) {
+        if (canProcess(input, output) && this.energyTank.getAmountAsLong() >= energyRequired) {
+            int speed = getSpeedLevel();
+            this.progress += speed;
+
+            while (this.progress >= this.maxProgress && canProcess(input, output) && !input.isEmpty() && this.energyTank.getAmountAsLong() >= energyRequired) {
+                this.energyTank.set((int) (this.energyTank.getAmountAsLong() - energyRequired));
                 processItem(input, output);
+                this.progress -= this.maxProgress;
 
-                if (getSpeedLevel() >= this.maxProgress && canProcess(input, output)) {
-                    this.progress = this.maxProgress / 2;
-                } else {
-                    this.progress = 0;
-                }
+                // Immediate 0-tick active ejection after completing craft
+                this.autoPushOutput(this.level, this.worldPosition);
+
+                input = this.inventory.getStackInSlot(0);
+                output = this.inventory.getStackInSlot(1);
+            }
+
+            if (input.isEmpty() || !canProcess(input, output)) {
+                this.progress = 0;
             }
             setChanged();
+            return true;
         } else {
             if (this.progress > 0) {
                 this.progress = Math.max(0, this.progress - 2);
                 setChanged();
             }
+            return false;
         }
     }
 
-    private void tickSingularityMode(ItemStack input, ItemStack output) {
-        if (this.singularityCount == 0) {
-            this.singularityItem = net.minecraft.world.item.Items.AIR;
+    private boolean tickSingularityMode(ItemStack input, ItemStack output) {
+        this.maxProgress = PureMashTweaksConfig.COMMON.compressorSingularitySpeed.get();
+
+        if (this.singularityCount == 0 && input.isEmpty()) {
+            this.singularityItem = Items.AIR;
         }
 
-        if (this.singularityItem == net.minecraft.world.item.Items.AIR && !input.isEmpty()) {
-            var recipe = dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.getRecipe(this.level, input, 1);
+        if (this.singularityItem == Items.AIR && !input.isEmpty()) {
+            var recipe = CompressorRecipeHelper.getRecipe(this.level, input, 1);
             if (recipe != null) {
                 this.singularityItem = input.getItem();
             }
         }
 
-        if (this.singularityItem != net.minecraft.world.item.Items.AIR) {
+        if (this.singularityItem != Items.AIR) {
             ItemStack tempInput = new ItemStack(this.singularityItem);
-            var recipe = dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.getRecipe(this.level, tempInput, 1);
+            var recipe = CompressorRecipeHelper.getRecipe(this.level, tempInput, 1);
 
             if (recipe == null) {
+                refundSingularityBuffer();
                 this.singularityCount = 0;
-                this.singularityItem = net.minecraft.world.item.Items.AIR;
+                this.singularityItem = Items.AIR;
                 this.progress = 0;
                 setChanged();
-                return;
+                return false;
             }
 
-            this.maxProgress = recipe.time();
-
-            if (this.singularityCount < recipe.cost()) {
-                this.progress = 0;
-                if (!input.isEmpty() && input.is(this.singularityItem)) {
-                    int needed = recipe.cost() - this.singularityCount;
-                    int toConsume = Math.min(input.getCount(), needed);
-                    input.shrink(toConsume);
-                    this.singularityCount += toConsume;
-                    setChanged();
-                }
+            if (recipe.time() > 0) {
+                this.maxProgress = recipe.time();
             }
 
-            if (this.singularityCount >= recipe.cost()) {
+            int energyRequired = this.getBaseEnergyUsage() * getSpeedLevel();
+
+            // Consumes items into the internal accumulator
+            if (!input.isEmpty() && input.is(this.singularityItem)) {
+                int needed = recipe.cost() - this.singularityCount;
+                int toConsume = Math.min(input.getCount(), needed);
+                input.shrink(toConsume);
+                this.singularityCount += toConsume;
+                setChanged();
+            }
+
+            if (this.singularityCount >= recipe.cost() && this.energyTank.getAmountAsLong() >= energyRequired) {
                 ItemStack result = recipe.result();
                 boolean canOutput = output.isEmpty() ||
                         (ItemStack.isSameItemSameComponents(output, result) && output.getCount() + result.getCount() <= output.getMaxStackSize());
 
                 if (canOutput) {
-                    this.progress += getSpeedLevel();
-                    if (this.progress >= this.maxProgress) {
+                    int speed = getSpeedLevel();
+                    this.progress += speed;
+
+                    while (this.progress >= this.maxProgress && this.singularityCount >= recipe.cost() && canOutput && this.energyTank.getAmountAsLong() >= energyRequired) {
+                        this.energyTank.set((int) (this.energyTank.getAmountAsLong() - energyRequired));
+
                         if (output.isEmpty()) {
                             this.inventory.setStackInSlot(1, result.copy());
                         } else {
                             output.grow(result.getCount());
                         }
-                        this.singularityCount = 0;
+                        this.singularityCount -= recipe.cost();
+                        this.progress -= this.maxProgress;
 
-                        if (getSpeedLevel() >= this.maxProgress && !input.isEmpty() && input.is(this.singularityItem)) {
-                            this.progress = this.maxProgress / 2;
-                        } else {
-                            this.progress = 0;
-                            this.singularityItem = net.minecraft.world.item.Items.AIR;
-                        }
+                        // Immediate 0-tick active ejection after completing singularity
+                        this.autoPushOutput(this.level, this.worldPosition);
+
+                        output = this.inventory.getStackInSlot(1);
+                        canOutput = output.isEmpty() ||
+                                (ItemStack.isSameItemSameComponents(output, result) && output.getCount() + result.getCount() <= output.getMaxStackSize());
+                    }
+
+                    if (this.singularityCount <= 0 && input.isEmpty()) {
+                        this.singularityItem = Items.AIR;
+                        this.progress = 0;
                     }
                     setChanged();
+                    return true;
                 }
+            } else {
+                this.progress = 0;
             }
         } else {
             this.singularityCount = 0;
             this.progress = 0;
             setChanged();
         }
+        return false;
     }
 
     private void updateMaxProgress() {
         if (this.mode == 1) {
-            this.maxProgress = PureMashTweaksConfig.COMPRESSOR_SPEED_SINGULARITY.get();
+            this.maxProgress = PureMashTweaksConfig.COMMON.compressorSingularitySpeed.get();
         } else {
-            this.maxProgress = PureMashTweaksConfig.COMPRESSOR_SPEED_ITEMS.get();
+            this.maxProgress = PureMashTweaksConfig.COMMON.compressorItemSpeed.get();
         }
     }
 
     private boolean canProcess(ItemStack input, ItemStack output) {
         if (input.isEmpty()) return false;
-        dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.CustomRecipeData recipe = dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
+        var recipe = CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
         if (recipe == null) return false;
         if ((this.mode == 0 || this.mode == 2) && input.getCount() < recipe.cost()) return false;
 
@@ -217,12 +392,19 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
     }
 
     private void processItem(ItemStack input, ItemStack output) {
-        dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.CustomRecipeData recipe =
-                dev.davidklgames.puremashtweaks.api.CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
-
+        var recipe = CompressorRecipeHelper.getRecipe(this.level, input, this.mode);
         if (recipe == null) return;
 
+        int batchMultiplier = 1;
+        if (hasStackProcessingUpgrade() && (this.mode == 0 || this.mode == 2)) {
+            int maxPossibleByInput = input.getCount() / recipe.cost();
+            int freeOutputSpace = output.isEmpty() ? recipe.result().getMaxStackSize() : (output.getMaxStackSize() - output.getCount());
+            int maxPossibleByOutput = freeOutputSpace / recipe.result().getCount();
+            batchMultiplier = Math.max(1, Math.min(maxPossibleByInput, maxPossibleByOutput));
+        }
+
         ItemStack result = recipe.result().copy();
+        result.setCount(result.getCount() * batchMultiplier);
 
         if (this.mode == 2) {
             double chance = getDuplicationChance();
@@ -231,7 +413,6 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
                 int spaceLeft = output.isEmpty() ? result.getMaxStackSize() : (result.getMaxStackSize() - output.getCount());
 
                 int extraToGive = Math.max(1, originalCount / 3);
-
                 int extraAllowed = spaceLeft - originalCount;
                 int toAdd = Math.min(extraToGive, extraAllowed);
 
@@ -243,7 +424,7 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
 
         switch (this.mode) {
             case 0, 2 -> {
-                input.shrink(recipe.cost());
+                input.shrink(recipe.cost() * batchMultiplier);
                 if (output.isEmpty()) {
                     inventory.setStackInSlot(1, result);
                 } else {
@@ -273,54 +454,82 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         for (int i = 2; i <= 4; i++) {
             ItemStack upgrade = this.inventory.getStackInSlot(i);
             if (upgrade.is(ModItems.SPEED_UPGRADE_1.get())) {
-                speed += PureMashTweaksConfig.MACHINE_SPEED_UPGRADE_1_POWER.get() * upgrade.getCount();
+                speed += PureMashTweaksConfig.COMMON.speedUpgrade1Power.get() * upgrade.getCount();
             } else if (upgrade.is(ModItems.SPEED_UPGRADE_2.get())) {
-                speed += PureMashTweaksConfig.MACHINE_SPEED_UPGRADE_2_POWER.get() * upgrade.getCount();
+                speed += PureMashTweaksConfig.COMMON.speedUpgrade2Power.get() * upgrade.getCount();
             } else if (upgrade.is(ModItems.SPEED_UPGRADE_3.get())) {
                 t3Count += upgrade.getCount();
             }
         }
 
         if (t3Count > 0) {
-            int basePower = PureMashTweaksConfig.MACHINE_SPEED_UPGRADE_3_POWER.get();
+            int basePower = PureMashTweaksConfig.COMMON.speedUpgrade3Power.get();
             if (t3Count == 1) {
-                speed += basePower;
+                speed += basePower * 2;
             } else if (t3Count == 2) {
-                speed += basePower * 4;
+                speed += basePower * 8;
             } else {
-                speed += basePower * 25;
+                speed += basePower * 32;
             }
         }
 
         return speed;
     }
 
-    private double getDuplicationChance() {
-        if (!PureMashTweaksConfig.ENABLE_DUPLICATION.get()) {
+    public double getDuplicationChance() {
+        if (!PureMashTweaksConfig.COMMON.enableDuplication.get()) {
             return 0.0;
         }
 
         double chance = 0.0;
         for (int i = 2; i <= 4; i++) {
             ItemStack upgrade = inventory.getStackInSlot(i);
-            if (upgrade.is(ModItems.SPEED_UPGRADE_2.get())) {
-                chance += PureMashTweaksConfig.MACHINE_UPGRADE_2_DUPLICATION_CHANCE.get() * upgrade.getCount();
-            }
-            if (upgrade.is(ModItems.SPEED_UPGRADE_3.get())) {
-                chance += PureMashTweaksConfig.MACHINE_UPGRADE_3_DUPLICATION_CHANCE.get() * upgrade.getCount();
+            if (upgrade.is(ModItems.DUPLICATION_UPGRADE_1.get())) {
+                chance += PureMashTweaksConfig.COMMON.duplicationUpgrade1Chance.get() * upgrade.getCount();
+            } else if (upgrade.is(ModItems.DUPLICATION_UPGRADE_2.get())) {
+                chance += PureMashTweaksConfig.COMMON.duplicationUpgrade2Chance.get() * upgrade.getCount();
             }
         }
-        return chance;
+        return Math.min(1.0, chance);
+    }
+
+    public boolean hasStackProcessingUpgrade() {
+        if (!PureMashTweaksConfig.COMMON.enableStackProcessing.get()) return false;
+        for (int i = 2; i <= 4; i++) {
+            if (this.inventory.getStackInSlot(i).is(ModItems.STACK_PROCESSING_UPGRADE.get())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getMode() { return this.mode; }
 
+    private void refundSingularityBuffer() {
+        if (this.singularityCount > 0 && this.singularityItem != Items.AIR && this.level != null && !this.level.isClientSide()) {
+            ItemStack refundStack = new ItemStack(this.singularityItem, this.singularityCount);
+
+            ItemStack remainder = this.inventory.insertItem(0, refundStack, false);
+            if (!remainder.isEmpty()) {
+                Containers.dropItemStack(this.level, this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.5, this.worldPosition.getZ() + 0.5, remainder);
+            }
+        }
+    }
+
     public void setMode(int mode) {
+        refundSingularityBuffer();
+
         this.mode = mode;
         this.progress = 0;
         this.singularityCount = 0;
-        this.singularityItem = net.minecraft.world.item.Items.AIR;
+        this.singularityItem = Items.AIR;
+        this.updateMaxProgress();
+        updateRecipeCache();
+
         setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
     }
 
     public int getProgress() { return this.progress; }
@@ -333,17 +542,12 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         this.locked = locked;
         if (locked) {
             ItemStack input = this.inventory.getStackInSlot(0);
-            this.lockedItem = input.isEmpty() ? net.minecraft.world.item.Items.AIR : input.getItem();
+            this.lockedItem = input.isEmpty() ? Items.AIR : input.getItem();
         } else {
-            this.lockedItem = net.minecraft.world.item.Items.AIR;
+            this.lockedItem = Items.AIR;
         }
         setChanged();
-    }
-
-    public int getSideConfig(Direction side) { return this.sideConfig[side.get3DDataValue()]; }
-    public void setSideConfig(Direction side, int config) {
-        this.sideConfig[side.get3DDataValue()] = config;
-        setChanged();
+        updateRecipeCache();
     }
 
     @Override
@@ -354,9 +558,9 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         output.putInt("Progress", this.progress);
         output.putInt("SingularityCount", this.singularityCount);
         output.putBoolean("Locked", this.locked);
-        output.putString("LockedItem", net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this.lockedItem).toString());
-        output.putString("SingularityItem", net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this.singularityItem).toString());
-        for (int i = 0; i < 6; i++) output.putInt("SideConfig_" + i, this.sideConfig[i]);
+        output.putString("LockedItem", BuiltInRegistries.ITEM.getKey(this.lockedItem).toString());
+        output.putString("SingularityItem", BuiltInRegistries.ITEM.getKey(this.singularityItem).toString());
+        output.putLong("Energy", this.energyTank.getAmountAsLong());
     }
 
     @Override
@@ -368,10 +572,11 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         this.singularityCount = input.getIntOr("SingularityCount", 0);
         this.locked = input.getBooleanOr("Locked", false);
         String lockedItemStr = input.getStringOr("LockedItem", "minecraft:air");
-        this.lockedItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(Objects.requireNonNull(Identifier.tryParse(lockedItemStr))).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR);
+        this.lockedItem = BuiltInRegistries.ITEM.get(Objects.requireNonNull(Identifier.tryParse(lockedItemStr))).map(Holder::value).orElse(Items.AIR);
         String singItemStr = input.getStringOr("SingularityItem", "minecraft:air");
-        this.singularityItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(Objects.requireNonNull(Identifier.tryParse(singItemStr))).map(net.minecraft.core.Holder::value).orElse(net.minecraft.world.item.Items.AIR);
-        for (int i = 0; i < 6; i++) this.sideConfig[i] = input.getIntOr("SideConfig_" + i, 0);
+        this.singularityItem = BuiltInRegistries.ITEM.get(Objects.requireNonNull(Identifier.tryParse(singItemStr))).map(Holder::value).orElse(Items.AIR);
+        this.energyTank.set((int) input.getLongOr("Energy", 0L));
+        this.updateMaxProgress();
     }
 
     @Override
@@ -393,56 +598,85 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
         protected void onRootCommit(ItemStack[] originalState) { setChanged(); }
     };
 
-    public net.neoforged.neoforge.transfer.ResourceHandler<net.neoforged.neoforge.transfer.item.ItemResource> getAutomationHandler(@Nullable Direction side) {
-        return new net.neoforged.neoforge.transfer.ResourceHandler<>() {
+    public ResourceHandler<ItemResource> getAutomationHandler(@Nullable Direction side) {
+        return new ResourceHandler<>() {
             @Override
             public int size() { return 2; }
 
             @Override
-            public net.neoforged.neoforge.transfer.item.@NonNull ItemResource getResource(int slot) {
-                return net.neoforged.neoforge.transfer.item.ItemResource.of(inventory.getStackInSlot(slot));
+            public @NonNull ItemResource getResource(int slot) {
+                if (slot == 1) {
+                    ItemStack currentResult = inventory.getStackInSlot(1);
+                    if (!currentResult.isEmpty()) {
+                        return ItemResource.of(currentResult);
+                    }
+                    if (!cachedOutputResource.isEmpty()) {
+                        return cachedOutputResource;
+                    }
+                }
+                return ItemResource.of(inventory.getStackInSlot(slot));
             }
 
             @Override
-            public long getAmountAsLong(int slot) { return inventory.getStackInSlot(slot).getCount(); }
+            public long getAmountAsLong(int slot) {
+                return inventory.getStackInSlot(slot).getCount();
+            }
 
             @Override
-            public long getCapacityAsLong(int slot, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource) {
+            public long getCapacityAsLong(int slot, @NonNull ItemResource resource) {
+                if (slot == 1) {
+                    return cachedOutputResource.isEmpty() ? 64 : cachedOutputResource.toStack().getMaxStackSize();
+                }
+                if (slot == 0) {
+                    if (isValid(0, resource)) {
+                        return resource.toStack().getMaxStackSize();
+                    }
+                    return 0;
+                }
                 return inventory.getSlotLimit(slot);
             }
 
             @Override
-            public boolean isValid(int slot, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource) {
+            public boolean isValid(int slot, @NonNull ItemResource resource) {
                 if (slot == 1) return false;
-                return inventory.isItemValid(slot, resource.toStack(1));
+                if (slot == 0) {
+                    if (locked && lockedItem != Items.AIR) {
+                        return resource.toStack().is(lockedItem);
+                    }
+                    if (level != null) {
+                        return CompressorRecipeHelper.getRecipe(level, resource.toStack(), mode) != null;
+                    }
+                }
+                return false;
             }
 
             @Override
-            public int insert(int index, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
-                if (side != null && sideConfig[side.get3DDataValue()] != 1) return 0;
+            public int insert(int index, @NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
                 if (index != 0 || amount <= 0 || resource.isEmpty()) return 0;
 
                 ItemStack stack = resource.toStack(amount);
+                if (!isValid(0, resource)) return 0;
+
                 ItemStack remainder = inventory.insertItem(0, stack, true);
                 int inserted = amount - remainder.getCount();
 
                 if (inserted > 0) {
                     journal.updateSnapshots(transaction);
                     ItemStack newStack = inventory.getStackInSlot(0).copy();
-                    if (newStack.isEmpty()) newStack = stack.copyWithCount(inserted);
+                    if (newStack.isEmpty()) newStack = resource.toStack(inserted);
                     else newStack.grow(inserted);
                     inventory.setStackSilent(0, newStack);
+                    updateRecipeCache();
                 }
                 return inserted;
             }
 
             @Override
-            public int extract(int index, net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
-                if (side != null && sideConfig[side.get3DDataValue()] != 2) return 0;
+            public int extract(int index, @NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
                 if (index != 1 || amount <= 0 || resource.isEmpty()) return 0;
 
                 ItemStack currentResult = inventory.getStackInSlot(1);
-                if (currentResult.isEmpty() || !net.neoforged.neoforge.transfer.item.ItemResource.of(currentResult).equals(resource)) {
+                if (currentResult.isEmpty() || !ItemResource.of(currentResult).equals(resource)) {
                     return 0;
                 }
 
@@ -457,12 +691,12 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
             }
 
             @Override
-            public int insert(net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
+            public int insert(@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
                 return this.insert(0, resource, amount, transaction);
             }
 
             @Override
-            public int extract(net.neoforged.neoforge.transfer.item.@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
+            public int extract(@NonNull ItemResource resource, int amount, @NonNull TransactionContext transaction) {
                 return this.extract(1, resource, amount, transaction);
             }
         };
@@ -472,9 +706,20 @@ public class MultifunctionalCompressorBlockEntity extends BlockEntity implements
     public void preRemoveSideEffects(@NonNull BlockPos pos, @NonNull BlockState state) {
         super.preRemoveSideEffects(pos, state);
         if (this.level != null && !this.level.isClientSide()) {
+            refundSingularityBuffer();
             for (int i = 0; i < this.inventory.getSlots(); i++) {
-                net.minecraft.world.Containers.dropItemStack(this.level, pos.getX(), pos.getY(), pos.getZ(), this.inventory.getStackInSlot(i));
+                Containers.dropItemStack(this.level, pos.getX(), pos.getY(), pos.getZ(), this.inventory.getStackInSlot(i));
             }
         }
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public @NonNull CompoundTag getUpdateTag(HolderLookup.@NonNull Provider registries) {
+        return this.saveCustomOnly(registries);
     }
 }

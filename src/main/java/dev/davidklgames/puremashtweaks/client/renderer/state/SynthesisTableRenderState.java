@@ -5,10 +5,9 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 
 public class SynthesisTableRenderState extends BlockEntityRenderState {
     public final ItemStackRenderState itemState = new ItemStackRenderState();
-
     public boolean isAutomationActive = false;
     public boolean hasHologram = false;
-    public float gameTime = 0.0f;
+    public float gameTime = 0.0F;
 
     public SynthesisTableRenderState() {
     }
