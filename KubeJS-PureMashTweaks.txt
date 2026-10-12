@@ -274,5 +274,31 @@ ServerEvents.recipes(event => {
 ----------------------------------------------------------------------------------------------------
 8. QUANTUM INFUSION
 ----------------------------------------------------------------------------------------------------
+Type ID: puremashtweaks:quantum_infusion
 
+Parameters:
+  - input: Required input item or tag (e.g. 'minecraft:nether_star')
+  - result: Output item stack (e.g. 'puremashtweaks:quantic_core')
+  - energy_cost: Total Forge Energy required in FE (Optional, Default: 250000)
+  - time_cost: Infusion duration in ticks (Optional, Default: 100 ticks = 5.0s)
+
+Fluent Syntax:
+ServerEvents.recipes(event => {
+    event.recipes.puremashtweaks.quantum_infusion(
+        'puremashtweaks:quantic_core',      // result (output)
+        'minecraft:nether_star'             // input
+    )
+    .energyCost(250000)                     // optional, default 250000
+    .timeCost(100)                          // optional, default 100
+    .id('kubejs:infuse_quantic_core')
+
+    // Custom Raw JSON Syntax alternative:
+    event.custom({
+        type: 'puremashtweaks:quantum_infusion',
+        input: { item: 'minecraft:nether_star' },
+        result: { id: 'puremashtweaks:quantic_core', count: 1 },
+        energy_cost: 250000,
+        time_cost: 100
+    }).id('kubejs:custom_infusion_quantic_core')
+})
 ====================================================================================================
