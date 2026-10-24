@@ -12,10 +12,12 @@ ServerEvents.recipes(event => {
     // Remove by Recipe ID
     event.remove({ id: 'puremashtweaks:synthesis/moldelonian_core' })
     event.remove({ id: 'puremashtweaks:synthesis/cosmic_singularity' })
+    event.remove({ id: 'puremashtweaks:synthesis/overworld_essence' })
 
     // Remove by Output Item
     event.remove({ output: 'puremashtweaks:synthorium_block' })
     event.remove({ output: 'puremashtweaks:moldelonian_ingot' })
+    event.remove({ output: 'puremashtweaks:overworld_essence' })
 
     // Remove all recipes from a specific PureMash machine type
     event.remove({ type: 'puremashtweaks:compression' })
@@ -24,6 +26,7 @@ ServerEvents.recipes(event => {
     event.remove({ type: 'puremashtweaks:alchemical' })
     event.remove({ type: 'puremashtweaks:shaped_synthesis' })
     event.remove({ type: 'puremashtweaks:shapeless_synthesis' })
+    event.remove({ type: 'puremashtweaks:quantum_infusion' })
 
     // Remove by Mod ID
     event.remove({ mod: 'puremashtweaks' })
@@ -39,6 +42,10 @@ Parameters:
   - result: Output item (e.g. 'puremashtweaks:moldelonian_core' or Item.of('item_id', count))
   - pattern: Exactly 9 strings representing rows (up to 9 chars per row). Use space ' ' for empty.
   - key: Character mapping to Items or Tags (e.g. '#c:ingots/iron', 'minecraft:diamond')
+  - tier: Required multiblock structure tier (Optional, Default: 1, Options: 1 or 2)
+  - energy_cost: Total Forge Energy in FE (Optional, Default: 0)
+  - quantic_energy: Total Quantic Energy in QE (Optional, Default: 0)
+  - need_catalysts: Whether catalysts are required on pedestals (Optional, Default: false)
 
 Example:
 ServerEvents.recipes(event => {
@@ -62,7 +69,44 @@ ServerEvents.recipes(event => {
             D: 'minecraft:diamond_block',
             N: 'minecraft:nether_star'
         }
-    ).id('kubejs:custom_moldelonian_core')
+    )
+    .tier(1)
+    .energyCost(250000)
+    .quanticEnergy(0)
+    .id('kubejs:custom_moldelonian_core')
+
+    // Custom Raw JSON Syntax alternative (with catalysts without QE):
+    event.custom({
+        type: 'puremashtweaks:shaped_synthesis',
+        pattern: [
+            '  SS SS  ',
+            ' S  N  S ',
+            'S   N   S',
+            '    D    ',
+            'NN DPD NN',
+            '    D    ',
+            'S   N   S',
+            ' S  N  S ',
+            '  SS SS  '
+        ],
+        key: {
+            S: { item: 'puremashtweaks:synthorium_block' },
+            N: { item: 'minecraft:netherite_block' },
+            D: { item: 'minecraft:diamond_block' },
+            P: { item: 'puremashtweaks:puremash_core' }
+        },
+        result: { id: 'puremashtweaks:creative_battery', count: 1 },
+        tier: 2,
+        energy_cost: 1500000,
+        quantic_energy: 0,
+        need_catalysts: true,
+        catalysts: [
+            { item: 'puremashtweaks:quantic_core' },
+            { item: 'puremashtweaks:quantic_core' },
+            { item: 'puremashtweaks:quantic_core' },
+            { item: 'puremashtweaks:quantic_core' }
+        ]
+    }).id('kubejs:custom_shaped_creative_battery')
 })
 
 
@@ -72,25 +116,86 @@ ServerEvents.recipes(event => {
 Type ID: puremashtweaks:shapeless_synthesis
 
 Parameters:
-  - result: Output item (e.g. 'puremashtweaks:moldelonian_ingot')
+  - result: Output item (e.g. 'puremashtweaks:overworld_essence')
   - ingredients: Array of up to 81 ingredients (items or tags)
+  - tier: Required multiblock structure tier (Optional, Default: 1, Options: 1 or 2)
+  - energy_cost: Total Forge Energy in FE (Optional, Default: 0)
+  - quantic_energy: Total Quantic Energy in QE (Optional, Default: 0)
+  - need_catalysts: Whether catalysts are required on pedestals (Optional, Default: false)
 
-Example:
+Examples:
 ServerEvents.recipes(event => {
+
+    // Overworld Essence (39 Natural Materials)
     event.recipes.puremashtweaks.shapeless_synthesis(
-        'puremashtweaks:moldelonian_ingot',
+        'puremashtweaks:overworld_essence',
         [
-            'puremashtweaks:synthorium_ingot',
-            'minecraft:netherite_ingot',
-            'minecraft:gold_ingot',
-            'minecraft:iron_ingot',
-            'minecraft:copper_ingot',
-            '#c:ingots/silver',
-            '#c:ingots/lead',
-            '#c:ingots/tin',
-            '#c:ingots/nickel'
+            'minecraft:grass_block',
+            'minecraft:podzol',
+            'minecraft:mycelium',
+            'minecraft:coarse_dirt',
+            'minecraft:dirt',
+            'minecraft:rooted_dirt',
+            'minecraft:clay',
+            'minecraft:gravel',
+            'minecraft:mud',
+            'minecraft:sand',
+            'minecraft:red_sand',
+            'minecraft:ice',
+            'minecraft:snow_block',
+            'minecraft:moss_block',
+            'minecraft:pale_moss_block',
+            'minecraft:stone',
+            'minecraft:andesite',
+            'minecraft:granite',
+            'minecraft:diorite',
+            'minecraft:calcite',
+            'minecraft:tuff',
+            'minecraft:dripstone_block',
+            'minecraft:amethyst_block',
+            'minecraft:deepslate',
+            'minecraft:bedrock',
+            'minecraft:red_mushroom',
+            'minecraft:brown_mushroom',
+            'minecraft:melon',
+            'minecraft:pumpkin',
+            'minecraft:oak_sapling',
+            'minecraft:spruce_sapling',
+            'minecraft:jungle_sapling',
+            'minecraft:acacia_sapling',
+            'minecraft:dark_oak_sapling',
+            'minecraft:birch_sapling',
+            'minecraft:mangrove_propagule',
+            'minecraft:cherry_sapling',
+            'minecraft:pale_oak_sapling',
+            'minecraft:kelp'
         ]
-    ).id('kubejs:custom_shapeless_moldelonian_ingot')
+    )
+    .tier(1)
+    .energyCost(500000)
+    .quanticEnergy(0)
+    .id('kubejs:custom_overworld_essence')
+
+    // Custom Raw JSON Syntax alternative (with catalysts without QE):
+    event.custom({
+        type: 'puremashtweaks:shapeless_synthesis',
+        ingredients: [
+            { item: 'puremashtweaks:synthorium_ingot' },
+            { item: 'puremashtweaks:moldelonian_ingot' },
+            { item: 'minecraft:nether_star' }
+        ],
+        result: { id: 'puremashtweaks:quantic_core', count: 1 },
+        tier: 1,
+        energy_cost: 250000,
+        quantic_energy: 0,
+        need_catalysts: true,
+        catalysts: [
+            { item: 'puremashtweaks:synthorium_rod' },
+            { item: 'puremashtweaks:synthorium_rod' },
+            { item: 'puremashtweaks:synthorium_rod' },
+            { item: 'puremashtweaks:synthorium_rod' }
+        ]
+    }).id('kubejs:custom_shapeless_quantic_core')
 })
 
 
@@ -271,6 +376,7 @@ ServerEvents.recipes(event => {
     }).id('kubejs:custom_alchemical_sand_to_clay')
 })
 
+
 ----------------------------------------------------------------------------------------------------
 8. QUANTUM INFUSION
 ----------------------------------------------------------------------------------------------------
@@ -280,6 +386,7 @@ Parameters:
   - input: Required input item or tag (e.g. 'minecraft:nether_star')
   - result: Output item stack (e.g. 'puremashtweaks:quantic_core')
   - energy_cost: Total Forge Energy required in FE (Optional, Default: 250000)
+  - quantic_energy: Total Quantic Energy required in QE (Optional, Default: 0)
   - time_cost: Infusion duration in ticks (Optional, Default: 100 ticks = 5.0s)
 
 Fluent Syntax:
@@ -289,6 +396,7 @@ ServerEvents.recipes(event => {
         'minecraft:nether_star'             // input
     )
     .energyCost(250000)                     // optional, default 250000
+    .quanticEnergy(10000)                   // optional, default 0
     .timeCost(100)                          // optional, default 100
     .id('kubejs:infuse_quantic_core')
 
@@ -298,6 +406,7 @@ ServerEvents.recipes(event => {
         input: { item: 'minecraft:nether_star' },
         result: { id: 'puremashtweaks:quantic_core', count: 1 },
         energy_cost: 250000,
+        quantic_energy: 10000,
         time_cost: 100
     }).id('kubejs:custom_infusion_quantic_core')
 })
